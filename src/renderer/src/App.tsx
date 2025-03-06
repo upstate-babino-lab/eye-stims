@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const tabs = ['Home', 'About', 'Contact'] // Tab labels
+const tabs = ['Sequence', 'Preview', 'Start'] // Tab labels
 
 export default function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState('Home')
@@ -25,9 +25,9 @@ export default function App(): JSX.Element {
 
         {/* Tab Content */}
         <div className="p-6 text-center text-lg">
-          {activeTab === 'Home' && <p>Welcome to the Home Page!</p>}
-          {activeTab === 'About' && <p>Learn more About Us here.</p>}
-          {activeTab === 'Contact' && <p>Get in touch with us on the Contact Page.</p>}
+          {activeTab === 'Sequence' && <p>Load sequence. Export video</p>}
+          {activeTab === 'Preview' && <p>Preview a stimulus</p>}
+          {activeTab === 'Start' && <p>Start running the sequence</p>}
         </div>
       </div>
     </div>
