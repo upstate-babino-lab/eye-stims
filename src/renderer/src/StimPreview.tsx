@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useState } from 'react';
+import { StimTypeName, Solid, stimConstructors } from './stimulus';
 
 export default function StimPreview() {
   return (
@@ -12,21 +13,16 @@ export default function StimPreview() {
 
 function StimForm() {
   const [stimName, setStimName] = useState('Solid');
-  const [durationSeconds, setDurationSeconds] = useState(1.0);
-  const [stimParameters, setStimParameters] = useState('{"foo": 42, "bar": 100}');
+  const [stimJson, setStimJson] = useState(JSON.stringify(new Solid()));
   const [jsonError, setJsonError] = useState('');
 
   // Dropdown options
-  const dropdownOptions = [
-    { value: 'solid', label: 'Solid' },
-    { value: 'bar', label: 'Bar' },
-    { value: 'option3', label: 'Option3' },
-  ];
+  const stimTypeNames = Object.keys(StimTypeName); //.filter((key) => isNaN(Number(key)));
 
   // Handle JSON input change and validation
   const handleJsonChange = (e) => {
     const value = e.target.value;
-    setStimParameters(value);
+    setStimJson(value);
 
     try {
       JSON.parse(value); // Attempt to parse JSON
@@ -36,44 +32,36 @@ function StimForm() {
     }
   };
 
+  function handleStimNameChange(e) {
+    const value = e.target.value;
+    setStimName(value);
+    const stim = new stimConstructors[value]();
+    setStimJson(JSON.stringify(stim));
+  }
+
+  const formStyles = 'border focus:outline-none focus:ring-2 focus:ring-blue-500';
+
   return (
-    <div className="flex gap-4 items-center p-2 rounded-lg shadow-sm text-gray-500">
+    <div className="flex gap-4 items-center py-2 rounded-lg shadow-sm text-gray-500">
       <div className="flex-col">
-        <div className="text-left">StimType</div>
-        <select
-          value={stimName}
-          onChange={(e) => setStimName(e.target.value)}
-          className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Stimulus name</option>
-          {dropdownOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
+        <div className="text-left">Name</div>
+        <select value={stimName} onChange={handleStimNameChange} className={formStyles}>
+          {stimTypeNames.map((name) => (
+            <option key={name} value={name}>
+              {name}
             </option>
           ))}
         </select>
       </div>
 
-      <div className="flex-col">
-        <div className="text-left">Seconds</div>
-        <input
-          type="number"
-          value={durationSeconds}
-          onChange={(e) => setDurationSeconds(parseFloat(e.target.value))}
-          step="0.1"
-          className="w-20 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
       <div className="flex-col w-full">
-        <div className="text-left">Parameters</div>
+        <div className="text-left">JSON</div>
         <div className="flex-1">
           <input
             type="text"
-            value={stimParameters}
+            value={stimJson}
             onChange={handleJsonChange}
-            placeholder={stimParameters}
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={'w-full ' + formStyles}
           />
           {jsonError && <p className="text-red-500 text-sm mt-1">{jsonError}</p>}
         </div>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import StimPreview from './StimPreview';
 
-const tabs = ['StimSequence', 'StimPreview', 'Start'] // Tab labels
+const tabs = ['StimSequence', 'StimPreview', 'Start']; // Tab labels
 
 export default function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState('Home');
@@ -21,14 +21,11 @@ export default function App(): JSX.Element {
         ))}
       </div>
 
-      {/* Tab Content */}
       <div className="flex-grow p-6 text-center text-lg">
-        {activeTab === 'StimSequence' ?
-          <p>Load sequence. Export video</p> :
-          activeTab === 'StimPreview' ?
-            <StimPreview /> :
-            activeTab === 'Start' && <p>Start running the sequence</p>}
+        {activeTab === 'StimSequence' && <p>Load sequence. Export video</p>}
+        {activeTab === 'StimPreview' && <StimPreview />}
+        {activeTab === 'Start' && <p>Start running the sequence</p>}
       </div>
     </div>
-  )
+  );
 }
