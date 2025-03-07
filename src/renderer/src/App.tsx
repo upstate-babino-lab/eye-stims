@@ -1,34 +1,33 @@
-import { useState } from 'react'
+import { useState } from 'react';
+import StimPreview from './StimPreview';
 
-const tabs = ['Sequence', 'Preview', 'Start'] // Tab labels
+const tabs = ['StimSequence', 'StimPreview', 'Start'] // Tab labels
 
 export default function App(): JSX.Element {
-  const [activeTab, setActiveTab] = useState('Home')
+  const [activeTab, setActiveTab] = useState('Home');
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4">
-      <div className="w-full max-w-md">
-        {/* Tabs */}
-        <div className="flex border-b border-gray-700">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              className={`flex-1 p-3 text-center transition-colors duration-300 ${
-                activeTab === tab ? 'border-b-2 border-blue-500 text-blue-400' : 'text-gray-400'
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+    <div className="flex flex-col min-h-screen w-full bg-gray-900 text-white p-4">
+      <div className="flex-shrink-0 border-b border-gray-700">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            className={`flex-1 p-3 text-center transition-colors duration-300
+              ${activeTab === tab ? 'border-b-2 border-blue-600 text-blue-400' : 'text-gray-400'}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-        {/* Tab Content */}
-        <div className="p-6 text-center text-lg">
-          {activeTab === 'Sequence' && <p>Load sequence. Export video</p>}
-          {activeTab === 'Preview' && <p>Preview a stimulus</p>}
-          {activeTab === 'Start' && <p>Start running the sequence</p>}
-        </div>
+      {/* Tab Content */}
+      <div className="flex-grow p-6 text-center text-lg">
+        {activeTab === 'StimSequence' ?
+          <p>Load sequence. Export video</p> :
+          activeTab === 'StimPreview' ?
+            <StimPreview /> :
+            activeTab === 'Start' && <p>Start running the sequence</p>}
       </div>
     </div>
   )
