@@ -4,7 +4,7 @@ import { StimTypeName, Solid, stimConstructors } from './stimulus';
 
 export default function StimPreview() {
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-[85vh]">
       <StimForm />
       <Canvas />
     </div>
@@ -13,6 +13,7 @@ export default function StimPreview() {
 
 function StimForm() {
   const [stimName, setStimName] = useState('Solid');
+  const [durationSeconds, setDurationSeconds] = useState(1.0);
   const [stimJson, setStimJson] = useState(JSON.stringify(new Solid()));
   const [jsonError, setJsonError] = useState('');
 
@@ -36,16 +37,23 @@ function StimForm() {
     const value = e.target.value;
     setStimName(value);
     const stim = new stimConstructors[value]();
+    delete stim.name;
+    delete stim.duration;
     setStimJson(JSON.stringify(stim));
   }
 
-  const formStyles = 'bg-gray-300 border focus:outline-hidden focus:ring-2 focus:ring-blue-500';
+  const formStyles =
+    ' bg-gray-300 border focus:outline-hidden focus:ring-2 focus:ring-blue-500';
 
   return (
     <div className="flex gap-4 items-center py-2 rounded-lg shadow-xs text-gray-500">
       <div className="flex-col">
         <div className="text-left">Name</div>
-        <select value={stimName} onChange={handleStimNameChange} className={formStyles}>
+        <select
+          value={stimName}
+          onChange={handleStimNameChange}
+          className={formStyles}
+        >
           {stimTypeNames.map((name) => (
             <option key={name} value={name}>
               {name}
@@ -54,16 +62,29 @@ function StimForm() {
         </select>
       </div>
 
+      <div className="flex-col">
+        <div className="text-left">Seconds</div>
+        <input
+          className={'w-16' + formStyles}
+          type="number"
+          value={durationSeconds}
+          onChange={(e) => setDurationSeconds(parseFloat(e.target.value))}
+          step="0.1"
+        />
+      </div>
+
       <div className="flex-col w-full">
         <div className="text-left">JSON</div>
         <div className="flex-1">
           <input
+            className={'w-full' + formStyles}
             type="text"
             value={stimJson}
             onChange={handleJsonChange}
-            className={'w-full ' + formStyles}
           />
-          {jsonError && <p className="text-red-500 text-sm mt-1">{jsonError}</p>}
+          {jsonError && (
+            <p className="text-red-500 text-sm mt-1">{jsonError}</p>
+          )}
         </div>
       </div>
     </div>
@@ -71,7 +92,9 @@ function StimForm() {
 }
 
 function Canvas() {
-  return <div className="grow bg-gray-400 border">
-    canvas to fill all remaining space
-  </div>;
+  return (
+    <div className="grow bg-gray-400 border">
+      canvas to fill all remaining space
+    </div>
+  );
 }

@@ -4,7 +4,7 @@ import StimPreview from './StimPreview';
 const tabs = ['StimSequence', 'StimPreview', 'Start']; // Tab labels
 
 export default function App(): JSX.Element {
-  const [activeTab, setActiveTab] = useState('Home');
+  const [activeTab, setActiveTab] = useState(tabs[0]);
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-gray-900 text-white p-4">
