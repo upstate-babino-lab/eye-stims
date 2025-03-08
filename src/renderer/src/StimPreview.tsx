@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useState } from 'react';
 import { StimTypeName, Solid, stimConstructors } from './stimulus';
+import Button from './components/Button';
 
 export default function StimPreview() {
   return (
-    <div className="flex flex-col h-[80vh]">
+    <div className="flex flex-col h-[82vh]">
       <StimForm />
       <Canvas />
     </div>
@@ -81,12 +82,7 @@ function StimForm() {
       <div className="flex-col w-full space-y-1">
         <div className="flex justify-between">
           <div>JSON</div>
-          <div
-            className="text-sm inline-flex items-center px-2 py-0.5 cursor-pointer rounded bg-green-800 hover:bg-green-700 active:bg-green-600"
-            onClick={handlePreviewClick}
-          >
-            Preview
-          </div>
+          <Button onClick={handlePreviewClick}>Preview</Button>
         </div>
         <div className="flex-1">
           <input
@@ -100,7 +96,7 @@ function StimForm() {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

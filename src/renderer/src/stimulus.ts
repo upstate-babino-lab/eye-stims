@@ -13,6 +13,19 @@ export abstract class Stimulus {
     if (duration) this.duration = duration;
     if (bgColor) this.bgColor = bgColor;
   }
+
+  // TODO: change to abstract
+  render(
+    canvas: HTMLCanvasElement | OffscreenCanvas,
+    frameEncoderCb?: (
+      ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+    ) => void
+  ): void {
+    const ctx = canvas.getContext('2d');
+    if (frameEncoderCb && ctx) {
+      frameEncoderCb(ctx);
+    }
+  }
 }
 
 export class Solid extends Stimulus {
@@ -44,6 +57,7 @@ export class Bar extends Stimulus {
   }
 }
 
+// Map of constructors allowing lookup by name
 export const stimConstructors = {
   Solid: Solid,
   Bar: Bar,

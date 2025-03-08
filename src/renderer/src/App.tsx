@@ -12,7 +12,7 @@ export default function App(): JSX.Element {
         {tabs.map((tab) => (
           <button
             key={tab}
-            className={`flex-1 p-3 text-center transition-colors duration-300
+            className={`flex-1 p-3 text-center cursor-pointer transition-colors duration-300
               ${activeTab === tab ? 'border-b-2 border-blue-600 text-blue-400' : 'text-gray-400'}`}
             onClick={() => setActiveTab(tab)}
           >
