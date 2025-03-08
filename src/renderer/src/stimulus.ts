@@ -1,6 +1,6 @@
 export enum StimTypeName {
   Solid = 'Solid',
-  Bar = 'Bar'
+  Bar = 'Bar',
 }
 
 export abstract class Stimulus {
@@ -16,7 +16,7 @@ export abstract class Stimulus {
 }
 
 export class Solid extends Stimulus {
-  constructor(duration?: number, bgColor?: string) {
+  constructor({ duration, bgColor }: Partial<Solid> = {}) {
     super(StimTypeName.Solid, duration, bgColor);
   }
 }
@@ -28,14 +28,14 @@ export class Bar extends Stimulus {
   width: number = 100; // pixels
   angle: number = 1; // clockwise in radians
 
-  constructor(
-    duration: number,
-    bgColor: string,
-    fgColor?: string,
-    speed?: number,
-    width?: number,
-    angle?: number
-  ) {
+  constructor({
+    duration,
+    bgColor,
+    fgColor,
+    speed,
+    width,
+    angle,
+  }: Partial<Bar> = {}) {
     super(StimTypeName.Bar, duration, bgColor);
     if (fgColor) this.fgColor = fgColor;
     if (speed) this.speed = speed;
@@ -46,5 +46,5 @@ export class Bar extends Stimulus {
 
 export const stimConstructors = {
   Solid: Solid,
-  Bar: Bar
+  Bar: Bar,
 };
