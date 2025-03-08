@@ -1,5 +1,5 @@
 singleQuote: true
 semi: true
-printWidth: 80
+printWidth: 83
 trailingComma: es5
 jsxBracketSameLine: false

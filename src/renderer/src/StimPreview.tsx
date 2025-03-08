@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useState } from 'react';
-import { StimTypeName, Solid, stimConstructors } from './stimulus';
+import { StimTypeName, stimConstructors } from './stimulus';
 import Button from './components/Button';
 
 export default function StimPreview() {
@@ -15,7 +15,7 @@ export default function StimPreview() {
 function StimForm() {
   const [stimName, setStimName] = useState('Solid');
   const [durationSeconds, setDurationSeconds] = useState(1.0);
-  const [stimJson, setStimJson] = useState(JSON.stringify(new Solid()));
+  const [stimJson, setStimJson] = useState('{"bgColor": "black"}');
   const [jsonError, setJsonError] = useState('');
 
   // Dropdown options
@@ -46,6 +46,14 @@ function StimForm() {
   function handlePreviewClick() {
     const stim = new stimConstructors[stimName](JSON.parse(stimJson));
     console.log('handlePreviewClick() with stim=' + JSON.stringify(stim));
+    const canvasContainer = document.getElementById('canvas-container');
+    const canvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
+    if (!canvasContainer || !canvas) {
+      throw new Error('Invalid HTML canvas');
+    }
+    canvas.width = canvasContainer.offsetWidth - 2;
+    canvas.height = canvasContainer.offsetHeight;
+    stim.render(canvas);
   }
 
   const formStyles =
@@ -91,19 +99,17 @@ function StimForm() {
             value={stimJson}
             onChange={handleJsonChange}
           />
-          {jsonError && (
-            <p className="text-red-500 text-sm mt-1">{jsonError}</p>
-          )}
+          {jsonError && <p className="text-red-500 text-sm mt-1">{jsonError}</p>}
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 
 function Canvas() {
   return (
-    <div className="grow bg-gray-400 border">
-      canvas to fill all remaining space
+    <div id="canvas-container" className="grow bg-gray-400 border">
+      <canvas id="preview-canvas"/>
     </div>
   );
 }
