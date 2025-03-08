@@ -39,10 +39,10 @@ function StimForm() {
     setStimJson(JSON.stringify(stim));
   }
 
-  const formStyles = 'border focus:outline-none focus:ring-2 focus:ring-blue-500';
+  const formStyles = 'bg-gray-300 border focus:outline-hidden focus:ring-2 focus:ring-blue-500';
 
   return (
-    <div className="flex gap-4 items-center py-2 rounded-lg shadow-sm text-gray-500">
+    <div className="flex gap-4 items-center py-2 rounded-lg shadow-xs text-gray-500">
       <div className="flex-col">
         <div className="text-left">Name</div>
         <select value={stimName} onChange={handleStimNameChange} className={formStyles}>
@@ -71,7 +71,7 @@ function StimForm() {
 }
 
 function Canvas() {
-  return <div className="flex-grow bg-gray-400 border">
+  return <div className="grow bg-gray-400 border">
     canvas to fill all remaining space
   </div>;
 }

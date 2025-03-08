@@ -8,7 +8,7 @@ export default function App(): JSX.Element {
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-gray-900 text-white p-4">
-      <div className="flex-shrink-0 border-b border-gray-700">
+      <div className="shrink-0 border-b border-gray-700">
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -21,7 +21,7 @@ export default function App(): JSX.Element {
         ))}
       </div>
 
-      <div className="flex-grow p-6 text-center text-lg">
+      <div className="grow p-6 text-center text-lg">
         {activeTab === 'StimSequence' && <p>Load sequence. Export video</p>}
         {activeTab === 'StimPreview' && <StimPreview />}
         {activeTab === 'Start' && <p>Start running the sequence</p>}
