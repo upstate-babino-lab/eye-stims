@@ -44,7 +44,10 @@ function StimForm() {
   }
 
   function handlePreviewClick() {
-    const stim = new stimConstructors[stimName](JSON.parse(stimJson));
+    const stim = new stimConstructors[stimName]({
+      duration: durationSeconds,
+      ...JSON.parse(stimJson),
+    });
     console.log('handlePreviewClick() with stim=' + JSON.stringify(stim));
     const canvasContainer = document.getElementById('canvas-container');
     const canvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
@@ -53,7 +56,13 @@ function StimForm() {
     }
     canvas.width = canvasContainer.offsetWidth - 2;
     canvas.height = canvasContainer.offsetHeight;
-    stim.render(canvas);
+    stim.render(canvas, () => {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        // Clear back to default
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    });
   }
 
   const formStyles =
@@ -109,7 +118,7 @@ function StimForm() {
 function Canvas() {
   return (
     <div id="canvas-container" className="grow bg-gray-400 border">
-      <canvas id="preview-canvas"/>
+      <canvas id="preview-canvas" />
     </div>
   );
 }

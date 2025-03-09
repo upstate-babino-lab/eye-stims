@@ -10,11 +10,11 @@ export abstract class Stimulus {
 
   constructor(name: StimTypeName, duration?: number, bgColor?: string) {
     this.name = name;
-    if (duration) this.duration = duration;
-    if (bgColor) this.bgColor = bgColor;
+    this.duration = duration ?? this.duration;
+    this.bgColor = bgColor ?? this.bgColor;
   }
 
-  render(canvas: HTMLCanvasElement | OffscreenCanvas): void {
+  render(canvas: HTMLCanvasElement | OffscreenCanvas, onDone?: () => void): void {
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       throw new Error('render() got invalid context from canvas');
@@ -24,16 +24,19 @@ export abstract class Stimulus {
     } else {
       // Onscreen animation
       let lastTimestamp = 0;
-      const animate = (timestamp: number): void => {
+      const animate = (newTimestamp: number): void => {
         if (!lastTimestamp) {
-          lastTimestamp = timestamp;
+          lastTimestamp = newTimestamp;
         }
-        const deltaTime = (timestamp - lastTimestamp) / 1000; // Convert to seconds
-        if (deltaTime < this.duration) {
-          this.renderFrame(canvas, ctx, deltaTime);
+        const age = (newTimestamp - lastTimestamp) / 1000; // Seconds
+        if (age < this.duration) {
+          this.renderFrame(canvas, ctx, age);
           requestAnimationFrame(animate);
         } else {
           console.log('Onscreen animation completed');
+          if (onDone) {
+            onDone();
+          }
         }
       };
       requestAnimationFrame(animate);
@@ -68,7 +71,7 @@ export class Bar extends Stimulus {
   fgColor: string = 'white';
   speed: number = 100; // pixels per second
   width: number = 100; // pixels
-  angle: number = 1; // clockwise in radians
+  angle: number = 0; // degrees
 
   constructor({
     duration,
@@ -79,10 +82,10 @@ export class Bar extends Stimulus {
     angle,
   }: Partial<Bar> = {}) {
     super(StimTypeName.Bar, duration, bgColor);
-    if (fgColor) this.fgColor = fgColor;
-    if (speed) this.speed = speed;
-    if (width) this.width = width;
-    if (angle) this.angle = angle;
+    this.fgColor = fgColor ?? this.fgColor;
+    this.speed = speed ?? this.speed;
+    this.width = width ?? this.width;
+    this.angle = angle ?? this.angle;
   }
 
   renderFrame(
@@ -90,11 +93,37 @@ export class Bar extends Stimulus {
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     ageSeconds: number
   ): void {
-    if (ageSeconds <= this.duration) {
+    if (ageSeconds > this.duration) {
+      return;
+    }
+    ctx.fillStyle = this.bgColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const diagonal = Math.sqrt(
+      canvas.width * canvas.width + canvas.height * canvas.height
+    );
+    const drawBar = (x: number): void => {
+      ctx.save();
+      // Start with pure background
       ctx.fillStyle = this.bgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
+
+      ctx.translate(canvas.width / 2, canvas.height / 2); // Canvas center
+      ctx.rotate(degreesToRadians(this.angle));
+
+      ctx.translate(x - canvas.width / 2, 0);
+
+      ctx.fillStyle = this.fgColor;
+      ctx.fillRect(-this.width / 2, -diagonal / 2, this.width, diagonal);
+      ctx.restore();
+    };
+
+    const barX = Math.round(ageSeconds * this.speed) % canvas.width;
+    drawBar(barX);
   }
+}
+
+function degreesToRadians(degrees: number): number {
+  return degrees * (Math.PI / 180);
 }
 
 // Map of constructors allowing lookup by name
