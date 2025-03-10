@@ -15,14 +15,14 @@ export abstract class Stimulus {
   }
 
   render(canvas: HTMLCanvasElement | OffscreenCanvas, onDone?: () => void): void {
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('render() got invalid context from canvas');
-    }
     if (canvas instanceof OffscreenCanvas) {
       // Offscreen
     } else {
-      // Onscreen animation
+      // Onscreen animation (for preview only)
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        throw new Error('render() got invalid context from canvas');
+      }
       let lastTimestamp = 0;
       const animate = (newTimestamp: number): void => {
         if (!lastTimestamp) {
@@ -30,10 +30,9 @@ export abstract class Stimulus {
         }
         const age = (newTimestamp - lastTimestamp) / 1000; // Seconds
         if (age < this.duration) {
-          this.renderFrame(canvas, ctx, age);
+          this.renderFrame(ctx, age);
           requestAnimationFrame(animate);
         } else {
-          console.log('Onscreen animation completed');
           if (onDone) {
             onDone();
           }
@@ -44,10 +43,9 @@ export abstract class Stimulus {
   }
 
   abstract renderFrame(
-    canvas: HTMLCanvasElement | OffscreenCanvas,
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     ageSeconds: number
-  );
+  ): void;
 }
 
 export class Solid extends Stimulus {
@@ -55,13 +53,12 @@ export class Solid extends Stimulus {
     super(StimTypeName.Solid, duration, bgColor);
   }
   renderFrame(
-    canvas: HTMLCanvasElement | OffscreenCanvas,
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     ageSeconds: number
   ): void {
     if (ageSeconds <= this.duration) {
       ctx.fillStyle = this.bgColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     }
   }
 }
@@ -89,7 +86,6 @@ export class Bar extends Stimulus {
   }
 
   renderFrame(
-    canvas: HTMLCanvasElement | OffscreenCanvas,
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     ageSeconds: number
   ): void {
@@ -97,27 +93,28 @@ export class Bar extends Stimulus {
       return;
     }
     ctx.fillStyle = this.bgColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     const diagonal = Math.sqrt(
-      canvas.width * canvas.width + canvas.height * canvas.height
+      ctx.canvas.width * ctx.canvas.width + ctx.canvas.height * ctx.canvas.height
     );
     const drawBar = (x: number): void => {
       ctx.save();
       // Start with pure background
       ctx.fillStyle = this.bgColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-      ctx.translate(canvas.width / 2, canvas.height / 2); // Canvas center
+      // Translate to canvas center to ensure rotation happens around the center.
+      ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
       ctx.rotate(degreesToRadians(this.angle));
 
-      ctx.translate(x - canvas.width / 2, 0);
-
+      // Move to desired location before drawing
+      ctx.translate(x - ctx.canvas.width / 2, 0);
       ctx.fillStyle = this.fgColor;
       ctx.fillRect(-this.width / 2, -diagonal / 2, this.width, diagonal);
       ctx.restore();
     };
 
-    const barX = Math.round(ageSeconds * this.speed) % canvas.width;
+    const barX = Math.round(ageSeconds * this.speed) % ctx.canvas.width;
     drawBar(barX);
   }
 }

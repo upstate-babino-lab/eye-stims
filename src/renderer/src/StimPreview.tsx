@@ -7,7 +7,7 @@ export default function StimPreview() {
   return (
     <div className="flex flex-col h-[82vh]">
       <StimForm />
-      <Canvas />
+      <PreviewCanvas />
     </div>
   );
 }
@@ -48,7 +48,7 @@ function StimForm() {
       duration: durationSeconds,
       ...JSON.parse(stimJson),
     });
-    console.log('handlePreviewClick() with stim=' + JSON.stringify(stim));
+    // console.log('>>>>> handlePreviewClick() with stim=' + JSON.stringify(stim));
     const canvasContainer = document.getElementById('canvas-container');
     const canvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
     if (!canvasContainer || !canvas) {
@@ -115,7 +115,7 @@ function StimForm() {
   );
 }
 
-function Canvas() {
+function PreviewCanvas() {
   return (
     <div id="canvas-container" className="grow bg-gray-400 border">
       <canvas id="preview-canvas" />
