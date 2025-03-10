@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useState } from 'react';
 import { StimTypeName, stimConstructors } from './stimulus';
+import { encodeStimuliAsync } from './video';
+
 import Button from './components/Button';
 
 export default function StimPreview() {
@@ -43,6 +45,17 @@ function StimForm() {
     setStimJson(JSON.stringify(stim));
   }
 
+  // For testing only
+  function handleEncoderClick() {
+    const stim = new stimConstructors[stimName]({
+      duration: durationSeconds,
+      ...JSON.parse(stimJson),
+    });
+    encodeStimuliAsync([stim], 640, 400, 30).then((buf) => {
+      downloadBlob(new Blob([buf]), 'stimulus.mp4');
+    })
+  }
+
   function handlePreviewClick() {
     const stim = new stimConstructors[stimName]({
       duration: durationSeconds,
@@ -56,12 +69,13 @@ function StimForm() {
     }
     canvas.width = canvasContainer.offsetWidth - 2;
     canvas.height = canvasContainer.offsetHeight;
-    stim.render(canvas, () => {
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        // Clear back to default
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Invalid context from canvas');
+    }
+    stim.preview(ctx, () => {
+      // Clear back to default
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     });
   }
 
@@ -99,7 +113,10 @@ function StimForm() {
       <div className="flex-col w-full space-y-1">
         <div className="flex justify-between">
           <div>JSON</div>
-          <Button onClick={handlePreviewClick}>Preview</Button>
+          <div>
+            <Button onClick={handleEncoderClick}>Test encoder</Button>
+            <Button onClick={handlePreviewClick}>Preview</Button>
+          </div>
         </div>
         <div className="flex-1">
           <input
@@ -122,3 +139,17 @@ function PreviewCanvas() {
     </div>
   );
 }
+
+
+function downloadBlob(blob, filename: string) {
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.style.display = "none";
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+}
+

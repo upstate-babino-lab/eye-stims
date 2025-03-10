@@ -14,38 +14,30 @@ export abstract class Stimulus {
     this.bgColor = bgColor ?? this.bgColor;
   }
 
-  render(canvas: HTMLCanvasElement | OffscreenCanvas, onDone?: () => void): void {
-    if (canvas instanceof OffscreenCanvas) {
-      // Offscreen
-    } else {
-      // Onscreen animation (for preview only)
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        throw new Error('render() got invalid context from canvas');
-      }
-      let lastTimestamp = 0;
-      const animate = (newTimestamp: number): void => {
-        if (!lastTimestamp) {
-          lastTimestamp = newTimestamp;
-        }
-        const age = (newTimestamp - lastTimestamp) / 1000; // Seconds
-        if (age < this.duration) {
-          this.renderFrame(ctx, age);
-          requestAnimationFrame(animate);
-        } else {
-          if (onDone) {
-            onDone();
-          }
-        }
-      };
-      requestAnimationFrame(animate);
-    }
-  }
-
   abstract renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     ageSeconds: number
   ): void;
+
+  // Animate only for on-screen context
+  preview(ctx: CanvasRenderingContext2D, onAllFramesDone?: () => void) {
+    let lastTimestamp = 0;
+    const animate = (newTimestamp: number): void => {
+      if (!lastTimestamp) {
+        lastTimestamp = newTimestamp;
+      }
+      const age = (newTimestamp - lastTimestamp) / 1000; // Seconds
+      if (age < this.duration) {
+        this.renderFrame(ctx, age);
+        requestAnimationFrame(animate);
+      } else {
+        if (onAllFramesDone) {
+          onAllFramesDone();
+        }
+      }
+    };
+    requestAnimationFrame(animate);
+  }
 }
 
 export class Solid extends Stimulus {
@@ -56,10 +48,11 @@ export class Solid extends Stimulus {
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     ageSeconds: number
   ): void {
-    if (ageSeconds <= this.duration) {
-      ctx.fillStyle = this.bgColor;
-      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    if (ageSeconds < 0 || ageSeconds > this.duration) {
+      return;
     }
+    ctx.fillStyle = this.bgColor;
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   }
 }
 
@@ -89,7 +82,7 @@ export class Bar extends Stimulus {
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     ageSeconds: number
   ): void {
-    if (ageSeconds > this.duration) {
+    if (ageSeconds < 0 || ageSeconds > this.duration) {
       return;
     }
     ctx.fillStyle = this.bgColor;
@@ -107,7 +100,6 @@ export class Bar extends Stimulus {
       ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
       ctx.rotate(degreesToRadians(this.angle));
 
-      // Move to desired location before drawing
       ctx.translate(x - ctx.canvas.width / 2, 0);
       ctx.fillStyle = this.fgColor;
       ctx.fillRect(-this.width / 2, -diagonal / 2, this.width, diagonal);
