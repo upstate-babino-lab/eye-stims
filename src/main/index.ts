@@ -1,6 +1,7 @@
 import { app, shell, BrowserWindow, Menu, dialog, ipcMain } from 'electron';
 import { join } from 'path';
 import * as fs from 'fs';
+import * as readline from 'readline';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 
@@ -124,15 +125,23 @@ app.on('window-all-closed', () => {
 });
 
 async function loadFileDialogAsync(mainWindow) {
+  const endings = ['jsonl', 'stim', 'JSONL', 'STIM'];
   const { filePaths } = await dialog.showOpenDialog({
-    properties: ['openFile'],
+    properties: ['openFile'], // Only one single file
+    filters: [
+      { name: 'Newline-terminated JSON files', extensions: endings },
+      { name: 'MP4 video files', extensions: ['mp4'] },
+    ],
   });
   if (filePaths.length > 0) {
-    fs.readFile(filePaths[0], 'utf-8', (err, data) => {
-      if (!err && mainWindow) {
-        mainWindow.webContents.send('file-loaded', data);
-      }
-    });
+    if (filePaths.length !== 1) {
+      throw new Error('Expecting to load one single file');
+    }
+    const filePath = filePaths[0];
+    if (endings.some((ending) => filePath.endsWith('.' + ending))) {
+      const parsedObjects = await readJsonlFile(filePath);
+      mainWindow.webContents.send('file-loaded', parsedObjects);
+    }
   }
 }
 
@@ -150,3 +159,25 @@ ipcMain.on('save-file', (_, { filePath, content }) => {
     if (err) console.error('Error saving file:', err);
   });
 });
+
+//-----------------------------------------------------------------------------
+// Read and parse newline-terminated JSON file streaming it line-by-line
+async function readJsonlFile(filePath: string): Promise<unknown[]> {
+  const fileStream = fs.createReadStream(filePath);
+
+  const rl = readline.createInterface({
+    input: fileStream,
+    crlfDelay: Infinity,
+  });
+
+  const parsedObjects: Array<unknown> = [];
+  for await (const line of rl) {
+    try {
+      const jsonO = JSON.parse(line);
+      parsedObjects.push(jsonO);
+    } catch (err) {
+      console.error(`Error parsing JSON: ${(err as Error).message}`);
+    }
+  }
+  return parsedObjects;
+}

@@ -29,9 +29,14 @@ if (process.contextIsolated) {
   window.api = api;
 }
 
-ipcRenderer.on('file-loaded', (_, data) => {
+ipcRenderer.on('file-loaded', (_, objects) => {
   console.log(`>>>>> renderer preload got 'file-loaded'`);
-  (document.getElementById('file-content') as HTMLTextAreaElement).value = data;
+  const numberedLines = objects
+    .map((object, index) => `${index + 1}: ${JSON.stringify(object)}`) // Add line numbers
+    .join('\n'); // Join into a single string with newlines
+
+  (document.getElementById('file-content') as HTMLTextAreaElement).value =
+    numberedLines;
 });
 
 ipcRenderer.on('request-save-file', (_, filePath) => {
