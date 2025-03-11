@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { StimTypeName, stimConstructors } from './stimulus';
 import { encodeStimuliAsync } from './video';
-
 import Button from './components/Button';
 
 export default function StimPreview() {

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import StimPreview from './StimPreview';
+import StimSequence from './StimSequence';
 
 const tabs = ['StimSequence', 'StimPreview', 'Start']; // Tab labels
 
@@ -22,7 +23,7 @@ export default function App(): JSX.Element {
       </div>
 
       <div className="grow p-6 text-center text-lg">
-        {activeTab === 'StimSequence' && <p>Load sequence. Export video</p>}
+        {activeTab === 'StimSequence' && <StimSequence />}
         {activeTab === 'StimPreview' && <StimPreview />}
         {activeTab === 'Start' && <p>Start running the sequence</p>}
       </div>
