@@ -64,7 +64,7 @@ function createWindow(): void {
     width: 900,
     height: 670,
     show: false,
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -136,7 +136,7 @@ async function loadFileDialogAsync(mainWindow: BrowserWindow) {
     properties: ['openFile'], // Only one single file
     filters: [
       {
-        name: 'Newline-terminated JSON files',
+        name: 'StimSequence',
         extensions: [...jsonlEndings, ...yamlEndings],
       },
       { name: 'MP4 video files', extensions: ['mp4'] },
