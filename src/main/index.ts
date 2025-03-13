@@ -40,7 +40,7 @@ function modifyDefaultMenu(mainWindow: BrowserWindow) {
                   console.log(`>>>>> App menu 'Save File' clicked`);
                   const { filePath } = await dialog.showSaveDialog({});
                   if (filePath && mainWindow) {
-                    mainWindow.webContents.send('request-save-file', filePath);
+                    mainWindow.webContents.send('request-file-to-save', filePath);
                   }
                 },
               },
@@ -68,7 +68,9 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
+      //sandbox: false,
+      contextIsolation: true,
+      nodeIntegration: false,
     },
   });
 
@@ -126,7 +128,8 @@ app.on('window-all-closed', () => {
   }
 });
 
-async function loadFileDialogAsync(mainWindow) {
+// Called from App menu or IPC request from renderer
+async function loadFileDialogAsync(mainWindow: BrowserWindow) {
   const jsonlEndings = ['jsonl', 'stim', 'JSONL', 'STIM'];
   const yamlEndings = ['yaml', 'yml'];
   const { filePaths } = await dialog.showOpenDialog({
@@ -150,6 +153,7 @@ async function loadFileDialogAsync(mainWindow) {
   if (yamlEndings.some((ending) => filePath.endsWith('.' + ending))) {
     parsedContent = await readYamlFile(filePath);
   }
+  console.log(`>>>>> main sending 'file-loaded' with parsedContent`);
   mainWindow.webContents.send('file-loaded', parsedContent);
 }
 
