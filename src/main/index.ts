@@ -2,6 +2,8 @@ import { app, shell, BrowserWindow, Menu, dialog, ipcMain } from 'electron';
 import { join } from 'path';
 import * as fs from 'fs';
 import * as readline from 'readline';
+import * as yaml from 'js-yaml';
+import * as fsp from 'fs/promises'; // Use fs/promises for async file operations
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 
@@ -125,24 +127,30 @@ app.on('window-all-closed', () => {
 });
 
 async function loadFileDialogAsync(mainWindow) {
-  const endings = ['jsonl', 'stim', 'JSONL', 'STIM'];
+  const jsonlEndings = ['jsonl', 'stim', 'JSONL', 'STIM'];
+  const yamlEndings = ['yaml', 'yml'];
   const { filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'], // Only one single file
     filters: [
-      { name: 'Newline-terminated JSON files', extensions: endings },
+      {
+        name: 'Newline-terminated JSON files',
+        extensions: [...jsonlEndings, ...yamlEndings],
+      },
       { name: 'MP4 video files', extensions: ['mp4'] },
     ],
   });
-  if (filePaths.length > 0) {
-    if (filePaths.length !== 1) {
-      throw new Error('Expecting to load one single file');
-    }
-    const filePath = filePaths[0];
-    if (endings.some((ending) => filePath.endsWith('.' + ending))) {
-      const parsedObjects = await readJsonlFile(filePath);
-      mainWindow.webContents.send('file-loaded', parsedObjects);
-    }
+  if (filePaths.length !== 1) {
+    throw new Error('Expecting to load one single file');
   }
+  const filePath = filePaths[0];
+  let parsedContent: unknown = null;
+  if (jsonlEndings.some((ending) => filePath.endsWith('.' + ending))) {
+    parsedContent = await readJsonlFile(filePath);
+  }
+  if (yamlEndings.some((ending) => filePath.endsWith('.' + ending))) {
+    parsedContent = await readYamlFile(filePath);
+  }
+  mainWindow.webContents.send('file-loaded', parsedContent);
 }
 
 //-----------------------------------------------------------------------------
@@ -180,4 +188,17 @@ async function readJsonlFile(filePath: string): Promise<unknown[]> {
     }
   }
   return parsedObjects;
+}
+
+//-----------------------------------------------------------------------------
+// TODO: change return type
+async function readYamlFile(filePath: string): Promise<unknown | null> {
+  try {
+    const fileContents = await fsp.readFile(filePath, 'utf8');
+    const parsedData = yaml.load(fileContents) as unknown;
+    return parsedData;
+  } catch (error) {
+    console.error(`Error parsing YAML file: ${error}`);
+    return null; // or throw error, depending on your error handling strategy
+  }
 }

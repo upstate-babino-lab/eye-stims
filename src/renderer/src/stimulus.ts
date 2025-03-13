@@ -1,6 +1,7 @@
 export enum StimTypeName {
   Solid = 'Solid',
   Bar = 'Bar',
+  // TODO next: grating, letter, checkerboard, wait
 }
 
 export abstract class Stimulus {

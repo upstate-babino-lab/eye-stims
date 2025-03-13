@@ -29,9 +29,32 @@ if (process.contextIsolated) {
   window.api = api;
 }
 
-ipcRenderer.on('file-loaded', (_, objects) => {
+function capitalize(str: string): string {
+  if (!str) {
+    return str; // Return empty string or null/undefined as is
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+function oldStimList2New(old) {
+  if (!old || !old.stimulus_list) {
+    return null;
+  }
+  return old.stimulus_list.map((oldItem) => {
+    const oldStim = oldItem.stimulus;
+    const newStim = {
+      name: capitalize(oldStim.stimulusType),
+      duration: oldStim.lifespan,
+      bgColor: oldStim.backgroundColor,
+    };
+    return newStim;
+  });
+}
+
+ipcRenderer.on('file-loaded', (_, parsedContents) => {
   console.log(`>>>>> renderer preload got 'file-loaded'`);
-  const numberedLines = objects
+  const stimulusList = oldStimList2New(parsedContents) ?? parsedContents;
+  const numberedLines = stimulusList
     .map((object, index) => `${index + 1}: ${JSON.stringify(object)}`) // Add line numbers
     .join('\n'); // Join into a single string with newlines
 
