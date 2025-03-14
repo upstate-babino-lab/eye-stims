@@ -29,9 +29,11 @@ function modifyDefaultMenu(mainWindow: BrowserWindow) {
             submenu: [
               {
                 label: 'Load File',
-                click: async () => {
+                click: () => {
                   console.log(`>>>>> App menu 'Load File' clicked`);
-                  loadFileDialogAsync(mainWindow);
+                  loadFileDialogAsync(mainWindow).catch((err) => {
+                    console.log('ERROR from loadFileDialogAsync(): ' + err);
+                  });
                 },
               },
               {
@@ -162,7 +164,9 @@ async function loadFileDialogAsync(mainWindow: BrowserWindow) {
 
 ipcMain.on('load-file', () => {
   console.log(`>>>>> main got 'load-file'`);
-  loadFileDialogAsync(theMainWindow);
+  loadFileDialogAsync(theMainWindow).catch((err) => {
+    console.log('ERROR from loadFileDialogAsync(): ' + err);
+  });
 });
 
 ipcMain.on('save-file', (_, { filePath, content }) => {

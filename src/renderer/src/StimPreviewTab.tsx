@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useState } from 'react';
 import { StimTypeName, stimConstructors } from './stimulus';
 import { encodeStimuliAsync } from './video';
 import Button from './components/Button';
 
-export default function StimPreview() {
+export default function StimPreviewTab() {
   return (
     <div className="flex flex-col h-[82vh]">
       <StimForm />
@@ -52,7 +51,7 @@ function StimForm() {
     });
     encodeStimuliAsync([stim], 640, 400, 30).then((buf) => {
       downloadBlob(new Blob([buf]), 'stimulus.mp4');
-    })
+    });
   }
 
   function handlePreviewClick() {
@@ -139,11 +138,10 @@ function PreviewCanvas() {
   );
 }
 
-
 function downloadBlob(blob, filename: string) {
   const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.style.display = "none";
+  const a = document.createElement('a');
+  a.style.display = 'none';
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
@@ -151,4 +149,3 @@ function downloadBlob(blob, filename: string) {
   document.body.removeChild(a);
   window.URL.revokeObjectURL(url);
 }
-

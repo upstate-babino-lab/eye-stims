@@ -1,26 +1,37 @@
-import { useEffect } from 'react';
-import Button from './components/Button';
+// Provides state accessible to all components in the App
+import { useEffect, useState, ReactNode } from 'react';
+import { StateContext } from './StateContext';
+import StimSequence from './stim-sequence';
 
-export default function StimSequence() {
+export function StateProvider({ children }: { children: ReactNode }) {
+  const [sharedState, setSharedState] = useState<StimSequence>(
+    new StimSequence('foobar')
+  );
+
   useEffect(() => {
     const handleFileLoaded = (parsedContents: unknown): void => {
-      console.log(`>>>>> renderer got 'file-loaded'`);
+      console.log(`>>>>> renderer StateProvider got 'file-loaded' from main`);
       const stimulusList = oldStimList2New(parsedContents) ?? parsedContents;
+      /*
       const numberedLines = stimulusList
         .map((object, index) => `${index + 1}: ${JSON.stringify(object)}`) // Add line numbers
         .join('\n'); // Join into a single string with newlines
 
       (document.getElementById('file-content') as HTMLTextAreaElement).value =
         numberedLines;
+        */
+      setSharedState(new StimSequence('newName', 'blah blah', stimulusList));
     };
 
     const handleSaveRequest = (filePath: string): void => {
-      console.log(`>>>>> renderer got 'request-file-to-save'`);
+      console.log(
+        `>>>>> renderer StateProvider got 'request-file-to-save' from main`
+      );
       const content = (
         document.getElementById('file-content') as HTMLTextAreaElement
       ).value;
       window.electron.send('save-file', { filePath: filePath, content: content });
-    }
+    };
 
     // Listen for messages from main process
     window.electron.on('file-loaded', handleFileLoaded);
@@ -34,14 +45,9 @@ export default function StimSequence() {
   }, []);
 
   return (
-    <div className="flex flex-col h-[82vh]">
-      <div className="text-right p-2">
-        <Button onClick={() => window.electron.send('load-file')}>
-          Load Sequence
-        </Button>
-      </div>
-      <textarea id="file-content" className="w-full h-full bg-gray-500" />
-    </div>
+    <StateContext.Provider value={{ sharedState, setSharedState }}>
+      {children}
+    </StateContext.Provider>
   );
 }
 
