@@ -20,7 +20,7 @@ export abstract class Stimulus {
     ageSeconds: number
   ): void;
 
-  // Animate only for on-screen context
+  // Animate only for on-screen context (concrete method)
   preview(ctx: CanvasRenderingContext2D, onAllFramesDone?: () => void) {
     let lastTimestamp = 0;
     const animate = (newTimestamp: number): void => {
@@ -39,6 +39,7 @@ export abstract class Stimulus {
     };
     requestAnimationFrame(animate);
   }
+
 }
 
 export class Solid extends Stimulus {

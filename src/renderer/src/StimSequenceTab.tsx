@@ -1,8 +1,8 @@
 import Button from './components/Button';
-import { useSharedState } from './StateContext';
+import { useTheStimSequence } from './StateContext';
 
 export default function StimSequenceTab() {
-  const { sharedState } = useSharedState();
+  const { theStimSequence: sharedState } = useTheStimSequence();
 
   return (
     <div className="flex flex-col h-[82vh]">
