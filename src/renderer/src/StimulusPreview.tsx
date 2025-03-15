@@ -2,147 +2,184 @@ import { useState } from 'react';
 import { StimTypeName, Stimulus, stimConstructors } from './stimulus';
 import { encodeStimuliAsync } from './video';
 import Button from './components/Button';
+import InputField from './components/InputField';
+
 
 // Pane to preview one single Stimulus
 export default function StimulusPreview(props: { stimulus: Stimulus }) {
+  const [stimulus, setStimulus] = useState<Stimulus>(
+    new stimConstructors[props.stimulus.name](props.stimulus)
+  );
   return (
-    <div className="flex flex-row">
-      <StimForm />
-      <PreviewCanvas />
+    <div className="flex flex-col border rounded-md border-gray-700">
+      <div className="flex flex-row p-1 gap-1 ml-auto">
+        <Button onClick={() => EncodeStim(stimulus)}>Test encoder</Button>
+        <Button onClick={() => PreviewStim(stimulus)}>Preview</Button>
+      </div>
+      <div className="flex flex-row p-2 gap-2">
+        <StimForm
+          initialStim={props.stimulus}
+          onNewStim={(newStim) => setStimulus(newStim)}
+        />
+        <PreviewCanvas />
+      </div>
     </div>
   );
+}
 
-  function StimForm() {
-    const [stimulus, setStimulus] = useState<Stimulus>(props.stimulus);
-    const [stimJson, setStimJson] = useState('');
-    const [jsonError, setJsonError] = useState('');
+function StimForm(props: {
+  initialStim: Stimulus;
+  onNewStim?: (newStim: Stimulus) => void;
+}) {
+  const [stimulus, setStimulus] = useState<Stimulus>(props.initialStim);
+  //const [stimJson, setStimJson] = useState('');
+  //const [jsonError, setJsonError] = useState('');
 
-    // Dropdown options
-    const stimTypeNames = Object.keys(StimTypeName); //.filter((key) => isNaN(Number(key)));
+  // Dropdown options
+  const stimTypeNames = Object.keys(StimTypeName); //.filter((key) => isNaN(Number(key)));
 
-    function setNewStimulus(
-      stimTypeName: StimTypeName,
-      overrides?: object
-    ): Stimulus {
-      const newStim = new stimConstructors[stimTypeName]({
-        ...stimulus, // properties that remain the same
-        ...overrides, // last properties win
-      });
-      setStimulus(newStim);
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { name, duration, ...otherProps } = newStim;
-      setStimJson(JSON.stringify(otherProps));
-
-      return newStim;
+  function setNewStimulus(
+    stimTypeName: StimTypeName,
+    overrides?: object
+  ): Stimulus {
+    const newStim = new stimConstructors[stimTypeName]({
+      ...stimulus, // properties that remain the same
+      ...overrides, // last properties win
+    });
+    setStimulus(newStim);
+    if (props.onNewStim) {
+      props.onNewStim(newStim);
     }
+    return newStim;
+  }
 
-    function handleStimNameChange(e: React.ChangeEvent<HTMLSelectElement>) {
-      const value = e.target.value;
-      setNewStimulus(value as StimTypeName);
+  function handleStimNameChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const value = e.target.value;
+    setNewStimulus(value as StimTypeName);
+  }
+
+  function handleStimPropChange(propName, newValue) {
+    const overrides = {};
+    overrides[propName] = newValue;
+    setNewStimulus(stimulus.name, overrides);
+  }
+
+  /* Handle JSON input change and validation
+  const handleJsonChange = (newValue: unknown) => {
+    const newJson = newValue as string;
+    try {
+      const parsedJson = JSON.parse(newJson); // Attempt to parse JSON
+      setJsonError(''); // Clear error if valid
+      setNewStimulus(stimulus.name, parsedJson);
+    } catch (error) {
+      setJsonError('Invalid JSON' + error); // Set error if invalid
     }
+  };
+*/
 
-    // Handle JSON input change and validation
-    const handleJsonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newJson = e.target.value;
-      try {
-        const parsedJson = JSON.parse(newJson); // Attempt to parse JSON
-        setJsonError(''); // Clear error if valid
-        setNewStimulus(stimulus.name, parsedJson);
-      } catch (error) {
-        setJsonError('Invalid JSON' + error); // Set error if invalid
-      }
-    };
+  const formStyles =
+    ' bg-gray-800 border border-gray-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500';
 
-    function handlePreviewClick() {
-      // console.log('>>>>> handlePreviewClick() with stim=' + JSON.stringify(stim));
-      const canvasContainer = document.getElementById('canvas-container');
-      const canvas = document.getElementById(
-        'preview-canvas'
-      ) as HTMLCanvasElement;
-      if (!canvasContainer || !canvas) {
-        throw new Error('Invalid HTML canvas');
-      }
-      canvas.width = canvasContainer.offsetWidth - 2;
-      canvas.height = canvasContainer.offsetHeight;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        throw new Error('Invalid context from canvas');
-      }
-      stimulus.preview(ctx, () => {
-        // Clear back to default
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      });
-    }
+  const stimKeys = Reflect.ownKeys(stimulus) // Subclass and superclass props including symbols
+    .filter((k) => typeof k !== 'symbol');
 
-    // For testing only
-    function handleEncoderClick() {
-      encodeStimuliAsync([stimulus], 640, 400, 30).then((buf) => {
-        downloadBlob(new Blob([buf]), 'stimulus.mp4');
-      });
-    }
+  return (
+    <div className="flex flex-row gap-4 text-gray-400">
+      <div className="flex flex-col text-gray-500">
+        {/* StimTypeName name is special */}
+        <div className={'text-left text-white'}>TypeName:</div>
+        {stimKeys
+          .filter((n) => n !== 'name')
+          .map((propName) => (
+            <div key={propName} className={'text-left'}>
+              {propName + ': '}
+            </div>
+          ))}
+      </div>
 
-    const formStyles =
-      ' bg-gray-800 border border-gray-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500';
+      <div className="flex flex-col">
+        {/* StimTypeName name is special */}
+        <select
+          value={stimulus.name}
+          onChange={handleStimNameChange}
+          className={formStyles}
+        >
+          {stimTypeNames.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
 
-    return (
-      <div className="flex flex-row gap-4 text-gray-400">
-        <div className="flex flex-col text-gray-500">
-          {Reflect.ownKeys(stimulus) // Subclass and superclass props including symbols
-            .filter((k) => typeof k !== 'symbol')
-            .map((propName) => (
-              <div key={propName} className={'text-left'}>
-                {propName + ': '}
-              </div>
-            ))}
-        </div>
-        <div className="flex flex-col">
-          <select
-            value={stimulus.name}
-            onChange={handleStimNameChange}
-            className={formStyles}
-          >
-            {stimTypeNames.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
-          <input
+        {stimKeys
+          .filter((n) => n !== 'name')
+          .map((propName) => (
+            <InputField
+              key={propName}
+              currentValue={stimulus[propName]}
+              className={formStyles}
+              onChange={(newValue) => handleStimPropChange(propName, newValue)}
+            />
+          ))}
+        {/*
+          <InputField
             className={'w-16' + formStyles}
-            type="number"
-            value={stimulus.duration}
-            onChange={(e) => {
+            currentValue={stimulus.duration}
+            onChange={(newValue) => {
               setNewStimulus(stimulus.name, {
-                duration: parseFloat(e.target.value),
+                duration: newValue,
               });
             }}
-            step="0.1"
           />
           <div className="flex-1">
-            <input
+            <InputField
               className={'w-full' + formStyles}
-              type="text"
-              value={stimJson}
+              currentValue={stimJson}
               onChange={handleJsonChange}
             />
             {jsonError && <p className="text-red-500 text-sm mt-1">{jsonError}</p>}
           </div>
-        </div>
-        <div className="flex flex-col">
-          <Button onClick={handlePreviewClick}>Preview</Button>
-          <Button onClick={handleEncoderClick}>Test encoder</Button>
-        </div>
+          */}
       </div>
-    );
-  }
+    </div>
+  );
 }
+
+
 function PreviewCanvas() {
   return (
     <div id="canvas-container" className="grow bg-gray-400 border">
       <canvas id="preview-canvas" />
     </div>
   );
+}
+
+
+
+function PreviewStim(stimulus: Stimulus) {
+  // console.log('>>>>> handlePreviewClick() with stim=' + JSON.stringify(stim));
+  const canvasContainer = document.getElementById('canvas-container');
+  const canvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
+  if (!canvasContainer || !canvas) {
+    throw new Error('Invalid HTML canvas');
+  }
+  canvas.width = canvasContainer.offsetWidth - 2;
+  canvas.height = canvasContainer.offsetHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    throw new Error('Invalid context from canvas');
+  }
+  stimulus.preview(ctx, () => {
+    // Clear back to default
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+}
+
+// For testing only
+function EncodeStim(stimulus: Stimulus) {
+  encodeStimuliAsync([stimulus], 640, 400, 30).then((buf) => {
+    downloadBlob(new Blob([buf]), 'stimulus.mp4');
+  });
 }
 
 function downloadBlob(blob, filename: string) {
