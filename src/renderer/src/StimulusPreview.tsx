@@ -4,19 +4,21 @@ import { encodeStimuliAsync } from './video';
 import Button from './components/Button';
 import InputField from './components/InputField';
 
-
 // Pane to preview one single Stimulus
-export default function StimulusPreview(props: { stimulus: Stimulus }) {
+export default function StimulusPreview(props: {
+  className?: string;
+  stimulus: Stimulus;
+}) {
   const [stimulus, setStimulus] = useState<Stimulus>(
     new stimConstructors[props.stimulus.name](props.stimulus)
   );
   return (
-    <div className="flex flex-col border rounded-md border-gray-700">
-      <div className="flex flex-row p-1 gap-1 ml-auto">
+    <div className={`flex flex-col ${props.className || ''}`}>
+      <div className="flex flex-row items-center p-1 gap-1 ml-auto">
         <Button onClick={() => EncodeStim(stimulus)}>Test encoder</Button>
         <Button onClick={() => PreviewStim(stimulus)}>Preview</Button>
       </div>
-      <div className="flex flex-row p-2 gap-2">
+      <div className="flex flex-row p-1 gap-2">
         <StimForm
           initialStim={props.stimulus}
           onNewStim={(newStim) => setStimulus(newStim)}
@@ -78,7 +80,7 @@ function StimForm(props: {
 */
 
   const formStyles =
-    ' bg-gray-800 border border-gray-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500';
+    ' bg-gray-800 h-7 border-1 border-gray-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500';
 
   const stimKeys = Reflect.ownKeys(stimulus) // Subclass and superclass props including symbols
     .filter((k) => typeof k !== 'symbol');
@@ -87,11 +89,11 @@ function StimForm(props: {
     <div className="flex flex-row gap-4 text-gray-400">
       <div className="flex flex-col text-gray-500">
         {/* StimTypeName name is special */}
-        <div className={'text-left text-white'}>TypeName:</div>
+        <div className={'text-left border-b-1 border-gray-900 text-white'}>TypeName:</div>
         {stimKeys
           .filter((n) => n !== 'name')
           .map((propName) => (
-            <div key={propName} className={'text-left'}>
+            <div key={propName} className={'text-left border-b-1 h-7 border-gray-900'}>
               {propName + ': '}
             </div>
           ))}
@@ -145,7 +147,6 @@ function StimForm(props: {
   );
 }
 
-
 function PreviewCanvas() {
   return (
     <div id="canvas-container" className="grow bg-gray-400 border">
@@ -153,8 +154,6 @@ function PreviewCanvas() {
     </div>
   );
 }
-
-
 
 function PreviewStim(stimulus: Stimulus) {
   // console.log('>>>>> handlePreviewClick() with stim=' + JSON.stringify(stim));

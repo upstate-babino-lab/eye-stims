@@ -10,7 +10,7 @@ export default function App(): JSX.Element {
   const { theStimSequence } = useTheStimSequence();
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-gray-900 text-gray-400 text-sm p-4">
+    <div className="flex flex-col h-screen bg-gray-900 text-gray-400 text-sm p-4">
       <div className="flex flex-row">
         <div className="flex flex-col">
           {theStimSequence && (
@@ -36,7 +36,7 @@ export default function App(): JSX.Element {
       </div>
 
       {theStimSequence && (
-        <div>
+        <>
           <div className="shrink-0 border-b border-gray-700">
             {tabLabels.map((tabLabel) => (
               <button
@@ -50,11 +50,9 @@ export default function App(): JSX.Element {
             ))}
           </div>
 
-          <div className="grow p-6 text-center text-lg">
-            {activeTab === 'Preview' && <SequencePreview />}
-            {activeTab === 'Run' && <p>Start running the sequence</p>}
-          </div>
-        </div>
+          {activeTab === 'Preview' && <SequencePreview />}
+          {activeTab === 'Run' && <p>Start running the sequence</p>}
+        </>
       )}
     </div>
   );
