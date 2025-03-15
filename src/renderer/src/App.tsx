@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import PreviewPane from './PreviewPane';
 import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
+import SequencePreview from './SequencePreview';
 
 const tabLabels = ['Preview', 'Run'];
 
@@ -51,7 +51,7 @@ export default function App(): JSX.Element {
           </div>
 
           <div className="grow p-6 text-center text-lg">
-            {activeTab === 'Preview' && <PreviewPane />}
+            {activeTab === 'Preview' && <SequencePreview />}
             {activeTab === 'Run' && <p>Start running the sequence</p>}
           </div>
         </div>

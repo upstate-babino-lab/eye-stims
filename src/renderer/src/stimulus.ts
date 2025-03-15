@@ -10,6 +10,7 @@ export abstract class Stimulus {
   bgColor: string = 'black';
 
   constructor(name: StimTypeName, duration?: number, bgColor?: string) {
+    // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
     this.name = name;
     this.duration = duration ?? this.duration;
     this.bgColor = bgColor ?? this.bgColor;
@@ -39,11 +40,11 @@ export abstract class Stimulus {
     };
     requestAnimationFrame(animate);
   }
-
 }
 
 export class Solid extends Stimulus {
   constructor({ duration, bgColor }: Partial<Solid> = {}) {
+    // console.log(`>>>>> constructor Solid(duration=${duration}, bgColor=${bgColor})`);
     super(StimTypeName.Solid, duration, bgColor);
   }
   renderFrame(
@@ -73,6 +74,7 @@ export class Bar extends Stimulus {
     width,
     angle,
   }: Partial<Bar> = {}) {
+    // console.log(`>>>>> constructor Bar(duration=${duration}, bgColor=${bgColor}, ...)`);
     super(StimTypeName.Bar, duration, bgColor);
     this.fgColor = fgColor ?? this.fgColor;
     this.speed = speed ?? this.speed;

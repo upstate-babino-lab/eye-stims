@@ -23,8 +23,9 @@ export function StateProvider({ children }: { children: ReactNode }) {
         numberedLines;
         */
       const fileNameWithExtension = filePath.split('/').pop() || '';
-      const name = (parsedContents && parsedContents['name']) || fileNameWithExtension;
-      const description = (parsedContents && parsedContents['description']) ?? ""
+      const name =
+        (parsedContents && parsedContents['name']) || fileNameWithExtension;
+      const description = (parsedContents && parsedContents['description']) ?? '';
       setTheStimSequence(new StimSequence(name, description, stimulusList));
     };
 
@@ -74,8 +75,12 @@ function oldStimList2New(old) {
 
   return old.stimulus_list.map((oldItem) => {
     const oldStim = oldItem.stimulus;
+    let name = capitalize(oldStim.stimulusType);
+    if (name === 'Wait') {
+      name = 'Solid'; // TODO: Are these really the same?
+    }
     const newStim = {
-      name: capitalize(oldStim.stimulusType),
+      name: name,
       duration: oldStim.lifespan,
       bgColor: oldStim.backgroundColor,
     };
