@@ -61,7 +61,6 @@ export function StateProvider({ children }: { children: ReactNode }) {
   );
 }
 
-
 function oldStimList2New(old) {
   if (!old || !old.stimulus_list) {
     return null;

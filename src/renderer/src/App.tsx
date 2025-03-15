@@ -1,22 +1,23 @@
 import { useState } from 'react';
-import StimPreviewTab from './StimPreviewTab';
-import StimSequenceTab from './StimSequenceTab';
+import PreviewPane from './PreviewPane';
 import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
 
-const tabs = ['Preview', 'Run'];
+const tabLabels = ['Preview', 'Run'];
 
 export default function App(): JSX.Element {
-  const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [activeTab, setActiveTab] = useState(tabLabels[0]);
   const { theStimSequence } = useTheStimSequence();
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-gray-900 text-white p-4">
+    <div className="flex flex-col min-h-screen w-full bg-gray-900 text-gray-400 text-sm p-4">
       <div className="flex flex-row">
         <div className="flex flex-col">
           {theStimSequence && (
             <>
-              <div className="font-bold text-xl">{theStimSequence.name}</div>
+              <div className="font-bold text-xl text-white">
+                {theStimSequence.name}
+              </div>
               <div>{theStimSequence.description}</div>
               <div>
                 Count: {theStimSequence.stimuli.length + ' | '}
@@ -25,7 +26,7 @@ export default function App(): JSX.Element {
             </>
           )}
         </div>
-        <div className="flex flex-col ml-auto">
+        <div className="flex flex-col gap-1 ml-auto">
           <Button onClick={() => window.electron.send('load-file')}>Load</Button>
           <div>Resolution: www x lll px</div>
           <Button onClick={() => window.electron.send('load-file')}>
@@ -34,28 +35,27 @@ export default function App(): JSX.Element {
         </div>
       </div>
 
-      {theStimSequence &&
+      {theStimSequence && (
         <div>
           <div className="shrink-0 border-b border-gray-700">
-            {tabs.map((tab) => (
+            {tabLabels.map((tabLabel) => (
               <button
-                key={tab}
-                className={`flex-1 p-3 text-center cursor-pointer transition-colors duration-300
-              ${activeTab === tab ? 'border-b-2 border-blue-600 text-blue-400' : 'text-gray-400'}`}
-                onClick={() => setActiveTab(tab)}
+                key={tabLabel}
+                className={`flex-1 px-3 py-2 text-center cursor-pointer transition-colors duration-300 text-xl 
+                  ${activeTab === tabLabel ? 'border-b-2 border-blue-700 text-blue-500' : 'text-gray-600 hover:text-gray-500'}`}
+                onClick={() => setActiveTab(tabLabel)}
               >
-                {tab}
+                {tabLabel}
               </button>
             ))}
           </div>
 
           <div className="grow p-6 text-center text-lg">
-            {activeTab === 'StimSequence' && <StimSequenceTab />}
-            {activeTab === 'StimPreview' && <StimPreviewTab />}
-            {activeTab === 'Start' && <p>Start running the sequence</p>}
+            {activeTab === 'Preview' && <PreviewPane />}
+            {activeTab === 'Run' && <p>Start running the sequence</p>}
           </div>
         </div>
-      }
+      )}
     </div>
   );
 }

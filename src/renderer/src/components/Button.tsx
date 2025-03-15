@@ -11,7 +11,7 @@ const Button: React.FC<ButtonProps> = ({ children, onClick }) => {
   return (
     <button
       className={
-        'text-sm bg-blue-500 text-white w-fit px-4 py-0.5 rounded ' +
+        'text-sm bg-blue-500 text-gray-200 w-fit px-4 py-0.5 rounded ' +
         'cursor-pointer hover:bg-blue-600 active:bg-blue-800'
       }
       //className="bg-blue-500 text-white px-4 py-0.5 rounded shadow-md hover:shadow-lg transition-shadow duration-300"

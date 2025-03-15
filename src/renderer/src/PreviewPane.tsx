@@ -3,9 +3,10 @@ import { StimTypeName, stimConstructors } from './stimulus';
 import { encodeStimuliAsync } from './video';
 import Button from './components/Button';
 
-export default function StimPreviewTab() {
+// Pane to preview a single Stimulus
+export default function PreviewPane() {
   return (
-    <div className="flex flex-col h-[82vh]">
+    <div className="flex flex-row">
       <StimForm />
       <PreviewCanvas />
     </div>
@@ -81,9 +82,14 @@ function StimForm() {
     ' bg-gray-300 border focus:outline-hidden focus:ring-2 focus:ring-blue-500';
 
   return (
-    <div className="flex gap-4 items-center py-2 rounded-lg shadow-xs text-gray-500">
-      <div className="flex-col space-y-1">
-        <div className="text-left">Name</div>
+    <div className="flex flex-row gap-4 text-gray-500">
+      <div className="flex flex-col">
+        <div className="text-left">Name:</div>
+        <div className="text-left">Seconds:</div>
+        <div className="text-left">JSON:</div>
+      </div>
+
+      <div className="flex flex-col">
         <select
           value={stimName}
           onChange={handleStimNameChange}
@@ -95,10 +101,6 @@ function StimForm() {
             </option>
           ))}
         </select>
-      </div>
-
-      <div className="flex-col space-y-1">
-        <div className="text-left">Seconds</div>
         <input
           className={'w-16' + formStyles}
           type="number"
@@ -106,16 +108,6 @@ function StimForm() {
           onChange={(e) => setDurationSeconds(parseFloat(e.target.value))}
           step="0.1"
         />
-      </div>
-
-      <div className="flex-col w-full space-y-1">
-        <div className="flex justify-between">
-          <div>JSON</div>
-          <div>
-            <Button onClick={handleEncoderClick}>Test encoder</Button>
-            <Button onClick={handlePreviewClick}>Preview</Button>
-          </div>
-        </div>
         <div className="flex-1">
           <input
             className={'w-full' + formStyles}
@@ -125,6 +117,11 @@ function StimForm() {
           />
           {jsonError && <p className="text-red-500 text-sm mt-1">{jsonError}</p>}
         </div>
+
+      </div>
+      <div className="flex flex-col">
+        <Button onClick={handlePreviewClick}>Preview</Button>
+        <Button onClick={handleEncoderClick}>Test encoder</Button>
       </div>
     </div>
   );
