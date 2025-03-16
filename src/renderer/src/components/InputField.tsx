@@ -24,8 +24,9 @@ const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
         <input
           {...otherProps} // Including key, className, etc.
           type="number"
-          value={(otherProps.currentValue as number).toFixed(2)}
+          value={otherProps.currentValue as number}
           onChange={handleNumber}
+          onBlur={formatNumberInput}
         />
       );
     case 'string':
@@ -42,3 +43,12 @@ const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
   }
 };
 export default InputField;
+
+function formatNumberInput(event) {
+  const input = event.target;
+  if (input.value !== '') {
+    if (!isNaN(parseFloat(input.value))) {
+      input.value = parseFloat(input.value).toFixed(2);
+    }
+  }
+}

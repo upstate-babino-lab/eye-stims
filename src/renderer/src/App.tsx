@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
 import SequencePreview from './SequencePreview';
+import { formatSeconds } from './utilities';
 
 const tabLabels = ['Preview', 'Run'];
 
@@ -22,7 +23,7 @@ export default function App(): JSX.Element {
                 <div>{theStimSequence.description}&nbsp;</div>
                 <div>
                   Count: {theStimSequence.stimuli.length + ' | '}
-                  Duration: {theStimSequence.duration()}
+                  Duration: {formatSeconds(theStimSequence.duration())}
                 </div>
               </div>
             </>
@@ -37,27 +38,25 @@ export default function App(): JSX.Element {
         </div>
       </div>
 
-      {
-        theStimSequence && (
-          <>
-            <div className="shrink-0 border-b border-gray-700">
-              {tabLabels.map((tabLabel) => (
-                <button
-                  key={tabLabel}
-                  className={`flex-1 px-3 py-2 text-center cursor-pointer transition-colors duration-300 text-xl 
+      {theStimSequence && (
+        <>
+          <div className="shrink-0 border-b border-gray-700">
+            {tabLabels.map((tabLabel) => (
+              <button
+                key={tabLabel}
+                className={`flex-1 px-3 py-2 text-center cursor-pointer transition-colors duration-300 text-xl 
                   ${activeTab === tabLabel ? 'border-b-2 border-blue-700 text-blue-500' : 'text-gray-600 hover:text-gray-500'}`}
-                  onClick={() => setActiveTab(tabLabel)}
-                >
-                  {tabLabel}
-                </button>
-              ))}
-            </div>
+                onClick={() => setActiveTab(tabLabel)}
+              >
+                {tabLabel}
+              </button>
+            ))}
+          </div>
 
-            {activeTab === 'Preview' && <SequencePreview />}
-            {activeTab === 'Run' && <p>Start running the sequence</p>}
-          </>
-        )
-      }
-    </div >
+          {activeTab === 'Preview' && <SequencePreview />}
+          {activeTab === 'Run' && <p>Start running the sequence</p>}
+        </>
+      )}
+    </div>
   );
 }
