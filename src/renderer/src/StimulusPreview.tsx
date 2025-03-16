@@ -3,20 +3,23 @@ import { StimTypeName, Stimulus, stimConstructors } from './stimulus';
 import { encodeStimuliAsync } from './video';
 import Button from './components/Button';
 import InputField from './components/InputField';
+import CloseButton from './components/CloseButton';
 
 // Pane to preview one single Stimulus
 export default function StimulusPreview(props: {
   className?: string;
   stimulus: Stimulus;
+  onClose?: () => void;
 }) {
   const [stimulus, setStimulus] = useState<Stimulus>(
     new stimConstructors[props.stimulus.name](props.stimulus)
   );
   return (
     <div className={`flex flex-col ${props.className || ''}`}>
-      <div className="flex flex-row items-center p-1 gap-1 ml-auto">
+      <div className="flex flex-row items-center p-1 gap-2 ml-auto">
         <Button onClick={() => EncodeStim(stimulus)}>Test encoder</Button>
         <Button onClick={() => PreviewStim(stimulus)}>Preview</Button>
+        <CloseButton onClick={() => props.onClose && props.onClose()} />
       </div>
       <div className="flex flex-row p-1 gap-2">
         <StimForm
