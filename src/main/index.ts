@@ -132,8 +132,8 @@ app.on('window-all-closed', () => {
 
 // Called from App menu or IPC request from renderer
 async function loadFileDialogAsync(mainWindow: BrowserWindow) {
-  const jsonlEndings = ['jsonl', 'stim', 'JSONL', 'STIM'];
-  const yamlEndings = ['yaml', 'yml'];
+  const jsonlEndings = ['jsonl', 'JSONL'];
+  const yamlEndings = ['yaml', 'yml', 'json', 'stims'];
   const { filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'], // Only one single file
     filters: [
@@ -149,6 +149,7 @@ async function loadFileDialogAsync(mainWindow: BrowserWindow) {
   }
   const filePath = filePaths[0];
   let parsedContent: unknown = null;
+
   if (jsonlEndings.some((ending) => filePath.endsWith('.' + ending))) {
     parsedContent = await readJsonlFile(filePath);
   }
@@ -156,7 +157,7 @@ async function loadFileDialogAsync(mainWindow: BrowserWindow) {
     parsedContent = await readYamlFile(filePath);
   }
   console.log(`>>>>> main sending 'file-loaded' with parsedContent`);
-  mainWindow.webContents.send('file-loaded', parsedContent);
+  mainWindow.webContents.send('file-loaded', filePath, parsedContent);
 }
 
 //-----------------------------------------------------------------------------

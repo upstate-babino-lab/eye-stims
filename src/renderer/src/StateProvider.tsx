@@ -4,14 +4,16 @@ import { StateContext } from './StateContext';
 import StimSequence from './stim-sequence';
 
 export function StateProvider({ children }: { children: ReactNode }) {
-  const [sharedState, setSharedState] = useState<StimSequence>(
-    new StimSequence('foobar')
+  const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(
+    null
   );
 
   useEffect(() => {
-    const handleFileLoaded = (parsedContents: unknown): void => {
+    const handleFileLoaded = (filePath: string, parsedContents: unknown): void => {
       console.log(`>>>>> renderer StateProvider got 'file-loaded' from main`);
-      const stimulusList = oldStimList2New(parsedContents) ?? parsedContents;
+      const stimulusList =
+        oldStimList2New(parsedContents) ??
+        (parsedContents && parsedContents['stimuli']);
       /*
       const numberedLines = stimulusList
         .map((object, index) => `${index + 1}: ${JSON.stringify(object)}`) // Add line numbers
@@ -20,7 +22,11 @@ export function StateProvider({ children }: { children: ReactNode }) {
       (document.getElementById('file-content') as HTMLTextAreaElement).value =
         numberedLines;
         */
-      setSharedState(new StimSequence('newName', 'blah blah', stimulusList));
+      const fileNameWithExtension = filePath.split('/').pop() || '';
+      const name =
+        (parsedContents && parsedContents['name']) || fileNameWithExtension;
+      const description = (parsedContents && parsedContents['description']) ?? '';
+      setTheStimSequence(new StimSequence(name, description, stimulusList));
     };
 
     const handleSaveRequest = (filePath: string): void => {
@@ -45,27 +51,36 @@ export function StateProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <StateContext.Provider value={{ sharedState, setSharedState }}>
+    <StateContext.Provider
+      value={{
+        theStimSequence: theStimSequence,
+        setTheStimSequence: setTheStimSequence,
+      }}
+    >
       {children}
     </StateContext.Provider>
   );
-}
-
-function capitalize(str: string): string {
-  if (!str) {
-    return str; // Return empty string or null/undefined as is
-  }
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 function oldStimList2New(old) {
   if (!old || !old.stimulus_list) {
     return null;
   }
+  const capitalize = (str: string) => {
+    if (!str) {
+      return str;
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+
   return old.stimulus_list.map((oldItem) => {
     const oldStim = oldItem.stimulus;
+    let name = capitalize(oldStim.stimulusType);
+    if (name === 'Wait') {
+      name = 'Solid'; // TODO: Are these really the same?
+    }
     const newStim = {
-      name: capitalize(oldStim.stimulusType),
+      name: name,
       duration: oldStim.lifespan,
       bgColor: oldStim.backgroundColor,
     };

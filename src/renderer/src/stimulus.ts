@@ -10,6 +10,7 @@ export abstract class Stimulus {
   bgColor: string = 'black';
 
   constructor(name: StimTypeName, duration?: number, bgColor?: string) {
+    // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
     this.name = name;
     this.duration = duration ?? this.duration;
     this.bgColor = bgColor ?? this.bgColor;
@@ -20,7 +21,7 @@ export abstract class Stimulus {
     ageSeconds: number
   ): void;
 
-  // Animate only for on-screen context
+  // Animate only for on-screen context (concrete method)
   preview(ctx: CanvasRenderingContext2D, onAllFramesDone?: () => void) {
     let lastTimestamp = 0;
     const animate = (newTimestamp: number): void => {
@@ -43,6 +44,7 @@ export abstract class Stimulus {
 
 export class Solid extends Stimulus {
   constructor({ duration, bgColor }: Partial<Solid> = {}) {
+    // console.log(`>>>>> constructor Solid(duration=${duration}, bgColor=${bgColor})`);
     super(StimTypeName.Solid, duration, bgColor);
   }
   renderFrame(
@@ -72,6 +74,7 @@ export class Bar extends Stimulus {
     width,
     angle,
   }: Partial<Bar> = {}) {
+    // console.log(`>>>>> constructor Bar(duration=${duration}, bgColor=${bgColor}, ...)`);
     super(StimTypeName.Bar, duration, bgColor);
     this.fgColor = fgColor ?? this.fgColor;
     this.speed = speed ?? this.speed;
