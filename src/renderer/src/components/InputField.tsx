@@ -24,7 +24,7 @@ const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
         <input
           {...otherProps} // Including key, className, etc.
           type="number"
-          value={otherProps.currentValue as number}
+          value={(otherProps.currentValue as number).toFixed(2)}
           onChange={handleNumber}
         />
       );
