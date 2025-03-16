@@ -79,32 +79,31 @@ function StimForm(props: {
   };
 */
 
-  const formStyles =
-    ' bg-gray-800 h-7 border-1 border-gray-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500';
+  const rowStyle = 'p-1 text-left border-b-1 h-7 border-gray-900';
+  //const formStyle = `${rowStyle} bg-gray-800 focus:outline-hidden focus:ring-2 focus:ring-blue-500`;
+  const formStyle = `${rowStyle} bg-gray-800 focus:outline-blue-500 `;
 
   const stimKeys = Reflect.ownKeys(stimulus) // Subclass and superclass props including symbols
     .filter((k) => typeof k !== 'symbol');
 
   return (
     <div className="flex flex-row gap-4 text-gray-400">
-      <div className="flex flex-col text-gray-500">
-        {/* StimTypeName name is special */}
-        <div className={'text-left border-b-1 border-gray-900 text-white'}>TypeName:</div>
+      <div className="flex flex-col gap-0.5 text-gray-500">
+        <div className={`${rowStyle} text-white`}>TypeName:</div>
         {stimKeys
           .filter((n) => n !== 'name')
           .map((propName) => (
-            <div key={propName} className={'text-left border-b-1 h-7 border-gray-900'}>
+            <div key={propName} className={rowStyle}>
               {propName + ': '}
             </div>
           ))}
       </div>
 
-      <div className="flex flex-col">
-        {/* StimTypeName name is special */}
+      <div className="flex flex-col gap-0.5">
         <select
           value={stimulus.name}
           onChange={handleStimNameChange}
-          className={formStyles}
+          className={formStyle}
         >
           {stimTypeNames.map((name) => (
             <option key={name} value={name}>
@@ -119,7 +118,7 @@ function StimForm(props: {
             <InputField
               key={propName}
               currentValue={stimulus[propName]}
-              className={formStyles}
+              className={formStyle}
               onChange={(newValue) => handleStimPropChange(propName, newValue)}
             />
           ))}
