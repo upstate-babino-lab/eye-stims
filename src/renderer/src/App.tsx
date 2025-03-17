@@ -37,8 +37,8 @@ export default function App(): JSX.Element {
             <Button
               onClick={() => {
                 encodeStimuliAsync(theStimSequence.stimuli, 640, 400, 30).then(
-                  (buf) => {
-                    downloadBlob(new Blob([buf]), 'stimulus.mp4');
+                  (blob) => {
+                    downloadBlob(blob, 'stimulus.mp4');
                   }
                 );
               }}

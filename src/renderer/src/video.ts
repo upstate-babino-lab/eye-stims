@@ -6,7 +6,7 @@ export async function encodeStimuliAsync(
   width: number,
   height: number,
   fps: number
-): Promise<ArrayBuffer> {
+): Promise<Blob> {
   const videoState = new VideoState(width, height, fps);
   stimuli.forEach((stimulus) => {
     const nFrames = stimulus.duration * videoState.fps;
@@ -16,7 +16,7 @@ export async function encodeStimuliAsync(
       videoState.encodeOneFrame();
     }
   });
-  return await videoState.getBufferAsync();
+  return new Blob([await videoState.getBufferAsync()]);
 }
 
 class VideoState {
