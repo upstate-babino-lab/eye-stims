@@ -25,7 +25,7 @@ export default function SequencePreview() {
           {selectedStimIndex >= 0 && (
             <StimulusPreview
               className="min-h-[30%] flex-shrink-0 bg-gray-950 rounded-md border-0 border-gray-800"
-              stimulus={theStimSequence.stimuli[0]}
+              stimIndex={selectedStimIndex}
               onClose={() => setSelectedStimIndex(-1)}
             />
           )}

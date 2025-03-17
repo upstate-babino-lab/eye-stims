@@ -1,34 +1,54 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StimTypeName, Stimulus, stimConstructors } from './stimulus';
 import { encodeStimuliAsync } from './video';
 import Button from './components/Button';
 import InputField from './components/InputField';
 import CloseButton from './components/CloseButton';
+import { useTheStimSequence } from './StateContext';
 
 // Pane to preview one single Stimulus
 export default function StimulusPreview(props: {
   className?: string;
-  stimulus: Stimulus;
+  stimIndex: number;
   onClose?: () => void;
 }) {
-  const [stimulus, setStimulus] = useState<Stimulus>(
-    new stimConstructors[props.stimulus.name](props.stimulus)
+  const { theStimSequence } = useTheStimSequence();
+  const indexedStim = theStimSequence?.stimuli[props.stimIndex];
+  const isValidStimType =
+    indexedStim && Object.values(StimTypeName).includes(indexedStim.name);
+  let constructor = stimConstructors['Solid'];
+  if (isValidStimType) {
+    constructor = stimConstructors[indexedStim.name];
+  } else {
+    console.log(
+      `ERROR from StimulusPreview: '${indexedStim?.name}' invalid StimTypeName`
+    );
+  }
+  const [stimulus, setStimulus] = useState<Stimulus | undefined>(
+    isValidStimType ? indexedStim && new constructor(indexedStim) : undefined
   );
-  return (
+
+  useEffect(() => {
+    setStimulus(indexedStim && new constructor(indexedStim));
+  }, [props.stimIndex, indexedStim, constructor]);
+
+  return stimulus && isValidStimType ? (
     <div className={`flex flex-col ${props.className || ''}`}>
-      <div className="flex flex-row items-center p-1 gap-2 ml-auto">
+      <div className="flex flex-row items-center p-1 gap-2 ml-auto text-gray-200">
         <Button onClick={() => EncodeStim(stimulus)}>Test encoder</Button>
         <Button onClick={() => PreviewStim(stimulus)}>Preview</Button>
         <CloseButton onClick={() => props.onClose && props.onClose()} />
       </div>
       <div className="flex flex-row p-1 gap-2">
         <StimForm
-          initialStim={props.stimulus}
+          initialStim={stimulus}
           onNewStim={(newStim) => setStimulus(newStim)}
         />
         <PreviewCanvas />
       </div>
     </div>
+  ) : (
+    <div className="text-blue-500">{`Unimplemented stimulus with StimType '${indexedStim?.name}'`}</div>
   );
 }
 
@@ -37,16 +57,15 @@ function StimForm(props: {
   onNewStim?: (newStim: Stimulus) => void;
 }) {
   const [stimulus, setStimulus] = useState<Stimulus>(props.initialStim);
-  //const [stimJson, setStimJson] = useState('');
-  //const [jsonError, setJsonError] = useState('');
+
+  useEffect(() => {
+    setStimulus(props.initialStim);
+  }, [props.initialStim]);
 
   // Dropdown options
   const stimTypeNames = Object.keys(StimTypeName); //.filter((key) => isNaN(Number(key)));
 
-  function setNewStimulus(
-    stimTypeName: StimTypeName,
-    overrides?: object
-  ): Stimulus {
+  function setNewStimulus(stimTypeName: StimTypeName, overrides?: object) {
     const newStim = new stimConstructors[stimTypeName]({
       ...stimulus, // properties that remain the same
       ...overrides, // last properties win
@@ -55,7 +74,6 @@ function StimForm(props: {
     if (props.onNewStim) {
       props.onNewStim(newStim);
     }
-    return newStim;
   }
 
   function handleStimNameChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -68,19 +86,6 @@ function StimForm(props: {
     overrides[propName] = newValue;
     setNewStimulus(stimulus.name, overrides);
   }
-
-  /* Handle JSON input change and validation
-  const handleJsonChange = (newValue: unknown) => {
-    const newJson = newValue as string;
-    try {
-      const parsedJson = JSON.parse(newJson); // Attempt to parse JSON
-      setJsonError(''); // Clear error if valid
-      setNewStimulus(stimulus.name, parsedJson);
-    } catch (error) {
-      setJsonError('Invalid JSON' + error); // Set error if invalid
-    }
-  };
-*/
 
   const rowStyle = 'p-1 text-left border-b-1 h-7 border-gray-900';
   //const formStyle = `${rowStyle} bg-gray-800 focus:outline-hidden focus:ring-2 focus:ring-blue-500`;
@@ -120,30 +125,11 @@ function StimForm(props: {
           .map((propName) => (
             <InputField
               key={propName}
-              currentValue={stimulus[propName]}
+              value={stimulus[propName]}
               className={formStyle}
               onChange={(newValue) => handleStimPropChange(propName, newValue)}
             />
           ))}
-        {/*
-          <InputField
-            className={'w-16' + formStyles}
-            currentValue={stimulus.duration}
-            onChange={(newValue) => {
-              setNewStimulus(stimulus.name, {
-                duration: newValue,
-              });
-            }}
-          />
-          <div className="flex-1">
-            <InputField
-              className={'w-full' + formStyles}
-              currentValue={stimJson}
-              onChange={handleJsonChange}
-            />
-            {jsonError && <p className="text-red-500 text-sm mt-1">{jsonError}</p>}
-          </div>
-          */}
       </div>
     </div>
   );
