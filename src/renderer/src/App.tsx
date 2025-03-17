@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
-import SequencePreview from './SequencePreview';
+import SequencePreviewTab from './SequencePreviewTab';
 import { downloadBlob, formatSeconds } from './utilities';
 import { encodeStimuliAsync } from './video';
+import RunTab from './RunTab';
 
 const tabLabels = ['Preview', 'Run'];
 
@@ -64,8 +65,8 @@ export default function App(): JSX.Element {
             ))}
           </div>
 
-          {activeTab === 'Preview' && <SequencePreview />}
-          {activeTab === 'Run' && <p>Start running the sequence</p>}
+          {activeTab === 'Preview' && <SequencePreviewTab />}
+          {activeTab === 'Run' && <RunTab />}
         </>
       )}
     </div>

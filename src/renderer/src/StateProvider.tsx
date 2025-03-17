@@ -3,6 +3,7 @@ import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './stim-sequence';
 import { newStimulus } from './stimulus';
+import { capitalize } from './utilities';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(
@@ -65,12 +66,6 @@ function oldStimList2New(old) {
   if (!old || !old.stimulus_list) {
     return null;
   }
-  const capitalize = (str: string) => {
-    if (!str) {
-      return str;
-    }
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
 
   return old.stimulus_list.map((oldItem) => {
     const oldStim = oldItem.stimulus;

@@ -3,7 +3,7 @@ import { useTheStimSequence } from './StateContext';
 import { useState } from 'react';
 import StimList from './StimList';
 
-export default function SequencePreview() {
+export default function SequencePreviewTab() {
   const { theStimSequence } = useTheStimSequence();
   const [selectedStimIndex, setSelectedStimIndex] = useState(-1);
   return (
