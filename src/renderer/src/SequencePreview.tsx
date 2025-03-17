@@ -1,7 +1,7 @@
 import StimulusPreview from './StimulusPreview';
 import { useTheStimSequence } from './StateContext';
 import { useState } from 'react';
-import Button from './components/Button';
+import StimList from './StimList';
 
 export default function SequencePreview() {
   const { theStimSequence } = useTheStimSequence();
@@ -10,21 +10,22 @@ export default function SequencePreview() {
   );
 
   return (
-    <div className="grow flex flex-col p-2 gap-1">
+    <div className="grow flex flex-col p-2 gap-2">
       {theStimSequence && (
         <>
-          <div className="h-[100%] bg-gray-950 rounded-md   p-6 text-center text-lg">
-            List of all stims here...
-            <div>
-              <Button onClick={() => setSelectedStimIndex(0)}>
-                open first stimulus
-              </Button>
-            </div>
+          <div className="h-[100%] bg-gray-950 rounded-md p-2 text-center text-lg">
+            <StimList
+              data={theStimSequence.stimuli}
+              onRowClick={(index) => {
+                console.log(`>>>>> onRowClick(${index})`);
+                setSelectedStimIndex(index);
+              }}
+            />
           </div>
           {selectedStimIndex >= 0 && (
             <StimulusPreview
-              className="min-h-[30%] flex-shrink-0 bg-gray-950 rounded-md "
-              stimulus={theStimSequence.stimuli[0]}
+              className="min-h-[30%] flex-shrink-0 bg-gray-950 rounded-md border-0 border-gray-800"
+              stimIndex={selectedStimIndex}
               onClose={() => setSelectedStimIndex(-1)}
             />
           )}

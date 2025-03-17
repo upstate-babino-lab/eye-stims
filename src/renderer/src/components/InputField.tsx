@@ -1,12 +1,12 @@
 import React from 'react';
 
 type InputFieldProps = React.HTMLAttributes<HTMLElement> & {
-  currentValue: unknown;
+  value: unknown;
   onChange: (newValue: unknown) => void;
 };
 
 const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
-  const valueType = typeof otherProps.currentValue;
+  const valueType = typeof otherProps.value;
 
   const handleNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newNumber = parseFloat(e.target.value);
@@ -24,8 +24,10 @@ const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
         <input
           {...otherProps} // Including key, className, etc.
           type="number"
-          value={otherProps.currentValue as number}
+          value={otherProps.value as number}
           onChange={handleNumber}
+          onBlur={formatNumberInput}
+          onFocus={formatNumberInput}
         />
       );
     case 'string':
@@ -33,7 +35,7 @@ const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
         <input
           {...otherProps}
           type="text"
-          value={otherProps.currentValue as string}
+          value={otherProps.value as string}
           onChange={handleString}
         />
       );
@@ -42,3 +44,12 @@ const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
   }
 };
 export default InputField;
+
+function formatNumberInput(event) {
+  const input = event.target;
+  if (input.value !== '') {
+    if (!isNaN(parseFloat(input.value))) {
+      input.value = parseFloat(input.value).toFixed(2);
+    }
+  }
+}

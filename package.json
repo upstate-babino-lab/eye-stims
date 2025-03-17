@@ -24,7 +24,9 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^4.0.0",
     "electron-updater": "^6.3.9",
-    "mp4-muxer": "^5.2.0"
+    "mp4-muxer": "^5.2.0",
+    "react-virtualized-auto-sizer": "^1.0.25",
+    "react-window": "^1.8.11"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
