@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: eye-spikes
+productName: eye-stims
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: eye-spikes
+  executableName: eye-stims
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

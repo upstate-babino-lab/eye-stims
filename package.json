@@ -1,10 +1,10 @@
 {
-  "name": "eye-spikes",
+  "name": "eye-stims",
   "version": "0.0.1",
   "description": "Electron application to stimulate retinas",
   "main": "./out/main/index.js",
   "author": "Pierre Wellner, SUNY Upstate Medical University Center for Vision Research - Babino Lab",
-  "homepage": "https://github.com/upstate-babino-lab/eye-spikes",
+  "homepage": "https://github.com/upstate-babino-lab/eye-stims",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",

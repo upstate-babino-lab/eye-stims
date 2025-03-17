@@ -1,4 +1,4 @@
-# eye-spikes
+# eye-stims
 
 An Electron application with React and TypeScript
 
