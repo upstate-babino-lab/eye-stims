@@ -5,10 +5,7 @@ import StimList from './StimList';
 
 export default function SequencePreview() {
   const { theStimSequence } = useTheStimSequence();
-  const [selectedStimIndex, setSelectedStimIndex] = useState(
-    theStimSequence ? 0 : -1
-  );
-
+  const [selectedStimIndex, setSelectedStimIndex] = useState(-1);
   return (
     <div className="grow flex flex-col p-2 gap-2">
       {theStimSequence && (

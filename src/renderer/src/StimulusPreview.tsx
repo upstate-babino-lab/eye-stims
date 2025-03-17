@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { StimTypeName, Stimulus, stimConstructors } from './stimulus';
-import { encodeStimuliAsync } from './video';
 import Button from './components/Button';
 import InputField from './components/InputField';
 import CloseButton from './components/CloseButton';
@@ -14,6 +13,7 @@ export default function StimulusPreview(props: {
 }) {
   const { theStimSequence } = useTheStimSequence();
   const indexedStim = theStimSequence?.stimuli[props.stimIndex];
+  // TODO: simplify below by using imported newStimulus()
   const isValidStimType =
     indexedStim && Object.values(StimTypeName).includes(indexedStim.name);
   let constructor = stimConstructors['Solid'];
@@ -35,7 +35,6 @@ export default function StimulusPreview(props: {
   return stimulus && isValidStimType ? (
     <div className={`flex flex-col ${props.className || ''}`}>
       <div className="flex flex-row items-center p-1 gap-2 ml-auto text-gray-200">
-        <Button onClick={() => EncodeStim(stimulus)}>Test encoder</Button>
         <Button onClick={() => PreviewStim(stimulus)}>Preview</Button>
         <CloseButton onClick={() => props.onClose && props.onClose()} />
       </div>
@@ -127,6 +126,7 @@ function StimForm(props: {
               key={propName}
               value={stimulus[propName]}
               className={formStyle}
+              formatNumber={propName === 'duration'}
               onChange={(newValue) => handleStimPropChange(propName, newValue)}
             />
           ))}
@@ -160,23 +160,4 @@ function PreviewStim(stimulus: Stimulus) {
     // Clear back to default
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   });
-}
-
-// For testing only
-function EncodeStim(stimulus: Stimulus) {
-  encodeStimuliAsync([stimulus], 640, 400, 30).then((buf) => {
-    downloadBlob(new Blob([buf]), 'stimulus.mp4');
-  });
-}
-
-function downloadBlob(blob, filename: string) {
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.style.display = 'none';
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
 }

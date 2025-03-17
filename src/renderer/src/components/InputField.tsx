@@ -2,6 +2,7 @@ import React from 'react';
 
 type InputFieldProps = React.HTMLAttributes<HTMLElement> & {
   value: unknown;
+  formatNumber?: boolean;
   onChange: (newValue: unknown) => void;
 };
 
@@ -17,6 +18,8 @@ const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
     const newString = e.target.value;
     otherProps.onChange(newString);
   };
+
+  const formatNumberInput = otherProps.formatNumber ? numberFormatter : () => {};
 
   switch (valueType) {
     case 'number':
@@ -45,7 +48,7 @@ const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
 };
 export default InputField;
 
-function formatNumberInput(event) {
+function numberFormatter(event) {
   const input = event.target;
   if (input.value !== '') {
     if (!isNaN(parseFloat(input.value))) {

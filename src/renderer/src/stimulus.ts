@@ -124,3 +124,14 @@ export const stimConstructors = {
   Solid: Solid,
   Bar: Bar,
 };
+
+export function newStimulus(stim: Stimulus) {
+  const isValidStimType = stim && Object.values(StimTypeName).includes(stim.name);
+  let constructor = stimConstructors['Solid']; // TODO: a default Error stimulus
+  if (isValidStimType) {
+    constructor = stimConstructors[stim.name];
+  } else {
+    console.log(`ERROR from newStimulus(): '${stim?.name}' invalid StimTypeName`);
+  }
+  return new constructor(stim);
+}

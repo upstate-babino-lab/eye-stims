@@ -2,7 +2,8 @@ import { useState } from 'react';
 import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
 import SequencePreview from './SequencePreview';
-import { formatSeconds } from './utilities';
+import { downloadBlob, formatSeconds } from './utilities';
+import { encodeStimuliAsync } from './video';
 
 const tabLabels = ['Preview', 'Run'];
 
@@ -32,9 +33,19 @@ export default function App(): JSX.Element {
         <div className="flex flex-col gap-1 ml-auto">
           <Button onClick={() => window.electron.send('load-file')}>Load</Button>
           <div>Resolution: www x lll px</div>
-          <Button onClick={() => window.electron.send('load-file')}>
-            Save .mp4
-          </Button>
+          {theStimSequence && (
+            <Button
+              onClick={() => {
+                encodeStimuliAsync(theStimSequence.stimuli, 640, 400, 30).then(
+                  (buf) => {
+                    downloadBlob(new Blob([buf]), 'stimulus.mp4');
+                  }
+                );
+              }}
+            >
+              Save .mp4
+            </Button>
+          )}
         </div>
       </div>
 

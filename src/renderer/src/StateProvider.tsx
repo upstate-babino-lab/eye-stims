@@ -2,6 +2,7 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './stim-sequence';
+import { newStimulus } from './stimulus';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(
@@ -14,19 +15,17 @@ export function StateProvider({ children }: { children: ReactNode }) {
       const stimulusList =
         oldStimList2New(parsedContents) ??
         (parsedContents && parsedContents['stimuli']);
-      /*
-      const numberedLines = stimulusList
-        .map((object, index) => `${index + 1}: ${JSON.stringify(object)}`) // Add line numbers
-        .join('\n'); // Join into a single string with newlines
-
-      (document.getElementById('file-content') as HTMLTextAreaElement).value =
-        numberedLines;
-        */
       const fileNameWithExtension = filePath.split('/').pop() || '';
       const name =
         (parsedContents && parsedContents['name']) || fileNameWithExtension;
       const description = (parsedContents && parsedContents['description']) ?? '';
-      setTheStimSequence(new StimSequence(name, description, stimulusList));
+      setTheStimSequence(
+        new StimSequence(
+          name,
+          description,
+          stimulusList.map((s) => newStimulus(s))
+        )
+      );
     };
 
     const handleSaveRequest = (filePath: string): void => {
