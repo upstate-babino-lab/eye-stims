@@ -19,7 +19,8 @@ export default function RunTab() {
   };
 
   return (
-    <div className="p-10 w-600">
+    <div className="flex flex-col items-center p-4 gap-6">
+      <div className="text-2xl">Placeholder... (form details TBD)</div>
       <DynamicForm
         config={formConfig}
         onSubmit={handleFormSubmit}

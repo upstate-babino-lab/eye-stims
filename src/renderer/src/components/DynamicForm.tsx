@@ -59,8 +59,8 @@ const DynamicForm: React.FC<Props> = ({
           <label className={labelClassName}>
             {(field.label || capitalize(field.name)) + ': '}
             {field.type === 'text' ||
-              field.type === 'number' ||
-              field.type === 'date' ? (
+            field.type === 'number' ||
+            field.type === 'date' ? (
               <input
                 type={field.type}
                 name={field.name}
@@ -104,8 +104,9 @@ const DynamicForm: React.FC<Props> = ({
           </label>
         </div>
       ))}
-
-      <Button>Start Running</Button>
+      <div className="pt-4 pl-40">
+        <Button>Start Running</Button>
+      </div>
     </form>
   );
 };

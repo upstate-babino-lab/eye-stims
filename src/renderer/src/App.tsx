@@ -14,7 +14,7 @@ export default function App(): JSX.Element {
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-gray-400 text-sm p-4">
-      <div className="flex flex-row">
+      <div className="flex flex-row gap-1.5">
         <div className="flex flex-col">
           {theStimSequence && (
             <>
@@ -23,7 +23,7 @@ export default function App(): JSX.Element {
               </div>
               <div className="bg-gray-950 rounded-md p-2">
                 <div>{theStimSequence.description}&nbsp;</div>
-                <div>
+                <div className='text-gray-500'>
                   Count: {theStimSequence.stimuli.length + ' | '}
                   Duration: {formatSeconds(theStimSequence.duration())}
                 </div>
@@ -31,21 +31,29 @@ export default function App(): JSX.Element {
             </>
           )}
         </div>
-        <div className="flex flex-col gap-1 ml-auto">
-          <Button onClick={() => window.electron.send('load-file')}>Load</Button>
-          <div>Resolution: www x lll px</div>
+        <div className="flex flex-col gap-2 ml-auto">
+          <Button
+            className="ml-auto"
+            onClick={() => window.electron.send('load-file')}
+          >
+            Load
+          </Button>
           {theStimSequence && (
-            <Button
-              onClick={() => {
-                encodeStimuliAsync(theStimSequence.stimuli, 640, 400, 30).then(
-                  (blob) => {
-                    downloadBlob(blob, 'stimulus.mp4');
-                  }
-                );
-              }}
-            >
-              Save .mp4
-            </Button>
+            <div className="flex pt-4 pb-0 flex-col gap-2 ml-auto">
+              <ResolutionDropdown />
+              <Button
+                className="ml-auto"
+                onClick={() => {
+                  encodeStimuliAsync(theStimSequence.stimuli, 640, 400, 30).then(
+                    (blob) => {
+                      downloadBlob(blob, 'stimulus.mp4');
+                    }
+                  );
+                }}
+              >
+                Save .mp4
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -72,3 +80,25 @@ export default function App(): JSX.Element {
     </div>
   );
 }
+
+const ResolutionDropdown = () => {
+  const [resolution, setResolution] = useState('640x480');
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setResolution(e.target.value);
+  };
+
+  return (
+    <div className="flex flex-row gap-0">
+      <label className="text-gray-500">Resolution:&nbsp;</label>
+      <select
+        value={resolution}
+        onChange={handleChange}
+        className="px-2 text-black rounded-sm bg-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        <option value="640x480">640 x 480</option>
+        <option value="1140x912">1140 x 912</option>
+      </select>
+    </div>
+  );
+};
