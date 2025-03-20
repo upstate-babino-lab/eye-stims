@@ -8,17 +8,22 @@ export async function encodeStimuliAsync(
   fps: number
 ): Promise<Blob> {
   const videoState = new VideoState(width, height, fps);
-  stimuli.forEach((stimulus) => {
+  stimuli.forEach(async (stimulus, iStim) => {
     const nFrames = stimulus.duration * videoState.fps;
+    console.log(`Encoding stim ${iStim} type ${stimulus.name} nFrames ${nFrames}`);
     for (let iFrame = 0; iFrame < nFrames; iFrame++) {
       const age = iFrame && iFrame / videoState.fps;
       stimulus.renderFrame(videoState.ctx, age);
       videoState.encodeOneFrame();
     }
+    await videoState.videoEncoder.flush();
   });
-  return new Blob([await videoState.getBufferAsync()]);
+
+  return await videoState.getBlobAsync();
 }
 
+// See https://dmnsgn.github.io/media-codecs for list of codecs that browser supports
+const CODEC = 'avc1.4d401f'; // avc1.42001f, avc1.4d401f
 class VideoState {
   readonly fps: number; // frames per second
   readonly canvas: OffscreenCanvas;
@@ -56,9 +61,8 @@ class VideoState {
       error: (e): void => console.error(e),
     });
 
-    // See https://dmnsgn.github.io/media-codecs for list of codecs that browser supports
     this.videoEncoder.configure({
-      codec: 'avc1.42001f',
+      codec: CODEC,
       width: width,
       height: height,
       //bitrate: 500_000,
@@ -75,9 +79,11 @@ class VideoState {
     this.lastFrame++;
   }
 
-  async getBufferAsync(): Promise<ArrayBuffer> {
+  async getBlobAsync(): Promise<Blob> {
     await this.videoEncoder.flush();
     this.muxer.finalize();
-    return this.muxer.target.buffer;
+    return new Blob([this.muxer.target.buffer], {
+      type: `video/mp4; codecs="${CODEC}"`,
+    });
   }
 }
