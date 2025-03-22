@@ -8,16 +8,27 @@ export async function encodeStimuliAsync(
   fps: number
 ): Promise<Blob> {
   const videoState = new VideoState(width, height, fps);
-  stimuli.forEach(async (stimulus, iStim) => {
+  const startTime = new Date().getTime();
+  let encodedSecondsSoFar = 0;
+  for (let iStim = 0; iStim < stimuli.length; iStim++) {
+    const stimulus = stimuli[iStim];
     const nFrames = stimulus.duration * videoState.fps;
-    console.log(`Encoding stim ${iStim} type ${stimulus.name} nFrames ${nFrames}`);
     for (let iFrame = 0; iFrame < nFrames; iFrame++) {
       const age = iFrame && iFrame / videoState.fps;
       stimulus.renderFrame(videoState.ctx, age);
       videoState.encodeOneFrame();
     }
-    await videoState.videoEncoder.flush();
-  });
+    encodedSecondsSoFar += stimulus.duration;
+    if (iStim % 100 == 0) {
+      const elapsedMinutes = (new Date().getTime() - startTime) / (1000 * 60);
+      const speed = Math.round(encodedSecondsSoFar / (elapsedMinutes * 60));
+      console.log(
+        `>>>>> iStim=${iStim} queueSize=${videoState.videoEncoder.encodeQueueSize}` +
+          ` elapsed=${Math.round(elapsedMinutes)}mins speed=${speed}x`
+      );
+      await videoState.videoEncoder.flush();
+    }
+  }
 
   return await videoState.getBlobAsync();
 }
