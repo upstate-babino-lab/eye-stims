@@ -23,7 +23,7 @@ export default function App(): JSX.Element {
               </div>
               <div className="bg-gray-950 rounded-md p-2">
                 <div>{theStimSequence.description}&nbsp;</div>
-                <div className='text-gray-500'>
+                <div className="text-gray-500">
                   Count: {theStimSequence.stimuli.length + ' | '}
                   Duration: {formatSeconds(theStimSequence.duration())}
                 </div>
@@ -46,12 +46,47 @@ export default function App(): JSX.Element {
                 onClick={() => {
                   encodeStimuliAsync(theStimSequence.stimuli, 640, 400, 30).then(
                     (blob) => {
-                      downloadBlob(blob, 'stimulus.mp4');
+                      if (blob) {
+                        downloadBlob(blob, 'stimulus.mp4');
+                      } else {
+                        console.log('Error: Expected Blob')
+                      }
                     }
                   );
                 }}
               >
-                Save .mp4
+                Download .mp4
+              </Button>
+
+              <Button
+                className="ml-auto"
+                onClick={async () => {
+                  const fileHandle = await window.showSaveFilePicker({
+                    suggestedName: `streamed-video.mp4`,
+                    types: [
+                      {
+                        description: 'Video File',
+                        accept: { 'video/mp4': ['.mp4'] },
+                      },
+                    ],
+                  });
+                  const fileStream = await fileHandle.createWritable();
+                  encodeStimuliAsync(
+                    theStimSequence.stimuli,
+                    640,
+                    400,
+                    30,
+                    fileStream
+                  ).then((blob) => {
+                    if (blob) {
+                      console.log(
+                        'Error: Expected null after streaming file to disk, not a Blob'
+                      );
+                    }
+                  });
+                }}
+              >
+                Stream to disk .mp4
               </Button>
             </div>
           )}

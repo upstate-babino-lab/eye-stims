@@ -163,8 +163,6 @@ function PreviewStim(stimulus: Stimulus) {
   });
 }
 
-
-
 // For testing only
 import { encodeStimuliAsync } from './video';
 import { downloadBlob } from './utilities';
