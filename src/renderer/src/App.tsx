@@ -2,8 +2,7 @@ import { useState } from 'react';
 import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
 import SequencePreviewTab from './SequencePreviewTab';
-import { downloadBlob, formatSeconds } from './utilities';
-import { encodeStimuliAsync } from './video';
+import { formatSeconds } from './utilities';
 import RunTab from './RunTab';
 
 const tabLabels = ['Preview', 'Run'];
@@ -44,7 +43,8 @@ export default function App(): JSX.Element {
               <Button
                 className="ml-auto"
                 onClick={() => {
-                  encodeStimuliAsync(theStimSequence.stimuli, 640, 400, 30).then(
+                  theStimSequence.encodeAsync(640, 400, 30);
+                  /*.then(
                     (blob) => {
                       if (blob) {
                         downloadBlob(blob, 'stimulus.mp4');
@@ -53,6 +53,7 @@ export default function App(): JSX.Element {
                       }
                     }
                   );
+                  */
                 }}
               >
                 Download .mp4
@@ -71,19 +72,19 @@ export default function App(): JSX.Element {
                     ],
                   });
                   const fileStream = await fileHandle.createWritable();
-                  encodeStimuliAsync(
-                    theStimSequence.stimuli,
+                  theStimSequence.encodeAsync(
                     640,
                     400,
                     30,
                     fileStream
-                  ).then((blob) => {
+                  ) /*.then((blob) => {
                     if (blob) {
                       console.log(
                         'Error: Expected null after streaming file to disk, not a Blob'
                       );
                     }
                   });
+                  */
                 }}
               >
                 Stream to disk .mp4

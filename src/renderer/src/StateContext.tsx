@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import StimSequence from './stim-sequence';
+import StimSequence from './StimSequence';
 
 type StateContextType = {
   theStimSequence: StimSequence | null;

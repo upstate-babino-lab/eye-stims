@@ -1,7 +1,7 @@
 // Provides state accessible to all components in the App
 import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
-import StimSequence from './stim-sequence';
+import StimSequence from './StimSequence';
 import { newStimulus } from './stimulus';
 import { capitalize } from './utilities';
 
