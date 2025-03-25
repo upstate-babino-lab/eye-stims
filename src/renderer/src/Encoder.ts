@@ -1,7 +1,8 @@
 import * as Mp4Muxer from 'mp4-muxer';
 
 // See https://dmnsgn.github.io/media-codecs for list of codecs that browser supports
-const CODEC = 'avc1.4d401f'; // avc1.42001f, avc1.4d401f
+const CODEC_BASE = 'avc'; // "avc" | "hevc" | "vp9" | "av1"
+const CODEC = CODEC_BASE + '1.4d401f'; // avc1.42001f, avc1.4d401f
 export class Encoder {
   readonly fps: number; // frames per second
   readonly canvas: OffscreenCanvas;
@@ -38,7 +39,7 @@ export class Encoder {
         ? new Mp4Muxer.FileSystemWritableFileStreamTarget(this.fileStream)
         : new Mp4Muxer.ArrayBufferTarget(),
       video: {
-        codec: 'avc', // If you change this, make sure to change VideoEncoder codec as well
+        codec: CODEC_BASE,
         width: width,
         height: height,
       },
@@ -71,7 +72,7 @@ export class Encoder {
     this.lastFrame++;
   }
 
-  /*
+  // Only returns a Blob when using fileStream
   async getBlobAsync(): Promise<Blob | null> {
     if (this.muxer.target['buffer']) {
       await this.videoEncoder.flush();
@@ -82,5 +83,4 @@ export class Encoder {
     }
     return null;
   }
-    */
 }
