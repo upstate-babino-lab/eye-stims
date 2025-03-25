@@ -42,25 +42,6 @@ export default function App(): JSX.Element {
               <ResolutionDropdown />
               <Button
                 className="ml-auto"
-                onClick={() => {
-                  theStimSequence.encodeAsync(640, 400, 30);
-                  /*.then(
-                    (blob) => {
-                      if (blob) {
-                        downloadBlob(blob, 'stimulus.mp4');
-                      } else {
-                        console.log('Error: Expected Blob')
-                      }
-                    }
-                  );
-                  */
-                }}
-              >
-                Download .mp4
-              </Button>
-
-              <Button
-                className="ml-auto"
                 onClick={async () => {
                   const fileHandle = await window.showSaveFilePicker({
                     suggestedName: `streamed-video.mp4`,
@@ -72,19 +53,7 @@ export default function App(): JSX.Element {
                     ],
                   });
                   const fileStream = await fileHandle.createWritable();
-                  theStimSequence.encodeAsync(
-                    640,
-                    400,
-                    30,
-                    fileStream
-                  ) /*.then((blob) => {
-                    if (blob) {
-                      console.log(
-                        'Error: Expected null after streaming file to disk, not a Blob'
-                      );
-                    }
-                  });
-                  */
+                  theStimSequence.encodeAsync(640, 400, 30, fileStream);
                 }}
               >
                 Stream to disk .mp4

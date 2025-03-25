@@ -3,9 +3,11 @@ import { Encoder } from './Encoder';
 
 export default class StimSequence {
   name: string = 'Uninitialized StimSequence';
-  description: string = '';
-  stimuli: Stimulus[] = [];
+  readonly description: string = '';
+  readonly stimuli: Stimulus[] = [];
   times: number[] = []; // Seconds into sequence
+  private cachedDuration: number = -1;
+  isEncoding: boolean = false;
 
   constructor(name?: string, description?: string, stimuli?: Stimulus[]) {
     this.name = name ?? this.name;
@@ -15,6 +17,9 @@ export default class StimSequence {
 
   // Calculate total duration AND populate times array in the same loop
   duration(): number {
+    if (this.cachedDuration >= 0) {
+      return this.cachedDuration;
+    }
     this.times = new Array(this.stimuli.length);
     const total = this.stimuli
       .map((s) => s.duration)
@@ -22,6 +27,7 @@ export default class StimSequence {
         this.times[currentIndex] = accumulator;
         return accumulator + currentValue;
       }, 0);
+    this.cachedDuration = total;
     return total;
   }
 
@@ -38,8 +44,9 @@ const cacheDir = path.join(app.getPath("userData"), "cache");
     fps: number,
     fileStream?: FileSystemWritableFileStream
   ): Promise<void> {
-    // Promise<Blob | null> {
+    this.isEncoding = true;
     const videoState = new Encoder(width, height, fps, fileStream);
+    const duration = this.duration();
     console.log(
       `>>>>> Encoding to ${fileStream ? 'disk' : 'memory'} ${this.stimuli.length} stimuli`
     );
@@ -56,11 +63,16 @@ const cacheDir = path.join(app.getPath("userData"), "cache");
       encodedSecondsSoFar += stimulus.duration;
       if (iStim % 100 == 0) {
         // Periodically log and flush
-        const elapsedMinutes = (new Date().getTime() - startTime) / (1000 * 60);
+        const secondsRemainingToEncode = duration - encodedSecondsSoFar;
+        const nowTime = new Date().getTime();
+        const elapsedMinutes = ( nowTime - startTime) / (1000 * 60);
         const speed = Math.round(encodedSecondsSoFar / (elapsedMinutes * 60));
+        const expectedMinutesToFinish = Math.round(secondsRemainingToEncode / (speed * 60));
         console.log(
-          `>>>>> iStim=${iStim} queueSize=${videoState.videoEncoder.encodeQueueSize}` +
-            ` elapsed=${Math.round(elapsedMinutes)}mins speed=${speed}x`
+          `>>>>> iStim=${iStim} queueSize=${videoState.videoEncoder.encodeQueueSize} ` +
+            `elapsed=${Math.round(elapsedMinutes)}mins speed=${speed}x ` +
+            `remaining=${expectedMinutesToFinish}mins ` +
+            `will finish at ${new Date(nowTime + (expectedMinutesToFinish * 60_000)).toLocaleTimeString()}`
         );
         await videoState.videoEncoder.flush();
       }
@@ -75,6 +87,6 @@ const cacheDir = path.join(app.getPath("userData"), "cache");
     console.log(
       `>>>>> Done encoding to ${fileStream ? 'disk' : 'memory'} ${this.stimuli.length} stimuli`
     );
-    //return await videoState.getBlobAsync();
+    this.isEncoding = false;
   }
 }
