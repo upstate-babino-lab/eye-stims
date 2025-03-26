@@ -35,7 +35,6 @@ export default function StimulusPreview(props: {
   return stimulus && isValidStimType ? (
     <div className={`flex flex-col ${props.className || ''}`}>
       <div className="flex flex-row items-center p-1 gap-2 ml-auto text-gray-200">
-        <Button onClick={() => EncodeStim(stimulus)}>TestEncoder</Button>
         <Button onClick={() => PreviewStim(stimulus)}>Preview</Button>
         <CloseButton onClick={() => props.onClose && props.onClose()} />
       </div>
@@ -160,17 +159,5 @@ function PreviewStim(stimulus: Stimulus) {
   stimulus.preview(ctx, () => {
     // Clear back to default
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  });
-}
-
-
-
-// For testing only
-import { encodeStimuliAsync } from './video';
-import { downloadBlob } from './utilities';
-
-function EncodeStim(stimulus: Stimulus) {
-  encodeStimuliAsync([stimulus], 640, 400, 30).then((buf) => {
-    downloadBlob(new Blob([buf]), 'stimulus.mp4');
   });
 }

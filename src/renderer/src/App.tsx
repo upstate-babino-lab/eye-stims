@@ -2,8 +2,7 @@ import { useState } from 'react';
 import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
 import SequencePreviewTab from './SequencePreviewTab';
-import { downloadBlob, formatSeconds } from './utilities';
-import { encodeStimuliAsync } from './video';
+import { formatSeconds } from './utilities';
 import RunTab from './RunTab';
 
 const tabLabels = ['Preview', 'Run'];
@@ -23,7 +22,7 @@ export default function App(): JSX.Element {
               </div>
               <div className="bg-gray-950 rounded-md p-2">
                 <div>{theStimSequence.description}&nbsp;</div>
-                <div className='text-gray-500'>
+                <div className="text-gray-500">
                   Count: {theStimSequence.stimuli.length + ' | '}
                   Duration: {formatSeconds(theStimSequence.duration())}
                 </div>
@@ -43,15 +42,21 @@ export default function App(): JSX.Element {
               <ResolutionDropdown />
               <Button
                 className="ml-auto"
-                onClick={() => {
-                  encodeStimuliAsync(theStimSequence.stimuli, 640, 400, 30).then(
-                    (blob) => {
-                      downloadBlob(blob, 'stimulus.mp4');
-                    }
-                  );
+                onClick={async () => {
+                  const fileHandle = await window.showSaveFilePicker({
+                    suggestedName: `streamed-video.mp4`,
+                    types: [
+                      {
+                        description: 'Video File',
+                        accept: { 'video/mp4': ['.mp4'] },
+                      },
+                    ],
+                  });
+                  const fileStream = await fileHandle.createWritable();
+                  theStimSequence.encodeAsync(640, 400, 30, fileStream);
                 }}
               >
-                Save .mp4
+                Stream to disk .mp4
               </Button>
             </div>
           )}
