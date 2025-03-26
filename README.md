@@ -23,7 +23,7 @@ $ npm run dev
 ### Build
 
 ```bash
-# For windows
+# For windows (as Administrator) setup.exe placed in dist/
 $ npm run build:win
 
 # For macOS.  .dmg placed in dist/
