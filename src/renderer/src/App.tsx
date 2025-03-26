@@ -10,6 +10,7 @@ const tabLabels = ['Preview', 'Run'];
 export default function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState(tabLabels[0]);
   const { theStimSequence } = useTheStimSequence();
+  const [ffmpegOutput, setFfmpegOutput] = useState<string>('');
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-gray-400 text-sm p-4">
@@ -58,6 +59,23 @@ export default function App(): JSX.Element {
               >
                 Stream to disk .mp4
               </Button>
+              <Button
+                className="ml-auto"
+                onClick={async () => {
+                  try {
+                    const result: string = await window.electron.runFfmpeg([
+                      '-version', // Example FFmpeg command (change as needed)
+                    ]);
+                    console.log('>>>>> Got ffmpeg result=' + result);
+                    setFfmpegOutput(result);
+                  } catch (err) {
+                    setFfmpegOutput('Got ffmpeg err=' + err);
+                  }
+                }}
+              >
+                RunFfmpeg
+              </Button>
+              <div>ffmpeg output: {ffmpegOutput}</div>
             </div>
           )}
         </div>

@@ -19,4 +19,7 @@ contextBridge.exposeInMainWorld('electron', {
   removeListener: (channel: string, callback: (...args: any[]) => void) => {
     ipcRenderer.removeListener(channel, callback);
   },
+  runFfmpeg: (args: string[]) => {
+    return ipcRenderer.invoke('run-ffmpeg', args);
+  },
 });
