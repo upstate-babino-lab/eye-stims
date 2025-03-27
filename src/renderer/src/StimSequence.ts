@@ -38,8 +38,16 @@ export default class StimSequence {
       await stimulus.saveToCacheAsync(width, height, fps);
     }
     */
-    Promise.all(
+    await Promise.all(
       this.stimuli.map((stimulus) => stimulus.saveToCacheAsync(width, height, fps))
+    );
+  }
+
+  async buildFromCache(width: number, height: number, fps: number) {
+    await this.saveToCacheAsync(width, height, fps);
+    return await window.electron.buildFromCache(
+      this.stimuli.map((stim) => stim.cachedFilename),
+      '/tmp/out.mp4'
     );
   }
 

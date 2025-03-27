@@ -4,9 +4,8 @@ import { mkdir, writeFile, readFile, access, rm } from 'fs/promises';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
-import { spawn } from 'child_process';
-import ffmpegPath from 'ffmpeg-static';
 import { theMainWindow } from '.';
+import { buildFromCache, spawnFfmpegAsync } from './spawn-ffmpeg';
 
 // Generate filename that's guaranteed to be valid on Windows, and of limited length.
 function hashFilename(unhashedFilename: string): string {
@@ -20,7 +19,7 @@ function hashFilename(unhashedFilename: string): string {
   return filename;
 }
 
-const cacheDir = path.join(app.getPath('userData'), 'stim-cache');
+export const cacheDir = path.join(app.getPath('userData'), 'stim-cache');
 
 // Ensure the cache directory exists
 const ensureCacheDir = async () => {
@@ -49,36 +48,16 @@ export function setupIpcHandlers() {
 
   ipcMain.handle('runFfmpeg', async (_event, args: string[]) => {
     console.log(`>>>>> main got 'runFfmpeg'`);
-    return new Promise((resolve, reject) => {
-      if (!ffmpegPath) {
-        reject('ffmpegPath not found');
-        return;
-      }
-
-      const ffmpegProcess = spawn(ffmpegPath, args);
-
-      let output: string = '';
-      let errorOutput: string = '';
-
-      ffmpegProcess.stdout.on('data', (data) => {
-        output += data.toString();
-        console.log('>>>>> ffmpeg output:', data.toString());
-      });
-
-      ffmpegProcess.stderr.on('data', (data) => {
-        errorOutput += data.toString();
-        console.error('ffmpeg error:', data.toString());
-      });
-
-      ffmpegProcess.on('close', (code) => {
-        if (code === 0) {
-          resolve(output);
-        } else {
-          reject(`ffmpeg exited with code ${code}: ${errorOutput}`);
-        }
-      });
-    });
+    return await spawnFfmpegAsync(args);
   });
+
+  ipcMain.handle(
+    'buildFromCache',
+    async (_event, stimFiles: string[], outputFilename: string) => {
+      console.log(`>>>>> main got 'buildFromCache'`);
+      return await buildFromCache(stimFiles, outputFilename);
+    }
+  );
 
   // Save buffer to cache
   ipcMain.handle(
@@ -107,7 +86,7 @@ export function setupIpcHandlers() {
     try {
       const filePath = path.join(cacheDir, hashFilename(unhashedFilename));
       await access(filePath); // Throws if file doesn't exist
-      return true;
+      return filePath;
     } catch {
       return false;
     }

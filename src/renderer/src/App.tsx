@@ -77,17 +77,19 @@ export default function App(): JSX.Element {
                 className="ml-auto"
                 onClick={async () => {
                   try {
-                    const result: string = await window.electron.runFfmpeg([
-                      '-version', // Example FFmpeg command (change as needed)
-                    ]);
-                    console.log('>>>>> Got ffmpeg result=' + result);
+                    const result: string = await theStimSequence.buildFromCache(
+                      640,
+                      400,
+                      30
+                    );
+                    setFfmpegOutput(result);
                     setFfmpegOutput(result);
                   } catch (err) {
                     setFfmpegOutput('Got ffmpeg err=' + err);
                   }
                 }}
               >
-                RunFfmpeg
+                Build
               </Button>
               <div>ffmpeg output: {ffmpegOutput}</div>
             </div>

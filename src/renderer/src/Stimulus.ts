@@ -10,6 +10,7 @@ export abstract class Stimulus {
   name: StimTypeName;
   duration: number = 1; // Seconds
   bgColor: string = 'black';
+  cachedFilename: string = '';
 
   constructor(name: StimTypeName, duration?: number, bgColor?: string) {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
@@ -56,9 +57,10 @@ export abstract class Stimulus {
     const unhashedFilename =
       `${width}x${height}-${fps}` + JSON.stringify(this) + '.mp4';
 
-    if (await window.electron.isCached(unhashedFilename)) {
+    this.cachedFilename = await window.electron.isCached(unhashedFilename);
+    if (this.cachedFilename) {
       console.log('>>>>> Stim already cached');
-      // Nothing to do
+      // Nothing more to do
       return;
     }
     const encoder = new Encoder(width, height, fps);
@@ -69,6 +71,7 @@ export abstract class Stimulus {
         unhashedFilename
       );
       console.log('>>>>> Stim cached at:', path);
+      this.cachedFilename = path;
     } catch (error) {
       throw new Error('Stim cache failed: ' + error);
     }
