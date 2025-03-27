@@ -5,7 +5,9 @@ import icon from '../../resources/icon.png?asset';
 import { modifyDefaultMenu } from './menu';
 import { setupIpcHandlers } from './ipc';
 
-function createWindow(): BrowserWindow {
+export let theMainWindow: BrowserWindow;
+
+function createTheMainWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
@@ -39,8 +41,7 @@ function createWindow(): BrowserWindow {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
-
-  return mainWindow;
+  theMainWindow = mainWindow;
 }
 
 // This method will be called when Electron has finished
@@ -57,13 +58,14 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  let mainWindow: BrowserWindow = createWindow();
+  createTheMainWindow();
+  setupIpcHandlers();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-      mainWindow = createWindow();
+      createTheMainWindow();
     }
   });
 
@@ -75,6 +77,4 @@ app.whenReady().then(() => {
       app.quit();
     }
   });
-
-  setupIpcHandlers(mainWindow);
 });

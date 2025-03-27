@@ -72,15 +72,21 @@ export class Encoder {
     this.lastFrame++;
   }
 
-  // Only returns a Blob when using fileStream
+  // Only if NOT using fileStream
+  async getBufferAsync(): Promise<ArrayBuffer> {
+    await this.videoEncoder.flush();
+    this.muxer.finalize();
+
+    return this.muxer.target['buffer'];
+  }
+
+  // Only if NOT using fileStream
   async getBlobAsync(): Promise<Blob | null> {
-    if (this.muxer.target['buffer']) {
-      await this.videoEncoder.flush();
-      this.muxer.finalize();
-      return new Blob([this.muxer.target['buffer']], {
-        type: `video/mp4; codecs="${CODEC}"`,
-      });
+    if (!this.muxer.target['buffer']) {
+      return null;
     }
-    return null;
+    return new Blob([await this.getBufferAsync()], {
+      type: `video/mp4; codecs="${CODEC}"`,
+    });
   }
 }

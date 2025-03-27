@@ -5,6 +5,9 @@ export interface ElectronAPI {
   on: (channel: string, callback: (...args: any[]) => void) => void;
   removeListener: (channel: string, callback: (...args: any[]) => void) => void;
   runFfmpeg: (args: string[]) => Promise<string>;
+  saveBufferToCache: (buffer: ArrayBuffer, filename: string) => Promise<string>;
+  readFromCache: (filename: string) => Promise<ArrayBuffer>;
+  isCached: (filename: string) => Promise<boolean>;
 }
 
 declare global {

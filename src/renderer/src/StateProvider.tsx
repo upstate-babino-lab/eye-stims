@@ -2,7 +2,7 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './StimSequence';
-import { newStimulus } from './stimulus';
+import { newStimulus } from './Stimulus';
 import { capitalize } from './utilities';
 
 export function StateProvider({ children }: { children: ReactNode }) {
@@ -36,7 +36,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
       const content = (
         document.getElementById('file-content') as HTMLTextAreaElement
       ).value;
-      window.electron.send('save-file', { filePath: filePath, content: content });
+      window.electron.send('saveFile', { filePath: filePath, content: content });
     };
 
     // Listen for messages from main process

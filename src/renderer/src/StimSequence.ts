@@ -1,4 +1,4 @@
-import { Stimulus } from './stimulus';
+import { Stimulus } from './Stimulus';
 import { Encoder } from './Encoder';
 
 export default class StimSequence {
@@ -31,12 +31,12 @@ export default class StimSequence {
     return total;
   }
 
-  /* TODO?
-Cache encoded stim videos in files cache directory (possible to cache in memory?)
-import { app } from "electron";
-import path from "path";
-const cacheDir = path.join(app.getPath("userData"), "cache");
-*/
+  async saveToCacheAsync(width: number, height: number, fps: number) {
+    for (let iStim = 0; iStim < this.stimuli.length; iStim++) {
+      const stimulus = this.stimuli[iStim];
+      await stimulus.saveToCacheAsync(width, height, fps);
+    }
+  }
 
   async encodeAsync(
     width: number,
@@ -46,7 +46,7 @@ const cacheDir = path.join(app.getPath("userData"), "cache");
   ): Promise<void> {
     this.isEncoding = true;
     try {
-      const videoState = new Encoder(width, height, fps, fileStream);
+      const encoder = new Encoder(width, height, fps, fileStream);
       const duration = this.duration();
       console.log(`>>>>> Encoding ${this.stimuli.length} stimuli...`);
       const startTime = new Date().getTime();
@@ -54,17 +54,12 @@ const cacheDir = path.join(app.getPath("userData"), "cache");
       let elapsedMinutes = 0;
       for (let iStim = 0; iStim < this.stimuli.length; iStim++) {
         const stimulus = this.stimuli[iStim];
-        const nFrames = stimulus.duration * videoState.fps;
-        for (let iFrame = 0; iFrame < nFrames; iFrame++) {
-          const age = iFrame && iFrame / videoState.fps;
-          stimulus.renderFrame(videoState.ctx, age);
-          videoState.encodeOneFrame();
-        }
+        stimulus.encode(encoder);
         encodedSecondsSoFar += stimulus.duration;
         const secondsRemainingToEncode = duration - encodedSecondsSoFar;
         if ((iStim && iStim % 200 === 0) || iStim >= this.stimuli.length) {
           // Periodically flush and log
-          await videoState.videoEncoder.flush();
+          await encoder.videoEncoder.flush();
           const nowTime = new Date().getTime();
           elapsedMinutes = (nowTime - startTime) / (1000 * 60);
           const speed = Math.round(encodedSecondsSoFar / (elapsedMinutes * 60));
@@ -80,8 +75,8 @@ const cacheDir = path.join(app.getPath("userData"), "cache");
         }
       }
       // All done
-      await videoState.videoEncoder.flush();
-      videoState.muxer.finalize();
+      await encoder.videoEncoder.flush();
+      encoder.muxer.finalize();
       if (fileStream) {
         await fileStream.close();
       }

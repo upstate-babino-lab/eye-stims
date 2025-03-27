@@ -34,7 +34,7 @@ export default function App(): JSX.Element {
         <div className="flex flex-col gap-2 ml-auto">
           <Button
             className="ml-auto"
-            onClick={() => window.electron.send('load-file')}
+            onClick={() => window.electron.send('loadFile')}
           >
             Load
           </Button>
@@ -59,6 +59,20 @@ export default function App(): JSX.Element {
               >
                 Stream to disk .mp4
               </Button>
+
+              <Button
+                className="ml-auto"
+                onClick={async () => {
+                  try {
+                    theStimSequence.saveToCacheAsync(640, 400, 30);
+                  } catch (err) {
+                    setFfmpegOutput('saveToCacheAsync() err=' + err);
+                  }
+                }}
+              >
+                Save to cache
+              </Button>
+
               <Button
                 className="ml-auto"
                 onClick={async () => {

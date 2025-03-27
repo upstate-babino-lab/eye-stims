@@ -1,6 +1,6 @@
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window'; // Only render visible items in list
 import AutoSizer from 'react-virtualized-auto-sizer'; // Resizes list when container size changes
-import { Stimulus } from './stimulus';
+import { Stimulus } from './Stimulus';
 import { useTheStimSequence } from './StateContext';
 import { formatSeconds } from './utilities';
 

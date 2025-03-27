@@ -1,26 +1,42 @@
-import { ipcMain, BrowserWindow } from 'electron';
+import { ipcMain, app } from 'electron';
 import { loadFileDialogAsync } from './menu';
+import { mkdir, writeFile, readFile, access } from 'fs/promises';
+import crypto from 'crypto';
+import path from 'path';
 import * as fs from 'fs';
 import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
+import { theMainWindow } from '.';
 
-export function setupIpcHandlers(mainWindow: BrowserWindow) {
-  ipcMain.on('load-file', () => {
-    console.log(`>>>>> main got 'load-file'`);
-    loadFileDialogAsync(mainWindow).catch((err) => {
+// Generate filename that's guaranteed to be valid on Windows, and of limited length.
+function hashFilename(unhashedFilename: string): string {
+  const extension = path.extname(unhashedFilename);
+  const filename =
+    crypto
+      .createHash('sha256')
+      .update(unhashedFilename)
+      .digest('hex')
+      .slice(0, 20) + extension;
+  return filename;
+}
+
+export function setupIpcHandlers() {
+  ipcMain.on('loadFile', () => {
+    console.log(`>>>>> main got 'loadFile'`);
+    loadFileDialogAsync(theMainWindow).catch((err) => {
       console.log('ERROR from loadFileDialogAsync(): ' + err);
     });
   });
 
-  ipcMain.on('save-file', (_, { filePath, content }) => {
-    console.log(`>>>>> main got 'save-file'`);
+  ipcMain.on('saveFile', (_, { filePath, content }) => {
+    console.log(`>>>>> main got 'saveFile'`);
     fs.writeFile(filePath, content, 'utf-8', (err) => {
       if (err) console.error('Error saving file:', err);
     });
   });
 
-  ipcMain.handle('run-ffmpeg', async (_event, args: string[]) => {
-    console.log(`>>>>> main got 'run-ffmpeg'`);
+  ipcMain.handle('runFfmpeg', async (_event, args: string[]) => {
+    console.log(`>>>>> main got 'runFfmpeg'`);
     return new Promise((resolve, reject) => {
       if (!ffmpegPath) {
         reject('ffmpegPath not found');
@@ -50,5 +66,58 @@ export function setupIpcHandlers(mainWindow: BrowserWindow) {
         }
       });
     });
+  });
+
+  const cacheDir = path.join(app.getPath('userData'), 'stim-cache');
+
+  // Ensure the cache directory exists
+  const ensureCacheDir = async () => {
+    await mkdir(cacheDir, { recursive: true });
+  };
+
+  // Save buffer to cache
+  ipcMain.handle(
+    'saveBufferToCache',
+    async (_event, buffer: ArrayBuffer, unhashedFilename: string) => {
+      // console.log(`>>>>> main got 'saveBufferToCache'`);
+      try {
+        await ensureCacheDir();
+        const filePath: string = path.join(
+          cacheDir,
+          hashFilename(unhashedFilename)
+        );
+        console.log(`>>>>> filePath=${filePath}`);
+        await writeFile(filePath, Buffer.from(buffer));
+        return filePath; // Return saved file path
+      } catch (error) {
+        console.error('Error saving buffer:', error);
+        throw error;
+      }
+    }
+  );
+
+  // Test if file exists in cache
+  ipcMain.handle('isCached', async (_event, unhashedFilename: string) => {
+    // console.log(`>>>>> main got 'isCached'`);
+    try {
+      const filePath = path.join(cacheDir, hashFilename(unhashedFilename));
+      await access(filePath); // Throws if file doesn't exist
+      return true;
+    } catch {
+      return false;
+    }
+  });
+
+  // Read buffer from cache
+  ipcMain.handle('readFromCache', async (_event, unhashedFilename: string) => {
+    // console.log(`>>>>> main got 'readFromCache'`);
+    try {
+      const filePath = path.join(cacheDir, hashFilename(unhashedFilename));
+      const data = await readFile(filePath);
+      return data.buffer; // Return as ArrayBuffer
+    } catch (error) {
+      console.error('Error reading from cache:', error);
+      throw error;
+    }
   });
 }

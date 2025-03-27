@@ -1,3 +1,5 @@
+import { Encoder } from './Encoder';
+
 export enum StimTypeName {
   Solid = 'Solid',
   Bar = 'Bar',
@@ -39,6 +41,37 @@ export abstract class Stimulus {
       }
     };
     requestAnimationFrame(animate);
+  }
+
+  encode(encoder: Encoder) {
+    const nFrames = this.duration * encoder.fps;
+    for (let iFrame = 0; iFrame < nFrames; iFrame++) {
+      const age = iFrame && iFrame / encoder.fps;
+      this.renderFrame(encoder.ctx, age);
+      encoder.encodeOneFrame();
+    }
+  }
+
+  async saveToCacheAsync(width, height, fps) {
+    const unhashedFilename =
+      `${width}x${height}-${fps}` + JSON.stringify(this) + '.mp4';
+
+    if (await window.electron.isCached(unhashedFilename)) {
+      console.log('>>>>> Stim already cached');
+      // Nothing to do
+      return;
+    }
+    const encoder = new Encoder(width, height, fps);
+    this.encode(encoder);
+    try {
+      const path = await window.electron.saveBufferToCache(
+        await encoder.getBufferAsync(),
+        unhashedFilename
+      );
+      console.log('>>>>> Stim cached at:', path);
+    } catch (error) {
+      throw new Error('Stim cache failed: ' + error);
+    }
   }
 }
 
