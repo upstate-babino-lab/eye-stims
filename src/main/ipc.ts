@@ -1,8 +1,8 @@
 import { ipcMain, app } from 'electron';
 import { loadFileDialogAsync } from './menu';
 import { mkdir, writeFile, readFile, access } from 'fs/promises';
-import crypto from 'crypto';
-import path from 'path';
+import * as crypto from 'crypto';
+import * as path from 'path';
 import * as fs from 'fs';
 import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
