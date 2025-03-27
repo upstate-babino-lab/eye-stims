@@ -52,7 +52,7 @@ export abstract class Stimulus {
     }
   }
 
-  async saveToCacheAsync(width, height, fps) {
+  async saveToCacheAsync(width: number, height: number, fps: number) {
     const unhashedFilename =
       `${width}x${height}-${fps}` + JSON.stringify(this) + '.mp4';
 

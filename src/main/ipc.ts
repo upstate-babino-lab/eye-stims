@@ -1,6 +1,6 @@
 import { ipcMain, app } from 'electron';
 import { loadFileDialogAsync } from './menu';
-import { mkdir, writeFile, readFile, access } from 'fs/promises';
+import { mkdir, writeFile, readFile, access, rm } from 'fs/promises';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -18,6 +18,18 @@ function hashFilename(unhashedFilename: string): string {
       .digest('hex')
       .slice(0, 20) + extension;
   return filename;
+}
+
+const cacheDir = path.join(app.getPath('userData'), 'stim-cache');
+
+// Ensure the cache directory exists
+const ensureCacheDir = async () => {
+  await mkdir(cacheDir, { recursive: true });
+};
+
+export async function clearStimCacheAsync() {
+  console.log('>>>>> removing ' + cacheDir);
+  await rm(cacheDir, { recursive: true, force: true });
 }
 
 export function setupIpcHandlers() {
@@ -67,13 +79,6 @@ export function setupIpcHandlers() {
       });
     });
   });
-
-  const cacheDir = path.join(app.getPath('userData'), 'stim-cache');
-
-  // Ensure the cache directory exists
-  const ensureCacheDir = async () => {
-    await mkdir(cacheDir, { recursive: true });
-  };
 
   // Save buffer to cache
   ipcMain.handle(

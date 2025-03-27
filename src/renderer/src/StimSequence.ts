@@ -32,10 +32,15 @@ export default class StimSequence {
   }
 
   async saveToCacheAsync(width: number, height: number, fps: number) {
+    /*
     for (let iStim = 0; iStim < this.stimuli.length; iStim++) {
       const stimulus = this.stimuli[iStim];
       await stimulus.saveToCacheAsync(width, height, fps);
     }
+    */
+    Promise.all(
+      this.stimuli.map((stimulus) => stimulus.saveToCacheAsync(width, height, fps))
+    );
   }
 
   async encodeAsync(

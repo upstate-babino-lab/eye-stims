@@ -3,6 +3,7 @@ import * as readline from 'readline';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as fsp from 'fs/promises'; // Use fs/promises for async file operations
+import { clearStimCacheAsync } from './ipc';
 
 export function modifyDefaultMenu(mainWindow: BrowserWindow) {
   const defaultMenu = Menu.getApplicationMenu();
@@ -40,6 +41,10 @@ export function modifyDefaultMenu(mainWindow: BrowserWindow) {
                     mainWindow.webContents.send('request-file-to-save', filePath);
                   }
                 },
+              },
+              {
+                label: 'Clear Stim Cache',
+                click: clearStimCacheAsync,
               },
               { type: 'separator' },
               { role: 'quit' },
