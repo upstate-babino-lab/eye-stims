@@ -22,7 +22,10 @@ contextBridge.exposeInMainWorld('electron', {
   runFfmpeg: (args: string[]) => {
     return ipcRenderer.invoke('runFfmpeg', args);
   },
-  buildFromCache: (stimFilenames: string[], outputFilename: string) => {
+  buildFromCache: (
+    stimFilenames: string[],
+    outputFilename: string
+  ): Promise<string> => {
     return ipcRenderer.invoke('buildFromCache', stimFilenames, outputFilename);
   },
   saveBufferToCache: (buffer: ArrayBuffer, filename: string) => {

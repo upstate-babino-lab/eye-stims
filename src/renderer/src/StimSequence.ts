@@ -2,6 +2,7 @@ import { Stimulus } from './Stimulus';
 import { Encoder } from './Encoder';
 
 export default class StimSequence {
+  fileBasename: string = '';
   name: string = 'Uninitialized StimSequence';
   readonly description: string = '';
   readonly stimuli: Stimulus[] = [];
@@ -9,7 +10,13 @@ export default class StimSequence {
   private cachedDuration: number = -1;
   isEncoding: boolean = false;
 
-  constructor(name?: string, description?: string, stimuli?: Stimulus[]) {
+  constructor(
+    fileBasename?: string,
+    name?: string,
+    description?: string,
+    stimuli?: Stimulus[]
+  ) {
+    this.fileBasename = fileBasename ?? this.fileBasename;
     this.name = name ?? this.name;
     this.description = description ?? this.description;
     this.stimuli = stimuli ?? this.stimuli;
@@ -47,7 +54,7 @@ export default class StimSequence {
     await this.saveToCacheAsync(width, height, fps);
     return await window.electron.buildFromCache(
       this.stimuli.map((stim) => stim.cachedFilename),
-      '/tmp/out.mp4'
+      this.fileBasename + '.mp4'
     );
   }
 

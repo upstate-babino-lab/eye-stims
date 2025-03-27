@@ -24,6 +24,7 @@ export default function App(): JSX.Element {
               <div className="bg-gray-950 rounded-md p-2">
                 <div>{theStimSequence.description}&nbsp;</div>
                 <div className="text-gray-500">
+                  {theStimSequence.fileBasename + ' | '}
                   Count: {theStimSequence.stimuli.length + ' | '}
                   Duration: {formatSeconds(theStimSequence.duration())}
                 </div>
@@ -77,15 +78,14 @@ export default function App(): JSX.Element {
                 className="ml-auto"
                 onClick={async () => {
                   try {
-                    const result: string = await theStimSequence.buildFromCache(
+                    const result = await theStimSequence.buildFromCache(
                       640,
                       400,
                       30
                     );
                     setFfmpegOutput(result);
-                    setFfmpegOutput(result);
                   } catch (err) {
-                    setFfmpegOutput('Got ffmpeg err=' + err);
+                    setFfmpegOutput('buildFromCache err=' + err);
                   }
                 }}
               >

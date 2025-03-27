@@ -22,6 +22,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
       const description = (parsedContents && parsedContents['description']) ?? '';
       setTheStimSequence(
         new StimSequence(
+          getBasenameFromString(filePath),
           name,
           description,
           stimulusList.map((s) => newStimulus(s))
@@ -80,4 +81,9 @@ function oldStimList2New(old) {
     };
     return newStim;
   });
+}
+
+function getBasenameFromString(filePath: string): string {
+  const baseNameIncludingExtension = filePath.split(/[/\\]/).pop() || '';
+  return baseNameIncludingExtension.replace(/\.[^/.]+$/, '');
 }

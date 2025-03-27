@@ -1,11 +1,11 @@
 import { ipcMain, app } from 'electron';
-import { loadFileDialogAsync } from './menu';
+import { loadFileDialogAsync, saveFileDialogAsync } from './menu';
 import { mkdir, writeFile, readFile, access, rm } from 'fs/promises';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
 import { theMainWindow } from '.';
-import { buildFromCache, spawnFfmpegAsync } from './spawn-ffmpeg';
+import { buildFromCacheAsync, spawnFfmpegAsync } from './spawn-ffmpeg';
 
 // Generate filename that's guaranteed to be valid on Windows, and of limited length.
 function hashFilename(unhashedFilename: string): string {
@@ -55,7 +55,8 @@ export function setupIpcHandlers() {
     'buildFromCache',
     async (_event, stimFiles: string[], outputFilename: string) => {
       console.log(`>>>>> main got 'buildFromCache'`);
-      return await buildFromCache(stimFiles, outputFilename);
+      const outputFullPathname = await saveFileDialogAsync(outputFilename);
+      return await buildFromCacheAsync(stimFiles, outputFullPathname);
     }
   );
 

@@ -23,10 +23,11 @@ export async function spawnFfmpegAsync(args: string[]) {
 
     ffmpegProcess.stderr.on('data', (data) => {
       errorOutput += data.toString();
-      console.error('ffmpeg error:', data.toString());
+      console.error('ffmpeg stderr:', data.toString());
     });
 
     ffmpegProcess.on('close', (code) => {
+      console.error(`>>>>> ffmpeg exited with code=${code} output=${output}`);
       if (code === 0) {
         resolve(output);
       } else {
@@ -36,10 +37,10 @@ export async function spawnFfmpegAsync(args: string[]) {
   });
 }
 
-export async function buildFromCache(
+export async function buildFromCacheAsync(
   inputFilenames: string[],
   outputFilename: string
-) {
+): Promise<string> {
   const fileListFilename: string = path.join(cacheDir, 'input-list.txt');
   const fileList: string = inputFilenames
     .map((name) => `file '${name}'`)
