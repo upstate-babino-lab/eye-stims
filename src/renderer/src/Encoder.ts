@@ -58,7 +58,7 @@ export class Encoder {
       width: width,
       height: height,
       //bitrate: 500_000,
-      latencyMode: 'quality', // 'realtime',
+      latencyMode: 'realtime', //'quality', // 'realtime',
     });
   }
 

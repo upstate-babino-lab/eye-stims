@@ -23,20 +23,28 @@ export async function spawnFfmpegAsync(args: string[]) {
     });
 
     ffmpegProcess.stderr.on('data', (data) => {
-      errorOutput += data.toString();
-      console.error('ffmpeg stderr:', data.toString());
+      const dataStr = data.toString();
+      /*
+      if (!dataStr.includes('Auto-inserting h264_mp4toannexb bitstream filter')) {
+        console.error('ffmpeg stderr:', data.toString());
+      }
+      errorOutput += dataStr;
+      */
+      errorOutput = dataStr; // Ignoring all but last stderr for now
     });
 
     ffmpegProcess.on('close', (code) => {
       // console.error('ffmpeg stderr:', errorOutput);
       const elapsedTime = new Date().getTime() - startTime;
       console.error(
-        `>>>>> ffmpeg exited after ${(elapsedTime / 1000).toFixed(2)} seconds with code=${code} output=${output}`
+        `>>>>> ffmpeg exited after ${(elapsedTime / 1000).toFixed(2)} seconds =` +
+          `${(elapsedTime / 60000).toFixed(2)} minutes ` +
+          `with code=${code} output=${output}`
       );
       if (code === 0) {
         resolve(output);
       } else {
-        reject(`ffmpeg exited with code ${code}: ${errorOutput}`);
+        reject(`ffmpeg exited with error code ${code}: ${errorOutput}`);
       }
     });
   });
@@ -46,6 +54,7 @@ export async function buildFromCacheAsync(
   inputFilenames: string[],
   outputFilename: string
 ): Promise<string> {
+  // TODO: make unique name to allow more than one call to ffmpeg
   const fileListFilename: string = path.join(cacheDir, 'input-list.txt');
   const fileList: string = inputFilenames
     .map((name) => `file '${name}'`)
@@ -56,7 +65,7 @@ export async function buildFromCacheAsync(
     '-f', 'concat',
     '-safe', '0', // Allows using absolute paths in the input-list.txt file
     '-i', fileListFilename,
-    //'-c', 'copy', // copy the streams directly without re-encoding
+    '-c', 'copy', // copy the streams directly without re-encoding
     //'-r', '30',
     // '-bsf:v', 'h264_mp4toannexb',
     '-y', // Force overwrite and avoid y/N prompt
