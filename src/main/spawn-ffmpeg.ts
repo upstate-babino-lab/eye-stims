@@ -5,6 +5,7 @@ import { writeFile } from 'fs/promises';
 import * as path from 'path';
 
 export async function spawnFfmpegAsync(args: string[]) {
+  const startTime = new Date().getTime();
   return new Promise((resolve, reject) => {
     if (!ffmpegPath) {
       reject('ffmpegPath not found');
@@ -27,7 +28,11 @@ export async function spawnFfmpegAsync(args: string[]) {
     });
 
     ffmpegProcess.on('close', (code) => {
-      console.error(`>>>>> ffmpeg exited with code=${code} output=${output}`);
+      // console.error('ffmpeg stderr:', errorOutput);
+      const elapsedTime = new Date().getTime() - startTime;
+      console.error(
+        `>>>>> ffmpeg exited after ${(elapsedTime / 1000).toFixed(2)} seconds with code=${code} output=${output}`
+      );
       if (code === 0) {
         resolve(output);
       } else {
@@ -51,7 +56,9 @@ export async function buildFromCacheAsync(
     '-f', 'concat',
     '-safe', '0', // Allows using absolute paths in the input-list.txt file
     '-i', fileListFilename,
-    //'-c', 'copy', // copy the streams directly, avoiding re-encoding
+    //'-c', 'copy', // copy the streams directly without re-encoding
+    //'-r', '30',
+    // '-bsf:v', 'h264_mp4toannexb',
     '-y', // Force overwrite and avoid y/N prompt
     outputFilename,
   ]

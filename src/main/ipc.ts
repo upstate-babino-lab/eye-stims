@@ -27,7 +27,7 @@ const ensureCacheDir = async () => {
 };
 
 export async function clearStimCacheAsync() {
-  console.log('>>>>> removing ' + cacheDir);
+  console.log('>>>>> Removing cacheDir ' + cacheDir);
   await rm(cacheDir, { recursive: true, force: true });
 }
 
