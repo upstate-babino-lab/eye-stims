@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
 import { cacheDir } from './ipc';
 import { writeFile } from 'fs/promises';
+
 import * as path from 'path';
 
 export async function spawnFfmpegAsync(args: string[]) {
@@ -70,7 +71,7 @@ export async function buildFromCacheAsync(
     // '-bsf:v', 'h264_mp4toannexb',
     '-y', // Force overwrite and avoid y/N prompt
     outputFilename,
-  ]
+  ];
   console.log(`>>>>> ffmpeg ` + args.join(' '));
   await spawnFfmpegAsync(args);
   return outputFilename;
