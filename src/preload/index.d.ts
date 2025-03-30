@@ -7,6 +7,7 @@ export interface ElectronAPI {
   runFfmpeg: (args: string[]) => Promise<string>;
   buildFromCache: (
     stimFilenames: string[],
+    startTimes: number[],
     outputFilename: string
   ) => Promise<string>;
   saveBufferToCache: (buffer: ArrayBuffer, filename: string) => Promise<string>;

@@ -29,6 +29,12 @@ const dtmfTones: { tone: string; f1: number; f2: number }[] = [
   { tone: 'D', f1: 941, f2: 1633 },
 ];
 
+function toneFilename(toneObj) {
+  return `dtmf-${toneObj.tone}.wav`;
+}
+export function toneFilenames(): string[] {
+  return dtmfTones.map((tObj) => toneFilename(tObj));
+}
 const sampleRate = 44100; // Samples per second
 const durationMs = 200; // Duration in milliseconds. Peak amplitude at half
 const numSamples = (sampleRate * durationMs) / 1000;
@@ -55,7 +61,7 @@ async function createWavFileAsync(
   filename: string
 ): Promise<void> {
   const scaledSamples = samples.map(
-    (s, i) => s * 0.4 * Math.sin((i / (samples.length - 1)) * Math.PI) ** 4
+    (s, i) => s * 0.5 * Math.sin((i / (samples.length - 1)) * Math.PI) ** 4
   );
   const wavData = wav.encode(
     [scaledSamples], // Array for mono (not stereo)
@@ -69,11 +75,10 @@ async function createWavFileAsync(
 export async function generateDTMFWavFilesAsync(
   destinationDirectory: string = __dirname
 ): Promise<void> {
-  for (const dtmf of dtmfTones) {
-    const samples = generateDTMFSineWave(dtmf.f1, dtmf.f2);
-    const filename = path.join(destinationDirectory, `dtmf-${dtmf.tone}.wav`); // Use tone name in filename
-    await createWavFileAsync(samples, filename);
-    console.log(`Generated ${filename}`);
+  for (const tObj of dtmfTones) {
+    const samples = generateDTMFSineWave(tObj.f1, tObj.f2);
+    const fullPathname = path.join(destinationDirectory, toneFilename(tObj));
+    await createWavFileAsync(samples, fullPathname);
   }
 }
 

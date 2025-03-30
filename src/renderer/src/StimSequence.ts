@@ -6,7 +6,7 @@ export default class StimSequence {
   name: string = 'Uninitialized StimSequence';
   readonly description: string = '';
   readonly stimuli: Stimulus[] = [];
-  times: number[] = []; // Seconds into sequence
+  startTimes: number[] = []; // Seconds into sequence
   private cachedDuration: number = -1;
   isEncoding: boolean = false;
 
@@ -27,11 +27,11 @@ export default class StimSequence {
     if (this.cachedDuration >= 0) {
       return this.cachedDuration;
     }
-    this.times = new Array(this.stimuli.length);
+    this.startTimes = new Array(this.stimuli.length);
     const total = this.stimuli
       .map((s) => s.duration)
       .reduce((accumulator, currentValue, currentIndex) => {
-        this.times[currentIndex] = accumulator;
+        this.startTimes[currentIndex] = accumulator;
         return accumulator + currentValue;
       }, 0);
     this.cachedDuration = total;
@@ -54,6 +54,7 @@ export default class StimSequence {
     await this.saveToCacheAsync(width, height, fps);
     return await window.electron.buildFromCache(
       this.stimuli.map((stim) => stim.cachedFilename),
+      this.startTimes,
       this.fileBasename + '.mp4'
     );
   }

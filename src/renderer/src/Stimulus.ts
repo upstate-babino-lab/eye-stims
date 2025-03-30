@@ -52,7 +52,7 @@ export abstract class Stimulus {
       encoder.encodeOneFrame();
     }
   }
-
+  /**/
   async saveToCacheAsync(width: number, height: number, fps: number) {
     const unhashedFilename =
       `${width}x${height}-${fps}` + JSON.stringify(this) + '.mp4';
@@ -76,6 +76,7 @@ export abstract class Stimulus {
       throw new Error('Stim cache failed: ' + error);
     }
   }
+  /**/
 }
 
 export class Solid extends Stimulus {

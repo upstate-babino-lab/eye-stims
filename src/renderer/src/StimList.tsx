@@ -67,7 +67,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
     >
       <div className={CELL_FORMAT}>{index}</div>
       <div className="min-w-30 p-0.5 text-left">
-        {formatSeconds(theStimSequence ? theStimSequence.times[index] : 0)}
+        {formatSeconds(theStimSequence ? theStimSequence.startTimes[index] : 0)}
       </div>
       <div className={CELL_FORMAT}>{row.name}</div>
       <div className={CELL_FORMAT}>{row.duration.toFixed(2)}</div>

@@ -24,9 +24,15 @@ contextBridge.exposeInMainWorld('electron', {
   },
   buildFromCache: (
     stimFilenames: string[],
+    startTimes: number[],
     outputFilename: string
   ): Promise<string> => {
-    return ipcRenderer.invoke('buildFromCache', stimFilenames, outputFilename);
+    return ipcRenderer.invoke(
+      'buildFromCache',
+      stimFilenames,
+      startTimes,
+      outputFilename
+    );
   },
   saveBufferToCache: (buffer: ArrayBuffer, filename: string) => {
     return ipcRenderer.invoke('saveBufferToCache', buffer, filename);
