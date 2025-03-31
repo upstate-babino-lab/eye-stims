@@ -4,10 +4,11 @@ import { cacheDir, ensureCacheDirAsync } from './ipc';
 import { writeFile as writeFileAsync } from 'fs/promises';
 import * as path from 'path';
 import { PEAK_OFFSET_MS } from '../../tools/generate-tones';
+import { DisplayKey, displays } from '../displays';
 
-export async function spawnFfmpegAsync(args: string[]) {
+export async function spawnFfmpegAsync(args: string[]): Promise<string> {
   const startTime = new Date().getTime();
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     if (!ffmpegPath) {
       reject('ffmpegPath not found');
       return;
@@ -41,10 +42,10 @@ export async function spawnFfmpegAsync(args: string[]) {
       console.error(
         `>>>>> ffmpeg exited after ${(elapsedTime / 1000).toFixed(2)} seconds =` +
           `${(elapsedTime / 60000).toFixed(2)} minutes ` +
-          `with code=${code} stdOutput=${stdOutput}`
+          `with code=${code} stdOutput=${stdOutput} stdOutput.length=${stdOutput.length}`
       );
       if (code === 0) {
-        resolve(stdOutput);
+        resolve(stdOutput || 'Success');
       } else {
         reject(`ffmpeg exited with error code ${code}: ${errorOutput}`);
       }
@@ -53,10 +54,12 @@ export async function spawnFfmpegAsync(args: string[]) {
 }
 
 export async function buildFromCacheAsync(
+  displayKey: DisplayKey,
   inputFilenames: string[],
   startTimes: number[],
   outputFilename: string
-) {
+): Promise<string> {
+  const displayProps = displays[displayKey];
   await ensureCacheDirAsync();
   // TODO: make unique name to allow more than one call to ffmpeg
   const inputListFilename: string = 'input-list.txt';
@@ -74,14 +77,14 @@ export async function buildFromCacheAsync(
     '-i', inputListFilename,
     '-i', audioFilename,
     '-c', 'copy', // copy the streams directly without re-encoding
-    '-r', '30', // TODO: use fps parameter
+    '-r', displayProps.fps.toString(),
     '-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
     '-y', // Force overwrite and avoid y/N prompt
     outputFilename,
   ];
   //args = ['-version'];
-  await spawnFfmpegAsync(args);
+  return await spawnFfmpegAsync(args);
 }
 
 // Returns name of generated audio file

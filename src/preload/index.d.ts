@@ -1,3 +1,5 @@
+import { DisplayKey } from "@renderer/displays";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ElectronAPI {
   process: any;
@@ -5,7 +7,8 @@ export interface ElectronAPI {
   on: (channel: string, callback: (...args: any[]) => void) => void;
   removeListener: (channel: string, callback: (...args: any[]) => void) => void;
   runFfmpeg: (args: string[]) => Promise<string>;
-  buildFromCache: (
+  buildFromCacheAsync: (
+    displayKey: DisplayKey,
     stimFilenames: string[],
     startTimes: number[],
     outputFilename: string

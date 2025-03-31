@@ -10,6 +10,7 @@ import {
   generateDTMFWavFilesAsync,
   toneFilenames,
 } from '../../tools/generate-tones';
+import { DisplayKey } from '../displays';
 
 // Generate filename that's guaranteed to be valid on Windows, and of limited length.
 function hashFilename(unhashedFilename: string): string {
@@ -69,19 +70,25 @@ export function setupIpcHandlers() {
   });
 
   ipcMain.handle(
-    'buildFromCache',
+    'buildFromCacheAsync',
     async (
       _event,
+      displayKey: DisplayKey,
       stimFiles: string[],
       startTimes: number[],
       outputFilename: string
     ) => {
       console.log(
-        `>>>>> main got 'buildFromCache' Awaiting user's outputFilename...`
+        `>>>>> main got 'buildFromCacheAsync' Awaiting user's outputFilename...`
       );
       ensureCacheDirAsync(); // Can work while user is picking outputFullPathname
       const outputFullPathname = await saveFileDialogAsync(outputFilename);
-      await buildFromCacheAsync(stimFiles, startTimes, outputFullPathname);
+      return await buildFromCacheAsync(
+        displayKey,
+        stimFiles,
+        startTimes,
+        outputFullPathname
+      );
     }
   );
 

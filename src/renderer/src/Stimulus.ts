@@ -1,3 +1,4 @@
+import { DisplayKey, displays } from '../../displays';
 import { Encoder } from './Encoder';
 
 export enum StimTypeName {
@@ -53,9 +54,12 @@ export abstract class Stimulus {
     }
   }
   /**/
-  async saveToCacheAsync(width: number, height: number, fps: number) {
+  async saveToCacheAsync(displayKey: DisplayKey) {
+    const displayProps = displays[displayKey];
     const unhashedFilename =
-      `${width}x${height}-${fps}` + JSON.stringify(this) + '.mp4';
+      `${displayProps.width}x${displayProps.height}-${displayProps.fps}` +
+      JSON.stringify(this) +
+      '.mp4';
 
     this.cachedFilename = await window.electron.isCached(unhashedFilename);
     if (this.cachedFilename) {
@@ -63,7 +67,7 @@ export abstract class Stimulus {
       // Nothing more to do
       return;
     }
-    const encoder = new Encoder(width, height, fps);
+    const encoder = new Encoder(displayKey);
     this.encode(encoder);
     try {
       const path = await window.electron.saveBufferToCache(
