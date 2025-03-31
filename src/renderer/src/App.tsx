@@ -4,12 +4,16 @@ import { useTheStimSequence } from './StateContext';
 import SequencePreviewTab from './SequencePreviewTab';
 import { formatSeconds } from './utilities';
 import RunTab from './RunTab';
+import { DisplayKey, displays } from '../../displays';
 
 const tabLabels = ['Preview', 'Run'];
 
 export default function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState(tabLabels[0]);
   const { theStimSequence } = useTheStimSequence();
+  const [displayKey, setDisplayKey] = useState<DisplayKey>(
+    DisplayKey[Object.keys(displays)[0]]
+  );
   const [ffmpegOutput, setFfmpegOutput] = useState<string>('');
 
   return (
@@ -35,13 +39,21 @@ export default function App(): JSX.Element {
         <div className="flex flex-col gap-2 ml-auto">
           <Button
             className="ml-auto"
-            onClick={() => window.electron.send('loadFile')}
+            onClick={() => {
+              setFfmpegOutput(''); // Clear upon load
+              window.electron.send('loadFile');
+            }}
           >
             Load
           </Button>
           {theStimSequence && (
             <div className="flex pt-4 pb-0 flex-col gap-2 ml-auto">
-              <ResolutionDropdown />
+              <DisplaysDropdown
+                initialValue={displayKey}
+                onChange={(newDisplayKey) => {
+                  setDisplayKey(newDisplayKey);
+                }}
+              />
               <Button
                 className="ml-auto"
                 onClick={async () => {
@@ -55,7 +67,7 @@ export default function App(): JSX.Element {
                     ],
                   });
                   const fileStream = await fileHandle.createWritable();
-                  theStimSequence.encodeAsync(640, 400, 30, fileStream);
+                  theStimSequence.encodeAsync(displayKey, fileStream);
                 }}
               >
                 Stream to disk .mp4
@@ -65,7 +77,7 @@ export default function App(): JSX.Element {
                 className="ml-auto"
                 onClick={async () => {
                   try {
-                    theStimSequence.saveToCacheAsync(640, 400, 30);
+                    theStimSequence.saveToCacheAsync(displayKey);
                   } catch (err) {
                     setFfmpegOutput('saveToCacheAsync() err=' + err);
                   }
@@ -78,14 +90,11 @@ export default function App(): JSX.Element {
                 className="ml-auto"
                 onClick={async () => {
                   try {
-                    const result = await theStimSequence.buildFromCache(
-                      640,
-                      400,
-                      30
-                    );
+                    const result =
+                      await theStimSequence.buildFromCacheAsync(displayKey);
                     setFfmpegOutput(result);
                   } catch (err) {
-                    setFfmpegOutput('buildFromCache err=' + err);
+                    setFfmpegOutput('buildFromCacheAsync err=' + err);
                   }
                 }}
               >
@@ -120,24 +129,29 @@ export default function App(): JSX.Element {
   );
 }
 
-const ResolutionDropdown = () => {
-  const [resolution, setResolution] = useState('640x480');
+function DisplaysDropdown(props: {
+  initialValue: DisplayKey;
+  onChange: (value: DisplayKey) => void;
+}) {
+  const [selectedValue, setSelectedValue] = useState(props.initialValue);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setResolution(e.target.value);
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = event.target.value;
+    setSelectedValue(DisplayKey[newValue]);
+    props.onChange(DisplayKey[newValue]);
   };
 
   return (
-    <div className="flex flex-row gap-0">
-      <label className="text-gray-500">Resolution:&nbsp;</label>
-      <select
-        value={resolution}
-        onChange={handleChange}
-        className="px-2 text-black rounded-sm bg-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-      >
-        <option value="640x480">640 x 480</option>
-        <option value="1140x912">1140 x 912</option>
-      </select>
-    </div>
+    <select
+      value={selectedValue}
+      onChange={handleChange}
+      className="px-2 text-black rounded-sm bg-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+    >
+      {Object.entries(displays).map(([key, displayProps]) => (
+        <option key={key} value={key}>
+          {key} ({displayProps.width}x{displayProps.height} {displayProps.fps}fps)
+        </option>
+      ))}
+    </select>
   );
-};
+}

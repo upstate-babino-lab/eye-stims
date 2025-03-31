@@ -9,8 +9,9 @@ import * as fs from 'fs';
 import * as wav from 'node-wav';
 import * as path from 'path';
 
+type DTMF = { tone: string; f1: number; f2: number };
 // DTMF frequencies (Hz) and tone names
-const dtmfTones: { tone: string; f1: number; f2: number }[] = [
+const dtmfTones: DTMF[] = [
   { tone: '1', f1: 697, f2: 1209 },
   { tone: '2', f1: 697, f2: 1336 },
   { tone: '3', f1: 697, f2: 1477 },
@@ -29,14 +30,15 @@ const dtmfTones: { tone: string; f1: number; f2: number }[] = [
   { tone: 'D', f1: 941, f2: 1633 },
 ];
 
-function toneFilename(toneObj) {
+function toneFilename(toneObj: DTMF) {
   return `dtmf-${toneObj.tone}.wav`;
 }
 export function toneFilenames(): string[] {
-  return dtmfTones.map((tObj) => toneFilename(tObj));
+  return dtmfTones.map((tObj: DTMF) => toneFilename(tObj));
 }
 const sampleRate = 44100; // Samples per second
 const durationMs = 200; // Duration in milliseconds. Peak amplitude at half
+export const PEAK_OFFSET_MS = durationMs / 2;
 const numSamples = (sampleRate * durationMs) / 1000;
 
 function generateDTMFSineWave(frequency1: number, frequency2: number): number[] {
@@ -60,6 +62,10 @@ async function createWavFileAsync(
   samples: number[],
   filename: string
 ): Promise<void> {
+  // See plot-tone-amplitude.py
+  // We want centered peak to be a bit more than 50 milliseconds wide
+  // to ensure accurate positioning at any threshold and enough duration
+  // to reliably identify the DTMF
   const scaledSamples = samples.map(
     (s, i) => s * 0.5 * Math.sin((i / (samples.length - 1)) * Math.PI) ** 4
   );

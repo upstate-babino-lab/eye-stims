@@ -3,10 +3,12 @@ import ffmpegPath from 'ffmpeg-static';
 import { cacheDir, ensureCacheDirAsync } from './ipc';
 import { writeFile as writeFileAsync } from 'fs/promises';
 import * as path from 'path';
+import { PEAK_OFFSET_MS } from '../../tools/generate-tones';
+import { DisplayKey, displays } from '../displays';
 
-export async function spawnFfmpegAsync(args: string[]) {
+export async function spawnFfmpegAsync(args: string[]): Promise<string> {
   const startTime = new Date().getTime();
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     if (!ffmpegPath) {
       reject('ffmpegPath not found');
       return;
@@ -40,10 +42,10 @@ export async function spawnFfmpegAsync(args: string[]) {
       console.error(
         `>>>>> ffmpeg exited after ${(elapsedTime / 1000).toFixed(2)} seconds =` +
           `${(elapsedTime / 60000).toFixed(2)} minutes ` +
-          `with code=${code} stdOutput=${stdOutput}`
+          `with code=${code} stdOutput=${stdOutput} stdOutput.length=${stdOutput.length}`
       );
       if (code === 0) {
-        resolve(stdOutput);
+        resolve(stdOutput || 'Success');
       } else {
         reject(`ffmpeg exited with error code ${code}: ${errorOutput}`);
       }
@@ -52,10 +54,12 @@ export async function spawnFfmpegAsync(args: string[]) {
 }
 
 export async function buildFromCacheAsync(
+  displayKey: DisplayKey,
   inputFilenames: string[],
   startTimes: number[],
   outputFilename: string
-) {
+): Promise<string> {
+  const displayProps = displays[displayKey];
   await ensureCacheDirAsync();
   // TODO: make unique name to allow more than one call to ffmpeg
   const inputListFilename: string = 'input-list.txt';
@@ -73,13 +77,14 @@ export async function buildFromCacheAsync(
     '-i', inputListFilename,
     '-i', audioFilename,
     '-c', 'copy', // copy the streams directly without re-encoding
-    //'-r', '30',
+    '-r', displayProps.fps.toString(),
+    '-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
     '-y', // Force overwrite and avoid y/N prompt
     outputFilename,
   ];
   //args = ['-version'];
-  await spawnFfmpegAsync(args);
+  return await spawnFfmpegAsync(args);
 }
 
 // Returns name of generated audio file
@@ -88,11 +93,10 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
   const audioFilename = 'audio.mp4';
 
   // Create delayed audio instances
-  // TODO: import offset from start to center from generate-tones.ts
   const filterComplex: string[] = startTimes
     .filter((st) => st >= 0.1)
     .map((st, i) => {
-      const delay = Math.round(st * 1000) - 100; // Center/peak of tone offset
+      const delay = Math.round(st * 1000) - PEAK_OFFSET_MS; // Center/peak of tone offset
       return `[0:a] adelay=${delay}|${delay} [a${i}];`;
     });
 
@@ -101,7 +105,10 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
     { length: filterComplex.length },
     (_, i) => `[a${i}]`
   ).join('');
-  filterComplex.push(`${amixInputs} amix=inputs=${filterComplex.length} [mixed]`);
+  filterComplex.push(`${amixInputs} amix=inputs=${filterComplex.length} [mixed];`);
+  filterComplex.push(
+    '[mixed]pan=stereo|FL=1.0*c0+0.0*c1|FR=0.0*c0+0.0*c1[left_stereo]'
+  );
 
   // Write filter complex to a text file
   await writeFileAsync(filterComplexFilename, filterComplex.join('\n'));
@@ -111,8 +118,8 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
   const args = [
       '-i', 'dtmf-0.wav',
       '-filter_complex_script', filterComplexFilename,
-      '-map', '[mixed]',
-      '-c:a', 'libopus',
+      '-map', '[left_stereo]',
+      '-c:a', 'libmp3lame', // 'libopus',
       '-y', 
       audioFilename,
     ];

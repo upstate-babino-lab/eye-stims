@@ -17,6 +17,7 @@
     "stims",
     "toannexb",
     "unhashed",
-    "vite"
+    "vite",
+    "vsync"
   ]
 }

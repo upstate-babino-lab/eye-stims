@@ -1,5 +1,6 @@
 import { Stimulus } from './Stimulus';
 import { Encoder } from './Encoder';
+import { DisplayKey } from '../../displays';
 
 export default class StimSequence {
   fileBasename: string = '';
@@ -38,22 +39,24 @@ export default class StimSequence {
     return total;
   }
 
-  async saveToCacheAsync(width: number, height: number, fps: number) {
+  async saveToCacheAsync(displayKey: DisplayKey) {
     for (let iStim = 0; iStim < this.stimuli.length; iStim++) {
       const stimulus = this.stimuli[iStim];
-      await stimulus.saveToCacheAsync(width, height, fps);
+      await stimulus.saveToCacheAsync(displayKey);
     }
     // TODO: Use limited parallelism -- ideally based on number of CPUs
+    // Perhaps WebWorkers are the way?
     /*
     await Promise.all(
-      this.stimuli.map((stimulus) => stimulus.saveToCacheAsync(width, height, fps))
+      this.stimuli.map((stimulus) => stimulus.saveToCacheAsync(displayKey))
     );
     */
   }
 
-  async buildFromCache(width: number, height: number, fps: number) {
-    await this.saveToCacheAsync(width, height, fps);
-    return await window.electron.buildFromCache(
+  async buildFromCacheAsync(displayKey: DisplayKey) {
+    await this.saveToCacheAsync(displayKey);
+    return await window.electron.buildFromCacheAsync(
+      displayKey,
       this.stimuli.map((stim) => stim.cachedFilename),
       this.startTimes,
       this.fileBasename + '.mp4'
@@ -61,14 +64,12 @@ export default class StimSequence {
   }
 
   async encodeAsync(
-    width: number,
-    height: number,
-    fps: number,
+    displayKey: DisplayKey,
     fileStream?: FileSystemWritableFileStream
   ): Promise<void> {
     this.isEncoding = true;
     try {
-      const encoder = new Encoder(width, height, fps, fileStream);
+      const encoder = new Encoder(displayKey, fileStream);
       const duration = this.duration();
       console.log(`>>>>> Encoding ${this.stimuli.length} stimuli...`);
       const startTime = new Date().getTime();
