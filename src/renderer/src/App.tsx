@@ -10,6 +10,7 @@ const tabLabels = ['Preview', 'Run'];
 export default function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState(tabLabels[0]);
   const { theStimSequence } = useTheStimSequence();
+  const [ffmpegOutput, setFfmpegOutput] = useState<string>('');
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-gray-400 text-sm p-4">
@@ -23,6 +24,7 @@ export default function App(): JSX.Element {
               <div className="bg-gray-950 rounded-md p-2">
                 <div>{theStimSequence.description}&nbsp;</div>
                 <div className="text-gray-500">
+                  {theStimSequence.fileBasename + ' | '}
                   Count: {theStimSequence.stimuli.length + ' | '}
                   Duration: {formatSeconds(theStimSequence.duration())}
                 </div>
@@ -33,7 +35,7 @@ export default function App(): JSX.Element {
         <div className="flex flex-col gap-2 ml-auto">
           <Button
             className="ml-auto"
-            onClick={() => window.electron.send('load-file')}
+            onClick={() => window.electron.send('loadFile')}
           >
             Load
           </Button>
@@ -58,6 +60,38 @@ export default function App(): JSX.Element {
               >
                 Stream to disk .mp4
               </Button>
+
+              <Button
+                className="ml-auto"
+                onClick={async () => {
+                  try {
+                    theStimSequence.saveToCacheAsync(640, 400, 30);
+                  } catch (err) {
+                    setFfmpegOutput('saveToCacheAsync() err=' + err);
+                  }
+                }}
+              >
+                Save to cache
+              </Button>
+
+              <Button
+                className="ml-auto"
+                onClick={async () => {
+                  try {
+                    const result = await theStimSequence.buildFromCache(
+                      640,
+                      400,
+                      30
+                    );
+                    setFfmpegOutput(result);
+                  } catch (err) {
+                    setFfmpegOutput('buildFromCache err=' + err);
+                  }
+                }}
+              >
+                Build
+              </Button>
+              <div>ffmpeg output: {ffmpegOutput}</div>
             </div>
           )}
         </div>

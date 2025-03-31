@@ -9,10 +9,14 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "cSpell.words": [
+    "adelay",
+    "amix",
     "Babino",
     "muxer",
     "Stim",
     "stims",
+    "toannexb",
+    "unhashed",
     "vite"
   ]
 }

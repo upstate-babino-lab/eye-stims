@@ -2,7 +2,7 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './StimSequence';
-import { newStimulus } from './stimulus';
+import { newStimulus } from './Stimulus';
 import { capitalize } from './utilities';
 
 export function StateProvider({ children }: { children: ReactNode }) {
@@ -20,8 +20,10 @@ export function StateProvider({ children }: { children: ReactNode }) {
       const name =
         (parsedContents && parsedContents['name']) || fileNameWithExtension;
       const description = (parsedContents && parsedContents['description']) ?? '';
+      // TODO: Instead of passing in a newStimulus for each, re-use the same object for duplicates
       setTheStimSequence(
         new StimSequence(
+          getBasenameFromString(filePath),
           name,
           description,
           stimulusList.map((s) => newStimulus(s))
@@ -36,7 +38,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
       const content = (
         document.getElementById('file-content') as HTMLTextAreaElement
       ).value;
-      window.electron.send('save-file', { filePath: filePath, content: content });
+      window.electron.send('saveFile', { filePath: filePath, content: content });
     };
 
     // Listen for messages from main process
@@ -80,4 +82,9 @@ function oldStimList2New(old) {
     };
     return newStim;
   });
+}
+
+function getBasenameFromString(filePath: string): string {
+  const baseNameIncludingExtension = filePath.split(/[/\\]/).pop() || '';
+  return baseNameIncludingExtension.replace(/\.[^/.]+$/, '');
 }

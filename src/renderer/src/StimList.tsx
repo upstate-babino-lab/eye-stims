@@ -1,6 +1,6 @@
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window'; // Only render visible items in list
 import AutoSizer from 'react-virtualized-auto-sizer'; // Resizes list when container size changes
-import { Stimulus } from './stimulus';
+import { Stimulus } from './Stimulus';
 import { useTheStimSequence } from './StateContext';
 import { formatSeconds } from './utilities';
 
@@ -56,7 +56,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   const { theStimSequence } = useTheStimSequence();
   const row = data.data[index];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { name, duration, bgColor, ...partial } = row;
+  const { name, duration, bgColor, cachedFilename, ...partial } = row;
   const partialJson = JSON.stringify(partial);
 
   return (
@@ -67,7 +67,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
     >
       <div className={CELL_FORMAT}>{index}</div>
       <div className="min-w-30 p-0.5 text-left">
-        {formatSeconds(theStimSequence ? theStimSequence.times[index] : 0)}
+        {formatSeconds(theStimSequence ? theStimSequence.startTimes[index] : 0)}
       </div>
       <div className={CELL_FORMAT}>{row.name}</div>
       <div className={CELL_FORMAT}>{row.duration.toFixed(2)}</div>

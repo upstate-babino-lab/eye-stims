@@ -19,4 +19,28 @@ contextBridge.exposeInMainWorld('electron', {
   removeListener: (channel: string, callback: (...args: any[]) => void) => {
     ipcRenderer.removeListener(channel, callback);
   },
+  runFfmpeg: (args: string[]) => {
+    return ipcRenderer.invoke('runFfmpeg', args);
+  },
+  buildFromCache: (
+    stimFilenames: string[],
+    startTimes: number[],
+    outputFilename: string
+  ): Promise<string> => {
+    return ipcRenderer.invoke(
+      'buildFromCache',
+      stimFilenames,
+      startTimes,
+      outputFilename
+    );
+  },
+  saveBufferToCache: (buffer: ArrayBuffer, filename: string) => {
+    return ipcRenderer.invoke('saveBufferToCache', buffer, filename);
+  },
+  readFromCache: (filename: string) => {
+    return ipcRenderer.invoke('readFromCache', filename);
+  },
+  isCached: (filename: string) => {
+    return ipcRenderer.invoke('isCached', filename);
+  },
 });

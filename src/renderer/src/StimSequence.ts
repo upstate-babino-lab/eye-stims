@@ -1,15 +1,22 @@
-import { Stimulus } from './stimulus';
+import { Stimulus } from './Stimulus';
 import { Encoder } from './Encoder';
 
 export default class StimSequence {
+  fileBasename: string = '';
   name: string = 'Uninitialized StimSequence';
   readonly description: string = '';
   readonly stimuli: Stimulus[] = [];
-  times: number[] = []; // Seconds into sequence
+  startTimes: number[] = []; // Seconds into sequence
   private cachedDuration: number = -1;
   isEncoding: boolean = false;
 
-  constructor(name?: string, description?: string, stimuli?: Stimulus[]) {
+  constructor(
+    fileBasename?: string,
+    name?: string,
+    description?: string,
+    stimuli?: Stimulus[]
+  ) {
+    this.fileBasename = fileBasename ?? this.fileBasename;
     this.name = name ?? this.name;
     this.description = description ?? this.description;
     this.stimuli = stimuli ?? this.stimuli;
@@ -20,23 +27,38 @@ export default class StimSequence {
     if (this.cachedDuration >= 0) {
       return this.cachedDuration;
     }
-    this.times = new Array(this.stimuli.length);
+    this.startTimes = new Array(this.stimuli.length);
     const total = this.stimuli
       .map((s) => s.duration)
       .reduce((accumulator, currentValue, currentIndex) => {
-        this.times[currentIndex] = accumulator;
+        this.startTimes[currentIndex] = accumulator;
         return accumulator + currentValue;
       }, 0);
     this.cachedDuration = total;
     return total;
   }
 
-  /* TODO?
-Cache encoded stim videos in files cache directory (possible to cache in memory?)
-import { app } from "electron";
-import path from "path";
-const cacheDir = path.join(app.getPath("userData"), "cache");
-*/
+  async saveToCacheAsync(width: number, height: number, fps: number) {
+    for (let iStim = 0; iStim < this.stimuli.length; iStim++) {
+      const stimulus = this.stimuli[iStim];
+      await stimulus.saveToCacheAsync(width, height, fps);
+    }
+    // TODO: Use limited parallelism -- ideally based on number of CPUs
+    /*
+    await Promise.all(
+      this.stimuli.map((stimulus) => stimulus.saveToCacheAsync(width, height, fps))
+    );
+    */
+  }
+
+  async buildFromCache(width: number, height: number, fps: number) {
+    await this.saveToCacheAsync(width, height, fps);
+    return await window.electron.buildFromCache(
+      this.stimuli.map((stim) => stim.cachedFilename),
+      this.startTimes,
+      this.fileBasename + '.mp4'
+    );
+  }
 
   async encodeAsync(
     width: number,
@@ -46,7 +68,7 @@ const cacheDir = path.join(app.getPath("userData"), "cache");
   ): Promise<void> {
     this.isEncoding = true;
     try {
-      const videoState = new Encoder(width, height, fps, fileStream);
+      const encoder = new Encoder(width, height, fps, fileStream);
       const duration = this.duration();
       console.log(`>>>>> Encoding ${this.stimuli.length} stimuli...`);
       const startTime = new Date().getTime();
@@ -54,17 +76,12 @@ const cacheDir = path.join(app.getPath("userData"), "cache");
       let elapsedMinutes = 0;
       for (let iStim = 0; iStim < this.stimuli.length; iStim++) {
         const stimulus = this.stimuli[iStim];
-        const nFrames = stimulus.duration * videoState.fps;
-        for (let iFrame = 0; iFrame < nFrames; iFrame++) {
-          const age = iFrame && iFrame / videoState.fps;
-          stimulus.renderFrame(videoState.ctx, age);
-          videoState.encodeOneFrame();
-        }
+        stimulus.encode(encoder);
         encodedSecondsSoFar += stimulus.duration;
         const secondsRemainingToEncode = duration - encodedSecondsSoFar;
         if ((iStim && iStim % 200 === 0) || iStim >= this.stimuli.length) {
           // Periodically flush and log
-          await videoState.videoEncoder.flush();
+          await encoder.videoEncoder.flush();
           const nowTime = new Date().getTime();
           elapsedMinutes = (nowTime - startTime) / (1000 * 60);
           const speed = Math.round(encodedSecondsSoFar / (elapsedMinutes * 60));
@@ -80,8 +97,8 @@ const cacheDir = path.join(app.getPath("userData"), "cache");
         }
       }
       // All done
-      await videoState.videoEncoder.flush();
-      videoState.muxer.finalize();
+      await encoder.videoEncoder.flush();
+      encoder.muxer.finalize();
       if (fileStream) {
         await fileStream.close();
       }

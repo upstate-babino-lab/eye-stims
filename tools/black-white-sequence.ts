@@ -5,7 +5,7 @@
 // Then as follows:
 // npx ts-node sequence-builder.ts foo 50000 > stim-50000.jsonl
 
-import { Bar } from '../src/renderer/src/Stimulus';
+import { Solid } from '../src/renderer/src/Stimulus';
 
 //console.error(JSON.stringify(process.argv));
 if (process.argv.length < 3) {
@@ -17,7 +17,7 @@ const nStimuli = +process.argv[3];
 const stimuli = new Array(nStimuli);
 
 for (let i = 0; i < nStimuli; i++) {
-  const stim = new Bar();
+  const stim = new Solid({ bgColor: i % 2 ? 'black' : 'white' });
   stimuli[i] = stim;
 }
 console.log(
