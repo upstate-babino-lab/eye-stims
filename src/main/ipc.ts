@@ -1,6 +1,6 @@
 import { ipcMain, app } from 'electron';
 import { loadFileDialogAsync, saveFileDialogAsync } from './menu';
-import { mkdir, writeFile, readFile, access, rm } from 'fs/promises';
+import { mkdir, writeFile, readFile, access, rm } from 'fs/promises'; // TODO: import as mkdirAsync, etc.
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -96,7 +96,7 @@ export function setupIpcHandlers() {
           cacheDir,
           hashFilename(unhashedFilename)
         );
-        console.log(`>>>>> filePath=${filePath}`);
+        // console.log(`>>>>> filePath=${filePath}`);
         await writeFile(filePath, Buffer.from(buffer));
         return filePath; // Return saved file path
       } catch (error) {

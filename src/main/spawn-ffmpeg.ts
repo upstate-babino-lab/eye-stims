@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
 import { cacheDir, ensureCacheDirAsync } from './ipc';
-import { writeFile } from 'fs/promises';
+import { writeFile as writeFileAsync } from 'fs/promises';
 import * as path from 'path';
 
 export async function spawnFfmpegAsync(args: string[]) {
@@ -62,7 +62,7 @@ export async function buildFromCacheAsync(
   const fileList: string = inputFilenames
     .map((name) => `file '${name}'`)
     .join('\n');
-  await writeFile(path.join(cacheDir, inputListFilename), fileList, 'utf-8');
+  await writeFileAsync(path.join(cacheDir, inputListFilename), fileList, 'utf-8');
 
   const audioFilename = await generateAudioFile(startTimes);
   /* prettier-ignore */
@@ -104,7 +104,7 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
   filterComplex.push(`${amixInputs} amix=inputs=${filterComplex.length} [mixed]`);
 
   // Write filter complex to a text file
-  writeFile(filterComplexFilename, filterComplex.join('\n'));
+  await writeFileAsync(filterComplexFilename, filterComplex.join('\n'));
   console.log(`>>>>> filterComplex written to ${filterComplexFilename}`);
 
   /* prettier-ignore */

@@ -3,7 +3,7 @@ import * as Mp4Muxer from 'mp4-muxer';
 // See https://dmnsgn.github.io/media-codecs for list of codecs that browser supports
 // TODO: Try vp8 because it's supposed to be faster
 const CODEC_BASE = 'avc'; // "avc1" | "hevc" | "vp9" | "av1"
-const CODEC = CODEC_BASE + '1.42001f'; // avc1.42001f | avc1.4d401f | avc1.64001f
+const CODEC = CODEC_BASE + '1.64001f'; // avc1.42001f | avc1.4d401f | avc1.64001f
 /*
 avc1.42001f: Baseline, no B-frames, low complexity, streaming, resolutions up to 1280x720 at 30fps.
 avc1.4d401f: Main, better compression, Level 4.0 resolutions up to 1920x1080 at 30fps.
