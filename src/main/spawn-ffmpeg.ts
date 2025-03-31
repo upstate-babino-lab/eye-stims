@@ -3,6 +3,7 @@ import ffmpegPath from 'ffmpeg-static';
 import { cacheDir, ensureCacheDirAsync } from './ipc';
 import { writeFile as writeFileAsync } from 'fs/promises';
 import * as path from 'path';
+import { PEAK_OFFSET_MS } from '../../tools/generate-tones';
 
 export async function spawnFfmpegAsync(args: string[]) {
   const startTime = new Date().getTime();
@@ -73,7 +74,8 @@ export async function buildFromCacheAsync(
     '-i', inputListFilename,
     '-i', audioFilename,
     '-c', 'copy', // copy the streams directly without re-encoding
-    //'-r', '30',
+    '-r', '30', // TODO: use fps parameter
+    '-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
     '-y', // Force overwrite and avoid y/N prompt
     outputFilename,
@@ -88,11 +90,10 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
   const audioFilename = 'audio.mp4';
 
   // Create delayed audio instances
-  // TODO: import offset from start to center from generate-tones.ts
   const filterComplex: string[] = startTimes
     .filter((st) => st >= 0.1)
     .map((st, i) => {
-      const delay = Math.round(st * 1000) - 100; // Center/peak of tone offset
+      const delay = Math.round(st * 1000) - PEAK_OFFSET_MS; // Center/peak of tone offset
       return `[0:a] adelay=${delay}|${delay} [a${i}];`;
     });
 
@@ -101,7 +102,10 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
     { length: filterComplex.length },
     (_, i) => `[a${i}]`
   ).join('');
-  filterComplex.push(`${amixInputs} amix=inputs=${filterComplex.length} [mixed]`);
+  filterComplex.push(`${amixInputs} amix=inputs=${filterComplex.length} [mixed];`);
+  filterComplex.push(
+    '[mixed]pan=stereo|FL=1.0*c0+0.0*c1|FR=0.0*c0+0.0*c1[left_stereo]'
+  );
 
   // Write filter complex to a text file
   await writeFileAsync(filterComplexFilename, filterComplex.join('\n'));
@@ -111,8 +115,8 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
   const args = [
       '-i', 'dtmf-0.wav',
       '-filter_complex_script', filterComplexFilename,
-      '-map', '[mixed]',
-      '-c:a', 'libopus',
+      '-map', '[left_stereo]',
+      '-c:a', 'libmp3lame', // 'libopus',
       '-y', 
       audioFilename,
     ];
