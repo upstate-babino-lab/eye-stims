@@ -24,7 +24,7 @@ const dtmfTones: DTMF[] = [
   { tone: '8', f1: 852, f2: 1336 },
   { tone: '9', f1: 852, f2: 1477 },
   { tone: 'C', f1: 852, f2: 1633 },
-  { tone: '*', f1: 941, f2: 1209 },
+  { tone: 'x', f1: 941, f2: 1209 }, // Because '*' is not valid filename character in Windows
   { tone: '0', f1: 941, f2: 1336 },
   { tone: '#', f1: 941, f2: 1477 },
   { tone: 'D', f1: 941, f2: 1633 },
