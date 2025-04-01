@@ -90,9 +90,9 @@ export default function App(): JSX.Element {
                 className="ml-auto"
                 onClick={async () => {
                   try {
-                    const result =
+                    const resultMessage =
                       await theStimSequence.buildFromCacheAsync(displayKey);
-                    setFfmpegOutput(result);
+                    setFfmpegOutput(resultMessage);
                   } catch (err) {
                     setFfmpegOutput('buildFromCacheAsync err=' + err);
                   }

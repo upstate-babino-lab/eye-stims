@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 import ffmpegPath from 'ffmpeg-static';
-import { cacheDir, ensureCacheDirAsync } from './ipc';
+import { stimsCacheDir, ensureCacheDirAsync } from './ipc';
 import { writeFile as writeFileAsync } from 'fs/promises';
 import * as path from 'path';
 import { PEAK_OFFSET_MS } from '../../tools/generate-tones';
@@ -14,8 +14,8 @@ export async function spawnFfmpegAsync(args: string[]): Promise<string> {
       return;
     }
 
-    console.log(`>>>>> cd ${cacheDir}\n>>>>> ffmpeg ` + args.join(' '));
-    const ffmpegProcess = spawn(ffmpegPath, args, { cwd: cacheDir });
+    console.log(`>>>>> cd ${stimsCacheDir}\n>>>>> ffmpeg ` + args.join(' '));
+    const ffmpegProcess = spawn(ffmpegPath, args, { cwd: stimsCacheDir });
 
     let stdOutput: string = '';
     let errorOutput: string = '';
@@ -57,7 +57,7 @@ export async function buildFromCacheAsync(
   displayKey: DisplayKey,
   inputFilenames: string[],
   startTimes: number[],
-  outputFilename: string
+  outputPath: string
 ): Promise<string> {
   const displayProps = displays[displayKey];
   await ensureCacheDirAsync();
@@ -66,7 +66,11 @@ export async function buildFromCacheAsync(
   const fileList: string = inputFilenames
     .map((name) => `file '${name}'`)
     .join('\n');
-  await writeFileAsync(path.join(cacheDir, inputListFilename), fileList, 'utf-8');
+  await writeFileAsync(
+    path.join(stimsCacheDir, inputListFilename),
+    fileList,
+    'utf-8'
+  );
 
   const audioFilename = await generateAudioFile(startTimes);
   /* prettier-ignore */
@@ -81,7 +85,7 @@ export async function buildFromCacheAsync(
     '-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
     '-y', // Force overwrite and avoid y/N prompt
-    outputFilename,
+    outputPath,
   ];
   //args = ['-version'];
   return await spawnFfmpegAsync(args);
@@ -89,8 +93,7 @@ export async function buildFromCacheAsync(
 
 // Returns name of generated audio file
 async function generateAudioFile(startTimes: number[]): Promise<string> {
-  const filterComplexFilename = path.join(cacheDir, 'filter-complex.txt');
-  const audioFilename = 'audio.mp4';
+  const filterComplexFilename = path.join(stimsCacheDir, 'filter-complex.txt');
 
   // Create delayed audio instances
   const filterComplex: string[] = startTimes
@@ -114,15 +117,16 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
   await writeFileAsync(filterComplexFilename, filterComplex.join('\n'));
   console.log(`>>>>> filterComplex written to ${filterComplexFilename}`);
 
+  const AUDIO_FILENAME = 'audio.m4a'; //.m4a for aac
   /* prettier-ignore */
   const args = [
       '-i', 'dtmf-0.wav',
       '-filter_complex_script', filterComplexFilename,
       '-map', '[left_stereo]',
-      '-c:a', 'libmp3lame', // 'libopus',
+      '-c:a', 'aac', // 'libmp3lame', // 'libopus',
       '-y', 
-      audioFilename,
+      AUDIO_FILENAME,
     ];
   await spawnFfmpegAsync(args);
-  return audioFilename;
+  return AUDIO_FILENAME;
 }

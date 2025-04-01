@@ -33,7 +33,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
 
     const handleSaveRequest = (filePath: string): void => {
       console.log(
-        `>>>>> renderer StateProvider got 'request-file-to-save' from main`
+        `>>>>> renderer StateProvider got 'request-file-to-save' from main. Will save HTML 'file-content'`
       );
       const content = (
         document.getElementById('file-content') as HTMLTextAreaElement
@@ -45,7 +45,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
     window.electron.on('file-loaded', handleFileLoaded);
     window.electron.on('request-file-to-save', handleSaveRequest);
 
-    // Clean up listener when component unmounts
+    // Clean up listeners when component unmounts
     return () => {
       window.electron.removeListener('file-loaded', handleFileLoaded);
       window.electron.removeListener('request-file-to-save', handleFileLoaded);

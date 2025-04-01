@@ -11,7 +11,7 @@ export interface ElectronAPI {
     displayKey: DisplayKey,
     stimFilenames: string[],
     startTimes: number[],
-    outputFilename: string
+    suggestedFilename: string
   ) => Promise<string>;
   saveBufferToCache: (buffer: ArrayBuffer, filename: string) => Promise<string>;
   readFromCache: (filename: string) => Promise<ArrayBuffer>;
