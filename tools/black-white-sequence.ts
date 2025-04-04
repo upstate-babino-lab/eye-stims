@@ -3,7 +3,7 @@
 // Make sure ts-node is installed
 // $ npm install -g ts-node
 // Then as follows:
-// npx ts-node sequence-builder.ts foo 50000 > stim-50000.jsonl
+// npx ts-node black-white-sequence.ts foo 50000 > stim-50000.jsonl
 
 import { Solid } from '../src/renderer/src/Stimulus';
 

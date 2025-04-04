@@ -94,6 +94,8 @@ export async function buildFromCacheAsync(
 // Returns name of generated audio file
 async function generateAudioFile(startTimes: number[]): Promise<string> {
   const filterComplexFilename = path.join(stimsCacheDir, 'filter-complex.txt');
+  const FILTER_PRE1 = '[mixed]';
+  const FILTER_OUTPUT = '[left_stereo]'; //'[boosted]';
 
   // Create delayed audio instances
   const filterComplex: string[] = startTimes
@@ -108,9 +110,12 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
     { length: filterComplex.length },
     (_, i) => `[a${i}]`
   ).join('');
-  filterComplex.push(`${amixInputs} amix=inputs=${filterComplex.length} [mixed];`);
   filterComplex.push(
-    '[mixed]pan=stereo|FL=1.0*c0+0.0*c1|FR=0.0*c0+0.0*c1[left_stereo]'
+    `${amixInputs} amix=inputs=${filterComplex.length} ${FILTER_PRE1};`
+  );
+  filterComplex.push(
+    // Left channel boosted, right channel silenced
+    `${FILTER_PRE1}pan=stereo|FL=4.5*c0+0.0*c1|FR=0.0*c0+0.0*c1${FILTER_OUTPUT};`
   );
 
   // Write filter complex to a text file
@@ -122,7 +127,7 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
   const args = [
       '-i', 'dtmf-0.wav',
       '-filter_complex_script', filterComplexFilename,
-      '-map', '[left_stereo]',
+      '-map', FILTER_OUTPUT,
       '-c:a', 'aac', // 'libmp3lame', // 'libopus',
       '-y', 
       AUDIO_FILENAME,
