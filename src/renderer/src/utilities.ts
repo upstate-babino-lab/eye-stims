@@ -30,3 +30,41 @@ export function downloadBlob(blob: Blob, filename: string) {
   document.body.removeChild(a);
   window.URL.revokeObjectURL(url);
 }
+
+export function stableStringify(obj: unknown, skipPrivate = true): string {
+  if (Array.isArray(obj)) {
+    return `[${obj.map((item) => stableStringify(item, skipPrivate)).join(',')}]`;
+  } else if (obj && typeof obj === 'object') {
+    const keys = Object.keys(obj)
+      .filter((key) => !skipPrivate || !key.startsWith('_')) // Exclude private
+      .sort();
+
+    const entries = keys.map(
+      (key) => `${JSON.stringify(key)}:${stableStringify(obj[key], skipPrivate)}`
+    );
+
+    return `{${entries.join(',')}}`;
+  } else {
+    return JSON.stringify(obj);
+  }
+}
+
+export function deepDedupeByJson<T>(arr: T[]): T[] {
+  const map = new Map<string, T>();
+  const result: T[] = [];
+
+  for (const obj of arr) {
+    const json = stableStringify(obj);
+    if (!map.has(json)) {
+      map.set(json, obj);
+    }
+    const dedupedObj = map.get(json);
+    if (!dedupedObj) {
+      throw new Error('dedupedObj should not be null');
+    }
+    if (dedupedObj) {
+      result.push(dedupedObj);
+    }
+  }
+  return result;
+}

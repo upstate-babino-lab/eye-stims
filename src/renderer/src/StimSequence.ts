@@ -1,6 +1,7 @@
 import { Stimulus } from './Stimulus';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../../displays';
+import { deepDedupeByJson } from './utilities';
 
 export default class StimSequence {
   fileBasename: string = '';
@@ -20,7 +21,8 @@ export default class StimSequence {
     this.fileBasename = fileBasename ?? this.fileBasename;
     this.name = name ?? this.name;
     this.description = description ?? this.description;
-    this.stimuli = stimuli ?? this.stimuli;
+    const stims = stimuli ?? this.stimuli;
+    this.stimuli = deepDedupeByJson(stims);
   }
 
   // Calculate total duration AND populate times array in the same loop
@@ -57,7 +59,7 @@ export default class StimSequence {
     await this.saveToCacheAsync(displayKey);
     return await window.electron.buildFromCacheAsync(
       displayKey,
-      this.stimuli.map((stim) => stim.cachedFilename),
+      this.stimuli.map((stim) => stim._cachedFilename),
       this.startTimes,
       this.fileBasename + '.mp4'
     );

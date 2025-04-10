@@ -1,5 +1,6 @@
 import { DisplayKey, displays } from '../../displays';
 import { Encoder } from './Encoder';
+import { stableStringify } from './utilities';
 
 export enum StimTypeName {
   Solid = 'Solid',
@@ -11,7 +12,7 @@ export abstract class Stimulus {
   name: StimTypeName;
   duration: number = 1; // Seconds
   bgColor: string = 'black';
-  cachedFilename: string = '';
+  _cachedFilename: string = '';
 
   constructor(name: StimTypeName, duration?: number, bgColor?: string) {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
@@ -58,11 +59,11 @@ export abstract class Stimulus {
     const displayProps = displays[displayKey];
     const unhashedFilename =
       `${displayProps.width}x${displayProps.height}-${displayProps.fps}` +
-      JSON.stringify(this) +
+      stableStringify(this) +
       '.mp4';
 
-    this.cachedFilename = await window.electron.isCached(unhashedFilename);
-    if (this.cachedFilename) {
+    this._cachedFilename = await window.electron.isCached(unhashedFilename);
+    if (this._cachedFilename) {
       console.log('>>>>> Stim already cached');
       // Nothing more to do
       return;
@@ -75,7 +76,7 @@ export abstract class Stimulus {
         unhashedFilename
       );
       console.log('>>>>> Stim cached at:', path);
-      this.cachedFilename = path;
+      this._cachedFilename = path;
     } catch (error) {
       throw new Error('Stim cache failed: ' + error);
     }
