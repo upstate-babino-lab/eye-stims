@@ -90,20 +90,6 @@ export async function loadFileDialogAsync(mainWindow: BrowserWindow) {
   mainWindow.webContents.send('file-loaded', filePath, parsedContent);
 }
 
-export async function saveFileDialogAsync(
-  outputFilename: string
-): Promise<string> {
-  const result = await dialog.showSaveDialog({
-    title: 'Save File',
-    defaultPath: outputFilename,
-    filters: [{ name: 'Stim videos', extensions: ['mp4'] }],
-  });
-  if (!result.canceled && result.filePath) {
-    return result.filePath;
-  }
-  return '';
-}
-
 //-----------------------------------------------------------------------------
 // Read and parse newline-terminated JSON file streaming it line-by-line
 async function readJsonlFile(filePath: string): Promise<unknown[]> {

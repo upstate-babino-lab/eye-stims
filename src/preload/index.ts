@@ -23,18 +23,22 @@ contextBridge.exposeInMainWorld('electron', {
   runFfmpeg: (args: string[]) => {
     return ipcRenderer.invoke('runFfmpeg', args);
   },
+  showSaveDialog: (
+    options: Electron.SaveDialogOptions
+  ): Promise<Electron.SaveDialogReturnValue> =>
+    ipcRenderer.invoke('showSaveDialog', options),
   buildFromCacheAsync: (
     displayKey: DisplayKey,
     stimFilenames: string[],
     startTimes: number[],
-    suggestedFilename: string
+    outputFullPathname: string
   ): Promise<string> => {
     return ipcRenderer.invoke(
       'buildFromCacheAsync',
       displayKey,
       stimFilenames,
       startTimes,
-      suggestedFilename
+      outputFullPathname
     );
   },
   saveBufferToCache: (buffer: ArrayBuffer, filename: string) => {

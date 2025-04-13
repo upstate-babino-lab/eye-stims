@@ -12,7 +12,7 @@ export abstract class Stimulus {
   name: StimTypeName;
   duration: number = 1; // Seconds
   bgColor: string = 'black';
-  _cachedFilename: string = '';
+  _cachedFilename: string = ''; // Not serialized
 
   constructor(name: StimTypeName, duration?: number, bgColor?: string) {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);

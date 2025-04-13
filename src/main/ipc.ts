@@ -1,5 +1,5 @@
-import { ipcMain, app } from 'electron';
-import { loadFileDialogAsync, saveFileDialogAsync } from './menu';
+import { ipcMain, app, dialog } from 'electron';
+import { loadFileDialogAsync } from './menu';
 import { mkdir, writeFile, readFile, access, rm } from 'fs/promises'; // TODO: import as mkdirAsync, etc.
 import * as crypto from 'crypto';
 import * as path from 'path';
@@ -69,6 +69,11 @@ export function setupIpcHandlers() {
     return await spawnFfmpegAsync(args);
   });
 
+  ipcMain.handle('showSaveDialog', async (_event, options) => {
+    const result = await dialog.showSaveDialog(options);
+    return result;
+  });
+
   ipcMain.handle(
     'buildFromCacheAsync',
     async (
@@ -76,14 +81,12 @@ export function setupIpcHandlers() {
       displayKey: DisplayKey,
       stimFiles: string[],
       startTimes: number[],
-      suggestedFilename: string
+      outputFullPathname: string
     ) => {
       console.log(
-        `>>>>> main got 'buildFromCacheAsync' Awaiting user's outputFilename (with suggestion ${suggestedFilename})`
+        `>>>>> main got 'buildFromCacheAsync' with outputFilename ${outputFullPathname})`
       );
-      ensureCacheDirAsync(); // Can generate audio while user is picking outputFullPathname
-      const outputFullPathname = await saveFileDialogAsync(suggestedFilename);
-      console.error(`>>>>> outputFullPathname=${outputFullPathname}`);
+      await ensureCacheDirAsync();
       return await buildFromCacheAsync(
         displayKey,
         stimFiles,

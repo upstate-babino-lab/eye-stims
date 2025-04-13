@@ -3,14 +3,16 @@ import { Encoder } from './Encoder';
 import { DisplayKey } from '../../displays';
 import { deepDedupeByJson } from './utilities';
 
+type ProgressCallback = (label: string, nDone: number, nTotal: number) => void;
 export default class StimSequence {
   fileBasename: string = '';
   name: string = 'Uninitialized StimSequence';
   readonly description: string = '';
   readonly stimuli: Stimulus[] = [];
   startTimes: number[] = []; // Seconds into sequence
-  private cachedDuration: number = -1;
-  isEncoding: boolean = false;
+  private cachedDuration: number = -1; // Sum of all stimuli durations
+  private cancelSaving: boolean = false; // Set to true to cancel saving
+  private isEncoding: boolean = false;
 
   constructor(
     fileBasename?: string,
@@ -41,11 +43,16 @@ export default class StimSequence {
     return total;
   }
 
-  async saveToCacheAsync(displayKey: DisplayKey) {
-    for (let iStim = 0; iStim < this.stimuli.length; iStim++) {
-      const stimulus = this.stimuli[iStim];
-      await stimulus.saveToCacheAsync(displayKey);
+  async saveToCacheAsync(displayKey: DisplayKey, cbProgress?: ProgressCallback) {
+    this.cancelSaving = false;
+    let intervalId: NodeJS.Timeout | null = null;
+    if (cbProgress) {
+      cbProgress('saveToCache', 0, this.stimuli.length);
+      intervalId = setInterval(() => {
+        cbProgress('saveToCache', this.nCachedStims(), this.stimuli.length);
+      }, 300);
     }
+
     // TODO: Use limited parallelism -- ideally based on number of CPUs
     // Perhaps WebWorkers are the way?
     /*
@@ -53,18 +60,72 @@ export default class StimSequence {
       this.stimuli.map((stimulus) => stimulus.saveToCacheAsync(displayKey))
     );
     */
+    for (let iStim = 0; iStim < this.stimuli.length; iStim++) {
+      if (this.cancelSaving) {
+        console.log('>>>>> saveToCacheAsync() cancelled');
+        break;
+      }
+      const stimulus = this.stimuli[iStim];
+      await stimulus.saveToCacheAsync(displayKey);
+    }
+
+    if (cbProgress) {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+      // Final call to update progress bar
+      cbProgress('saveToCache done', this.nCachedStims(), this.stimuli.length);
+    }
   }
 
-  async buildFromCacheAsync(displayKey: DisplayKey) {
-    await this.saveToCacheAsync(displayKey);
-    return await window.electron.buildFromCacheAsync(
+  nCachedStims(): number {
+    return this.stimuli.filter((stim) => stim._cachedFilename).length;
+  }
+
+  private async saveFileDialogAsync(suggestedFilename: string): Promise<string> {
+    const result = await window.electron.showSaveDialog({
+      title: 'Save File',
+      defaultPath: suggestedFilename,
+      filters: [{ name: 'Stim videos', extensions: ['mp4'] }],
+    });
+    if (result.canceled || !result.filePath) {
+      this.cancelSaving = true;
+      return '';
+    }
+    return result.filePath;
+  }
+
+  async buildFromCacheAsync(
+    displayKey: DisplayKey,
+    cbProgress?: ProgressCallback
+  ) {
+    const [outputFilename] = await Promise.all([
+      this.saveFileDialogAsync(this.fileBasename + '.mp4'),
+      this.saveToCacheAsync(displayKey, cbProgress),
+    ]);
+    if (!outputFilename) {
+      return 'Canceled';
+    }
+    if (cbProgress) {
+      cbProgress('buildFromCache...', 0, this.stimuli.length);
+    }
+    const result = await window.electron.buildFromCacheAsync(
       displayKey,
       this.stimuli.map((stim) => stim._cachedFilename),
       this.startTimes,
-      this.fileBasename + '.mp4'
+      outputFilename
     );
+    if (cbProgress) {
+      cbProgress(
+        `Build saved to ${outputFilename}`,
+        this.stimuli.length,
+        this.stimuli.length
+      );
+    }
+    return result;
   }
 
+  // Streaming encoder no longer used because too slow (not enough parallelism or caching)
   async encodeAsync(
     displayKey: DisplayKey,
     fileStream?: FileSystemWritableFileStream

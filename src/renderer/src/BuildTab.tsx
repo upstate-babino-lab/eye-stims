@@ -9,6 +9,7 @@ export function BuildTab() {
     DisplayKey[Object.keys(displays)[0]]
   );
 
+  const [progress, setProgress] = useState<string>('');
   const [ffmpegOutput, setFfmpegOutput] = useState<string>('');
 
   return (
@@ -45,7 +46,11 @@ export function BuildTab() {
             className=""
             onClick={async () => {
               try {
-                theStimSequence.saveToCacheAsync(displayKey);
+                await theStimSequence.saveToCacheAsync(
+                  displayKey,
+                  (label, nDone, nTotal) =>
+                    setProgress(`${label} ${nDone} / ${nTotal}`)
+                );
               } catch (err) {
                 setFfmpegOutput('saveToCacheAsync() err=' + err);
               }
@@ -58,8 +63,11 @@ export function BuildTab() {
             className=""
             onClick={async () => {
               try {
-                const resultMessage =
-                  await theStimSequence.buildFromCacheAsync(displayKey);
+                const resultMessage = await theStimSequence.buildFromCacheAsync(
+                  displayKey,
+                  (label, nDone, nTotal) =>
+                    setProgress(`${label} ${nDone} / ${nTotal}`)
+                );
                 setFfmpegOutput(resultMessage);
               } catch (err) {
                 setFfmpegOutput('buildFromCacheAsync err=' + err);
@@ -68,6 +76,7 @@ export function BuildTab() {
           >
             Build
           </Button>
+          <div>{progress}</div>
           <div>ffmpeg output: {ffmpegOutput}</div>
         </div>
       )}
