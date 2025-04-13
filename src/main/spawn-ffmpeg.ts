@@ -93,7 +93,7 @@ export async function buildFromCacheAsync(
 
 // Returns name of generated audio file
 async function generateAudioFile(startTimes: number[]): Promise<string> {
-  const filterComplexFilename = path.join(stimsCacheDir, 'filter-complex.txt');
+  const filterComplexFilename = 'filter-complex.txt';
   const FILTER_PRE1 = '[mixed]';
   const FILTER_OUTPUT = '[left_stereo]'; //'[boosted]';
 
@@ -119,8 +119,9 @@ async function generateAudioFile(startTimes: number[]): Promise<string> {
   );
 
   // Write filter complex to a text file
-  await writeFileAsync(filterComplexFilename, filterComplex.join('\n'));
-  console.log(`>>>>> filterComplex written to ${filterComplexFilename}`);
+  const filterComplexPathname = path.join(stimsCacheDir, filterComplexFilename);
+  await writeFileAsync(filterComplexPathname, filterComplex.join('\n'));
+  console.log(`>>>>> filterComplex written to ${filterComplexPathname}`);
 
   const AUDIO_FILENAME = 'audio.m4a'; //.m4a for aac
   /* prettier-ignore */
