@@ -1,4 +1,5 @@
-import { Stimulus } from './Stimulus';
+import { Stimulus } from './Stims/Stimulus';
+import './Stims/StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../../displays';
 import { deepDedupeByJson } from './utilities';

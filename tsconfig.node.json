@@ -4,6 +4,7 @@
     "electron.vite.config.*",
     "src/main/**/*",
     "src/preload/**/*",
+    "src/renderer/src/Stims/Stimulus.ts",
     "tools/*",
     "src/displays.ts"
   ],

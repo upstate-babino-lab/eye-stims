@@ -5,7 +5,7 @@
 // Then as follows:
 // npx ts-node sequence-builder.ts foo 50000 > stim-50000.jsonl
 
-import { Bar } from '../src/renderer/src/Stimulus';
+import { Bar } from '../src/renderer/src/Stims/Stimulus';
 
 //console.error(JSON.stringify(process.argv));
 if (process.argv.length < 3) {

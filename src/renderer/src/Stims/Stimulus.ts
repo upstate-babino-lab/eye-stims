@@ -1,7 +1,3 @@
-import { DisplayKey, displays } from '../../displays';
-import { Encoder } from './Encoder';
-import { stableStringify } from './utilities';
-
 export enum StimTypeName {
   Solid = 'Solid',
   Bar = 'Bar',
@@ -45,43 +41,6 @@ export abstract class Stimulus {
     };
     requestAnimationFrame(animate);
   }
-
-  encode(encoder: Encoder) {
-    const nFrames = this.duration * encoder.fps;
-    for (let iFrame = 0; iFrame < nFrames; iFrame++) {
-      const age = iFrame && iFrame / encoder.fps;
-      this.renderFrame(encoder.ctx, age);
-      encoder.encodeOneFrame();
-    }
-  }
-  /**/
-  async saveToCacheAsync(displayKey: DisplayKey) {
-    const displayProps = displays[displayKey];
-    const unhashedFilename =
-      `${displayProps.width}x${displayProps.height}-${displayProps.fps}` +
-      stableStringify(this) +
-      '.mp4';
-
-    this._cachedFilename = await window.electron.isCached(unhashedFilename);
-    if (this._cachedFilename) {
-      console.log('>>>>> Stim already cached');
-      // Nothing more to do
-      return;
-    }
-    const encoder = new Encoder(displayKey);
-    this.encode(encoder);
-    try {
-      const path = await window.electron.saveBufferToCache(
-        await encoder.getBufferAsync(),
-        unhashedFilename
-      );
-      console.log('>>>>> Stim cached at:', path);
-      this._cachedFilename = path;
-    } catch (error) {
-      throw new Error('Stim cache failed: ' + error);
-    }
-  }
-  /**/
 }
 
 export class Solid extends Stimulus {
