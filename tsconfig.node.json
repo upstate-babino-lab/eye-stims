@@ -4,9 +4,12 @@
     "electron.vite.config.*",
     "src/main/**/*",
     "src/preload/**/*",
-    "src/renderer/src/Stims/Stimulus.ts",
+    "src/renderer/src/Stims/*.ts",
     "tools/*",
     "src/displays.ts"
+  ],
+  "exclude": [
+    "src/renderer/src/Stims/StimulusElectron.ts",
   ],
   "compilerOptions": {
     "composite": true,

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { StimTypeName, Stimulus, stimConstructors } from './Stims/Stimulus';
+import { StimTypeName, Stimulus } from './Stims/Stimulus';
+import { stimConstructors } from './Stims/stimConstructors';
 import Button from './components/Button';
 import InputField from './components/InputField';
 import CloseButton from './components/CloseButton';

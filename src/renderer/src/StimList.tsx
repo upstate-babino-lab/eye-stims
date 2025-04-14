@@ -56,7 +56,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   const { theStimSequence } = useTheStimSequence();
   const row = data.data[index];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { name, duration, bgColor, cachedFilename, ...partial } = row;
+  const { name, duration, bgColor, _cachedFilename, ...partial } = row;
   const partialJson = JSON.stringify(partial);
 
   return (

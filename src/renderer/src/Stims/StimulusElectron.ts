@@ -1,5 +1,5 @@
 /*
-  Extend Stimulus with Electron-specific methods.
+  Extend Stimulus class with Electron-specific methods.
   We do this in separate file so a simple ts-node
   program can import Stimulus without problems.
 
@@ -14,12 +14,12 @@ import { stableStringify } from '../utilities';
 // Extend the interface
 declare module './Stimulus' {
   interface Stimulus {
-    encode(encoder: Encoder);
+    encode(encoder: Encoder): void;
     saveToCacheAsync(displayKey: DisplayKey): void;
   }
 }
 
-Stimulus.prototype.encode = function (encoder: Encoder) {
+Stimulus.prototype.encode = function (encoder: Encoder): void {
   const nFrames = this.duration * encoder.fps;
   for (let iFrame = 0; iFrame < nFrames; iFrame++) {
     const age = iFrame && iFrame / encoder.fps;

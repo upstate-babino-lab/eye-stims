@@ -2,7 +2,7 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './StimSequence';
-import { newStimulus } from './Stims/Stimulus';
+import { newStimulus } from './Stims/stimConstructors';
 import { capitalize } from './utilities';
 
 export function StateProvider({ children }: { children: ReactNode }) {
@@ -20,7 +20,6 @@ export function StateProvider({ children }: { children: ReactNode }) {
       const name =
         (parsedContents && parsedContents['name']) || fileNameWithExtension;
       const description = (parsedContents && parsedContents['description']) ?? '';
-      // TODO: Instead of passing in a newStimulus for each, re-use the same object for duplicates
       setTheStimSequence(
         new StimSequence(
           getBasenameFromString(filePath),

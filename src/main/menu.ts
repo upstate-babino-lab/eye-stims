@@ -14,7 +14,7 @@ export function modifyDefaultMenu(mainWindow: BrowserWindow) {
   defaultMenu.items
     .filter((item) => item.role != 'help')
     .forEach((defaultMenuItem) => {
-      console.log(`>>>>> menuItem.role=${defaultMenuItem.role}`);
+      // console.log(`>>>>> menuItem.role=${defaultMenuItem.role}`);
       if (
         defaultMenuItem.role &&
         defaultMenuItem.role.toLowerCase() == 'filemenu'
