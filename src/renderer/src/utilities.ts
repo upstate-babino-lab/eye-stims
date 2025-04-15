@@ -49,7 +49,9 @@ export function stableStringify(obj: unknown, skipPrivate = true): string {
   }
 }
 
-export function deepDedupeByJson<T>(arr: T[]): T[] {
+// Compare elements JSON stableStringify (not counting _private properties)
+// and ensure duplicates point to the same object
+export function deepDeduplicate<T>(arr: T[]): T[] {
   const map = new Map<string, T>();
   const result: T[] = [];
 
@@ -67,4 +69,9 @@ export function deepDedupeByJson<T>(arr: T[]): T[] {
     }
   }
   return result;
+}
+
+export function logMARtoPx(logMAR: number, pxPerDegree: number): number {
+  const degrees = Math.pow(10, logMAR) / 60;
+  return Math.round(degrees * pxPerDegree);
 }
