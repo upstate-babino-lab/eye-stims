@@ -14,6 +14,7 @@ let ncontrasts = 5;
 let angles = [Math.PI / 4];
 let speed = 100;
 let nsizes = 6;
+
 let startLogMAR = 1.8;
 let logMarStep = 0.2;
 
@@ -38,7 +39,7 @@ function logMARtoPx(logMAR, pxPerDegree = 12.524) {
   return Math.round(degrees * pxPerDegree);
 }
 
-function inverseAngle(angle) {
+function inverseAngle(angle: number) {
   return (angle + Math.PI) % (2 * Math.PI);
 }
 
@@ -63,35 +64,38 @@ for (let size of sizes) {
     for (let colorPair of colors) {
       for (let duration of durations) {
         for (let i = 0; i < repetitions; i++) {
-          // use cohort to maintain balance in analysis
-          cohort = r.uuid();
+          id = r.uuid();
           before = new stims.Solid({ duration: 1, meta: { group: id } });
 
-          id = r.uuid();
-          left = new stims.SinusoidalGrating(
-            duration,
-            colorPair[0],
-            speed,
-            size,
-            angle,
-            colorPair[1],
-            { group: id, cohort: cohort, class: 'FORWARD', block: true }
-          );
-          after = new stims.Wait(r.randi(60, 75) / 60, { group: id, block: true });
+          left = new stims.SinusoidalGrating({
+            duration: duration,
+            bgColor: colorPair[0],
+            speed: speed,
+            width: size,
+            angle: angle,
+            barColor: colorPair[1],
+            meta: { group: id, cohort: cohort, class: 'FORWARD', block: true },
+          });
+          after = new stims.Solid({
+            duration: r.randi(60, 75) / 60,
+            meta: { group: id, block: true },
+          });
           stimuli.push([before, left, after]);
 
           id = r.uuid();
-          meta = { group: id, block: true };
-          right = new stims.SinusoidalGrating(
-            duration,
-            colorPair[0],
-            speed,
-            size,
-            inverseAngle(angle),
-            colorPair[1],
-            { group: id, cohort: cohort, class: 'REVERSE', block: true }
-          );
-          after = new stims.Wait(r.randi(60, 75) / 60, { group: id, block: true });
+          right = new stims.SinusoidalGrating({
+            duration: duration,
+            bgColor: colorPair[0],
+            speed: speed,
+            width: size,
+            angle: inverseAngle(angle),
+            barColor: colorPair[1],
+            meta: { group: id, cohort: cohort, class: 'REVERSE', block: true },
+          });
+          after = new stims.Solid({
+            duration: r.randi(60, 75) / 60,
+            meta: { group: id, block: true },
+          });
           stimuli.push([before, right, after]);
         }
       }
@@ -99,5 +103,5 @@ for (let size of sizes) {
   }
 }
 
-r.shuffle(stimuli); // Shuffle groups of three (each includes before and after)
+r.shuffle(stimuli); // Shuffle groups [before, grating, after ]
 stimuli = stimuli.flat();
