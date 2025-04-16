@@ -1,10 +1,7 @@
 import { StimTypeName, Stimulus } from './Stimulus';
+import { degreesToRadians, diagonalLength } from './stim-utils';
 
-function degreesToRadians(degrees: number): number {
-  return degrees * (Math.PI / 180);
-}
-
-export default class Bar extends Stimulus {
+export class Bar extends Stimulus {
   // TODO: change parameters to match eye-candy
   fgColor: string = 'white';
   speed: number = 100; // pixels per second
@@ -34,12 +31,8 @@ export default class Bar extends Stimulus {
     if (ageSeconds < 0 || ageSeconds > this.duration) {
       return;
     }
-    ctx.fillStyle = this.bgColor;
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    const diagonal = Math.sqrt(
-      ctx.canvas.width * ctx.canvas.width + ctx.canvas.height * ctx.canvas.height
-    );
-    const drawBar = (x: number): void => {
+    const diagonal = diagonalLength(ctx);
+    const draw = (x: number): void => {
       ctx.save();
       // Start with pure background
       ctx.fillStyle = this.bgColor;
@@ -55,7 +48,6 @@ export default class Bar extends Stimulus {
       ctx.restore();
     };
 
-    const barX = Math.round(ageSeconds * this.speed) % ctx.canvas.width;
-    drawBar(barX);
+    draw(Math.round(ageSeconds * this.speed) % ctx.canvas.width);
   }
 }

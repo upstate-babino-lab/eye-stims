@@ -19,13 +19,14 @@ const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
     otherProps.onChange(newString);
   };
 
-  const formatNumberInput = otherProps.formatNumber ? numberFormatter : () => {};
-
+  const formatNumberInput = otherProps.formatNumber ? numberFormatter : () => { };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { formatNumber, ...rest } = otherProps; // To avoid React warning
   switch (valueType) {
     case 'number':
       return (
         <input
-          {...otherProps} // Including key, className, etc.
+          {...rest} // Including key, className, etc.
           type="number"
           value={otherProps.value as number}
           onChange={handleNumber}

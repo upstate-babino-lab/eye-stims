@@ -2,6 +2,7 @@ export enum StimTypeName {
   Uninitialized = 'Uninitialized',
   Solid = 'Solid',
   Bar = 'Bar',
+  SinusoidalGrating = 'SinusoidalGrating',
   // TODO next: grating, letter, checkerboard, wait
 }
 
@@ -9,13 +10,19 @@ export abstract class Stimulus {
   name: StimTypeName;
   duration: number = 1; // Seconds
   bgColor: string = 'black';
-  _cachedFilename: string = ''; // Not serialized
-
-  constructor(name: StimTypeName, duration?: number, bgColor?: string) {
+  meta?: Record<string, unknown> = {};
+  _cachedFilename: string = '';
+  constructor(
+    name: StimTypeName,
+    duration?: number,
+    bgColor?: string,
+    meta?: Record<string, unknown>
+  ) {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
     this.name = name;
     this.duration = duration ?? this.duration;
     this.bgColor = bgColor ?? this.bgColor;
+    this.meta = meta ?? this.meta;
   }
 
   abstract renderFrame(

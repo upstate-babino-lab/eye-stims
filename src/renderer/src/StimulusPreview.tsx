@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { StimTypeName, Stimulus } from './Stims/Stimulus';
-import { stimConstructors } from './Stims/stimConstructors';
+import { StimTypeName, Stimulus } from './stims/Stimulus';
+import { stimConstructors } from './stims/stimConstructors';
 import Button from './components/Button';
 import InputField from './components/InputField';
 import CloseButton from './components/CloseButton';
@@ -92,19 +92,19 @@ function StimForm(props: {
   const formStyle = `${rowStyle} bg-gray-800 focus:outline-blue-500 `;
 
   const stimKeys = Reflect.ownKeys(stimulus) // Subclass and superclass props including symbols
-    .filter((k) => typeof k !== 'symbol');
+    .filter((k) => typeof k !== 'symbol')
+    .filter((k) => k.startsWith('_') === false)
+    .filter((k) => !['name', 'meta'].includes(k));
 
   return (
     <div className="flex flex-row gap-4 text-gray-400">
       <div className="flex flex-col gap-0.5 text-gray-500">
         <div className={`${rowStyle} text-white`}>TypeName:</div>
-        {stimKeys
-          .filter((n) => n !== 'name')
-          .map((propName) => (
-            <div key={propName} className={rowStyle}>
-              {propName + ': '}
-            </div>
-          ))}
+        {stimKeys.map((propName) => (
+          <div key={propName} className={rowStyle}>
+            {propName + ': '}
+          </div>
+        ))}
       </div>
 
       <div className="flex flex-col gap-0.5">
@@ -120,17 +120,15 @@ function StimForm(props: {
           ))}
         </select>
 
-        {stimKeys
-          .filter((n) => n !== 'name')
-          .map((propName) => (
-            <InputField
-              key={propName}
-              value={stimulus[propName]}
-              className={formStyle}
-              formatNumber={propName === 'duration'}
-              onChange={(newValue) => handleStimPropChange(propName, newValue)}
-            />
-          ))}
+        {stimKeys.map((propName) => (
+          <InputField
+            key={propName}
+            value={stimulus[propName]}
+            className={formStyle}
+            formatNumber={propName === 'duration'}
+            onChange={(newValue) => handleStimPropChange(propName, newValue)}
+          />
+        ))}
       </div>
     </div>
   );

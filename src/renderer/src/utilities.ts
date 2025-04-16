@@ -31,6 +31,7 @@ export function downloadBlob(blob: Blob, filename: string) {
   window.URL.revokeObjectURL(url);
 }
 
+// Allows deep comparison of JSON (not counting _private properties)
 export function stableStringify(obj: unknown, skipPrivate = true): string {
   if (Array.isArray(obj)) {
     return `[${obj.map((item) => stableStringify(item, skipPrivate)).join(',')}]`;
@@ -48,6 +49,8 @@ export function stableStringify(obj: unknown, skipPrivate = true): string {
     return JSON.stringify(obj);
   }
 }
+
+/*
 
 // Compare elements JSON stableStringify (not counting _private properties)
 // and ensure duplicates point to the same object
@@ -70,8 +73,4 @@ export function deepDeduplicate<T>(arr: T[]): T[] {
   }
   return result;
 }
-
-export function logMARtoPx(logMAR: number, pxPerDegree: number): number {
-  const degrees = Math.pow(10, logMAR) / 60;
-  return Math.round(degrees * pxPerDegree);
-}
+*/
