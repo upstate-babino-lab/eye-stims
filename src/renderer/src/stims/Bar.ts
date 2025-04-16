@@ -1,12 +1,12 @@
 import { StimTypeName, Stimulus } from './Stimulus';
-import { degreesToRadians, diagonalLength } from './stim-utils';
+import { degreesToRadians, diagonalLength, vminsToPx } from './stim-utils';
 
 export class Bar extends Stimulus {
   // TODO: change parameters to match eye-candy
   fgColor: string = 'white';
-  speed: number = 100; // pixels per second
-  width: number = 100; // pixels
-  angle: number = 0; // degrees
+  width: number = 10; // CSS vmin units (percent of display's smallest side)
+  speed: number = 10; // vmins per second
+  angle: number = 0; // Degrees
 
   constructor({
     duration,
@@ -32,6 +32,7 @@ export class Bar extends Stimulus {
       return;
     }
     const diagonal = diagonalLength(ctx);
+    const barWidth = vminsToPx(this.width, ctx);
     const draw = (x: number): void => {
       ctx.save();
       // Start with pure background
@@ -44,10 +45,10 @@ export class Bar extends Stimulus {
 
       ctx.translate(x - ctx.canvas.width / 2, 0);
       ctx.fillStyle = this.fgColor;
-      ctx.fillRect(-this.width / 2, -diagonal / 2, this.width, diagonal);
+      ctx.fillRect(-barWidth / 2, -diagonal / 2, barWidth, diagonal);
       ctx.restore();
     };
 
-    draw(Math.round(ageSeconds * this.speed) % ctx.canvas.width);
+    draw(Math.round(ageSeconds * vminsToPx(this.speed, ctx)) % ctx.canvas.width);
   }
 }

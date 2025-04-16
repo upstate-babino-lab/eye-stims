@@ -2,8 +2,8 @@ import { StimTypeName, Stimulus } from './Stimulus';
 import { degreesToRadians, diagonalLength } from './stim-utils';
 
 export class SinusoidalGrating extends Stimulus {
-  speed: number = 100; // pixels per second
-  width: number = 100;
+  width: number = 10; // vmins: percent of minimum viewport dimension
+  speed: number = 10; // vmins per second
   angle = 45; // degrees
   barColor = 'white';
   constructor({ duration, bgColor }: Partial<SinusoidalGrating> = {}) {

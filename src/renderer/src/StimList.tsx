@@ -1,6 +1,6 @@
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window'; // Only render visible items in list
 import AutoSizer from 'react-virtualized-auto-sizer'; // Resizes list when container size changes
-import { Stimulus } from './Stims/Stimulus';
+import { Stimulus } from './stims/Stimulus';
 import { useTheStimSequence } from './StateContext';
 import { formatSeconds } from './utilities';
 
@@ -56,7 +56,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   const { theStimSequence } = useTheStimSequence();
   const row = data.data[index];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { name, duration, bgColor, _cachedFilename, ...partial } = row;
+  const { name, duration, bgColor, meta, _cachedFilename, ...partial } = row;
   const partialJson = JSON.stringify(partial);
 
   return (
