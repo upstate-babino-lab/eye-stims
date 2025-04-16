@@ -137,7 +137,7 @@ function StimForm(props: {
 function PreviewCanvas() {
   return (
     <div id="canvas-container" className="grow bg-gray-400 border">
-      <canvas id="preview-canvas" />
+      <canvas id="preview-canvas" className="w-full h-full" />
     </div>
   );
 }
