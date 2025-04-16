@@ -2,7 +2,7 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './StimSequence';
-import { newStimulus } from './Stims/stimConstructors';
+import { newStimulus } from './stims/stimConstructors';
 import { capitalize } from './utilities';
 
 export function StateProvider({ children }: { children: ReactNode }) {
