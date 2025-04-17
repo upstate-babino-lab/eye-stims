@@ -31,24 +31,34 @@ export class Bar extends Stimulus {
     if (ageSeconds < 0 || ageSeconds > this.duration) {
       return;
     }
-    const diagonal = diagonalLength(ctx);
     const barWidth = vminsToPx(this.width, ctx);
-    const draw = (x: number): void => {
+    const diagonal = diagonalLength(ctx) + barWidth / 2;
+    const barLength = diagonal * 2; // Extra to be sure it's long enough
+    const angleRadians = degreesToRadians(this.angle);
+
+    const draw = (offset: number): void => {
       ctx.save();
       // Start with pure background
       ctx.fillStyle = this.bgColor;
       ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-      // Translate to canvas center to ensure rotation happens around the center.
       ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
-      ctx.rotate(degreesToRadians(this.angle));
+      ctx.rotate(angleRadians);
 
-      ctx.translate(x - ctx.canvas.width / 2, 0);
+      // Offset is perpendicular to the bar angle
+      // TODO: offset should be in direction of vmin
+      offset = offset - diagonal / 2; // So bar starts just off screen
+      const offsetX = offset * Math.sin(angleRadians);
+      const offsetY = -offset * Math.cos(angleRadians);
+      ctx.translate(offsetX, offsetY);
+
       ctx.fillStyle = this.fgColor;
-      ctx.fillRect(-barWidth / 2, -diagonal / 2, barWidth, diagonal);
+      //ctx.fillRect(-barWidth / 2, -diagonal, barWidth, diagonal);
+      ctx.fillRect(-barLength / 2, -barWidth / 2, barLength, barWidth);
+
       ctx.restore();
     };
 
-    draw(Math.round(ageSeconds * vminsToPx(this.speed, ctx)) % ctx.canvas.width);
+    draw(Math.round(ageSeconds * vminsToPx(this.speed, ctx)) % (diagonal * 1.1));
   }
 }
