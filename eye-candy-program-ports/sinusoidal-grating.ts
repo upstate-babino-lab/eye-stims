@@ -73,7 +73,7 @@ for (let size of sizes) {
             speed: speed,
             width: size,
             angle: angle,
-            barColor: colorPair[1],
+            fgColor: colorPair[1],
             meta: { group: id, cohort: cohort, class: 'FORWARD', block: true },
           });
           after = new stims.Solid({
@@ -89,7 +89,7 @@ for (let size of sizes) {
             speed: speed,
             width: size,
             angle: inverseAngle(angle),
-            barColor: colorPair[1],
+            fgColor: colorPair[1],
             meta: { group: id, cohort: cohort, class: 'REVERSE', block: true },
           });
           after = new stims.Solid({

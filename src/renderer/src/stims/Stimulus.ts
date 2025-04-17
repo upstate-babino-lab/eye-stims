@@ -8,7 +8,7 @@ export enum StimTypeName {
 
 export abstract class Stimulus {
   name: StimTypeName;
-  duration: number = 1; // Seconds
+  duration: number = 10; // Seconds
   bgColor: string = 'black';
   meta?: Record<string, unknown> = {};
   _cachedFilename: string = '';

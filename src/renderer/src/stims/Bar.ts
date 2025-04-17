@@ -36,24 +36,23 @@ export class Bar extends Stimulus {
     const barLength = diagonal * 2; // Extra to be sure it's long enough
     const angleRadians = degreesToRadians(this.angle);
 
-    const draw = (offset: number): void => {
+    const draw = (pxOffset: number): void => {
       ctx.save();
       // Start with pure background
       ctx.fillStyle = this.bgColor;
       ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-      ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
-      ctx.rotate(angleRadians);
+      ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2); // Origin to center
+      ctx.rotate(angleRadians); // Rotate around origin
 
       // Offset is perpendicular to the bar angle
-      // TODO: offset should be in direction of vmin
-      offset = offset - diagonal / 2; // So bar starts just off screen
-      const offsetX = offset * Math.sin(angleRadians);
-      const offsetY = -offset * Math.cos(angleRadians);
+      pxOffset = pxOffset - diagonal / 2; // So bar starts just off screen
+      const offsetX = pxOffset * Math.sin(angleRadians);
+      const offsetY = -pxOffset * Math.cos(angleRadians);
       ctx.translate(offsetX, offsetY);
 
       ctx.fillStyle = this.fgColor;
-      //ctx.fillRect(-barWidth / 2, -diagonal, barWidth, diagonal);
+      // Rectangle centered on origin
       ctx.fillRect(-barLength / 2, -barWidth / 2, barLength, barWidth);
 
       ctx.restore();
