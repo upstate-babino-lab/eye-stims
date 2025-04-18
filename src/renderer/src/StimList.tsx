@@ -6,7 +6,7 @@ import { formatSeconds } from './utilities';
 
 const ROW_HEIGHT = 30;
 const CELL_FORMAT = 'min-w-20 p-0.5 text-left';
-const TYPE_FORMAT = CELL_FORMAT + ' w-25'; // Typename column a bit wider
+const TYPE_FORMAT = CELL_FORMAT + ' min-w-25'; // Typename column a bit wider
 
 const StimList = ({
   data,
