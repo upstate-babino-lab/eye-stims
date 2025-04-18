@@ -26,11 +26,13 @@ export class Grating extends Stimulus {
     width,
     angle,
   }: Partial<Grating> = {}) {
-    if (gratingType === GratingType.Sinusoidal) {
-      super(StimTypeName.SinusoidalGrating, duration, bgColor);
-    } else {
-      super(StimTypeName.BarGrating, duration, bgColor);
-    }
+    super(
+      gratingType === GratingType.Sinusoidal
+        ? StimTypeName.SinusoidalGrating
+        : StimTypeName.BarGrating,
+      duration,
+      bgColor
+    );
     this.gratingType = gratingType ?? this.gratingType;
     this.fgColor = fgColor ?? this.fgColor;
     this.speed = speed ?? this.speed;

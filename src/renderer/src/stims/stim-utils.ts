@@ -2,13 +2,17 @@ export function degreesToRadians(degrees: number): number {
   return degrees * (Math.PI / 180);
 }
 
-export function vmin(ctx): number {
+export function vmin(
+  ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+): number {
   const width = ctx.canvas.width;
   const height = ctx.canvas.height;
   return Math.min(width, height);
 }
 
-export function vmax(ctx): number {
+export function vmax(
+  ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+): number {
   const width = ctx.canvas.width;
   const height = ctx.canvas.height;
   return Math.max(width, height);
@@ -53,7 +57,7 @@ export function colorToRGB(cssColor: string): { r: number; g: number; b: number 
   };
 }
 
-export function rgbToHex(rgb) {
+export function rgbToHex(rgb: { r: number; g: number; b: number }) {
   return (
     '#' + ((1 << 24) + (rgb.r << 16) + (rgb.g << 8) + rgb.b).toString(16).slice(1)
   );

@@ -13,6 +13,7 @@
     "src/renderer/src/stims/StimulusElectron.ts",
   ],
   "compilerOptions": {
+    "target": "es2015",
     "composite": true,
     "types": [
       "electron-vite/node"
