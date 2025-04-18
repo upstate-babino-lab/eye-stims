@@ -20,6 +20,9 @@
     "toannexb",
     "unhashed",
     "vite",
+    "vmax",
+    "vmin",
+    "vmins",
     "vsync"
   ]
 }

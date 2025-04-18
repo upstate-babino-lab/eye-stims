@@ -6,28 +6,32 @@ type InputFieldProps = React.HTMLAttributes<HTMLElement> & {
   onChange: (newValue: unknown) => void;
 };
 
-const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
-  const valueType = typeof otherProps.value;
+const InputField: React.FC<InputFieldProps> = ({
+  value,
+  formatNumber,
+  onChange,
+  ...otherProps
+}) => {
+  const valueType = typeof value;
 
   const handleNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newNumber = parseFloat(e.target.value);
-    otherProps.onChange(newNumber);
+    onChange(newNumber);
   };
 
   const handleString = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newString = e.target.value;
-    otherProps.onChange(newString);
+    onChange(newString);
   };
 
-  const formatNumberInput = otherProps.formatNumber ? numberFormatter : () => {};
-
+  const formatNumberInput = formatNumber ? numberFormatter : () => { };
   switch (valueType) {
     case 'number':
       return (
         <input
           {...otherProps} // Including key, className, etc.
           type="number"
-          value={otherProps.value as number}
+          value={value as number}
           onChange={handleNumber}
           onBlur={formatNumberInput}
           onFocus={formatNumberInput}
@@ -38,7 +42,7 @@ const InputField: React.FC<InputFieldProps> = ({ ...otherProps }) => {
         <input
           {...otherProps}
           type="text"
-          value={otherProps.value as string}
+          value={value as string}
           onChange={handleString}
         />
       );

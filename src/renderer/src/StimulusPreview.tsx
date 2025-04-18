@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { StimTypeName, Stimulus } from './Stims/Stimulus';
-import { stimConstructors } from './Stims/stimConstructors';
+import { useEffect, useRef, useState } from 'react';
+import { StimTypeName, Stimulus } from './stims/Stimulus';
+import { stimConstructors } from './stims/stimConstructors';
 import Button from './components/Button';
 import InputField from './components/InputField';
 import CloseButton from './components/CloseButton';
@@ -92,19 +92,19 @@ function StimForm(props: {
   const formStyle = `${rowStyle} bg-gray-800 focus:outline-blue-500 `;
 
   const stimKeys = Reflect.ownKeys(stimulus) // Subclass and superclass props including symbols
-    .filter((k) => typeof k !== 'symbol');
+    .filter((k) => typeof k !== 'symbol')
+    .filter((k) => k.startsWith('_') === false)
+    .filter((k) => !['name', 'meta'].includes(k));
 
   return (
     <div className="flex flex-row gap-4 text-gray-400">
       <div className="flex flex-col gap-0.5 text-gray-500">
         <div className={`${rowStyle} text-white`}>TypeName:</div>
-        {stimKeys
-          .filter((n) => n !== 'name')
-          .map((propName) => (
-            <div key={propName} className={rowStyle}>
-              {propName + ': '}
-            </div>
-          ))}
+        {stimKeys.map((propName) => (
+          <div key={propName} className={rowStyle}>
+            {propName + ': '}
+          </div>
+        ))}
       </div>
 
       <div className="flex flex-col gap-0.5">
@@ -120,29 +120,75 @@ function StimForm(props: {
           ))}
         </select>
 
-        {stimKeys
-          .filter((n) => n !== 'name')
-          .map((propName) => (
-            <InputField
-              key={propName}
-              value={stimulus[propName]}
-              className={formStyle}
-              formatNumber={propName === 'duration'}
-              onChange={(newValue) => handleStimPropChange(propName, newValue)}
-            />
-          ))}
+        {stimKeys.map((propName) => (
+          <InputField
+            key={propName}
+            value={stimulus[propName]}
+            className={formStyle}
+            formatNumber={propName === 'duration'}
+            onChange={(newValue) => handleStimPropChange(propName, newValue)}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
 function PreviewCanvas() {
+  /*
+  Deal with canvas resizing quirks, because canvas has two sizes:
+  - Canvas element size (CSS) — controlled via Tailwind (w-full, h-full, etc.).
+  - Canvas drawing buffer size (JS) — controlled via canvas.width and canvas.height.
+  */
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+
+    if (!canvas || !container) return;
+
+    const resizeCanvas = () => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+
+        /* Optional: clear or draw something
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, width, height);
+          ctx.fillStyle = 'skyblue';
+          ctx.fillRect(0, 0, width, height);
+        }
+        */
+      }
+    };
+
+    resizeCanvas(); // Initial
+
+    window.addEventListener('resize', resizeCanvas);
+    return () => window.removeEventListener('resize', resizeCanvas);
+  }, []);
+
   return (
-    <div id="canvas-container" className="grow bg-gray-400 border">
-      <canvas id="preview-canvas" />
+    <div
+      id="canvas-container"
+      ref={containerRef}
+      className="grow bg-gray-400 border w-full h-full"
+    >
+      <canvas
+        id="preview-canvas"
+        ref={canvasRef}
+        className="w-full h-full block"
+      />
     </div>
   );
 }
+
 
 function PreviewStim(stimulus: Stimulus) {
   // console.log('>>>>> handlePreviewClick() with stim=' + JSON.stringify(stim));

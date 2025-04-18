@@ -1,6 +1,5 @@
-import { StimTypeName, Stimulus } from './Stimulus';
-import Solid from './Solid';
-import Bar from './Bar';
+import { SqrGrating } from './SqrGrating';
+import { StimTypeName, Stimulus, Solid, Bar, SinGrating } from './index';
 
 // Should never actually be used.
 class Uninitialized extends Stimulus {
@@ -38,6 +37,8 @@ export const stimConstructors: StimConstructors = {
   Uninitialized: Uninitialized,
   Solid: Solid,
   Bar: Bar,
+  SinGrating: SinGrating,
+  SqrGrating: SqrGrating,
 };
 
 export function newStimulus(stim: Stimulus) {

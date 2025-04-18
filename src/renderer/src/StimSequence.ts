@@ -1,8 +1,8 @@
-import { Stimulus } from './Stims/Stimulus';
-import './Stims/StimulusElectron';
+import { Stimulus } from './stims/Stimulus';
+import './stims/StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../../displays';
-import { deepDeduplicate } from './utilities';
+//import { deepDeduplicate } from './utilities';
 
 type ProgressCallback = (label: string, nDone: number, nTotal: number) => void;
 export default class StimSequence {
@@ -25,7 +25,7 @@ export default class StimSequence {
     this.name = name ?? this.name;
     this.description = description ?? this.description;
     const stims = stimuli ?? this.stimuli;
-    this.stimuli = deepDeduplicate(stims);
+    this.stimuli = stims; // deepDeduplicate(stims);
   }
 
   // Calculate total duration AND populate times array in the same loop
