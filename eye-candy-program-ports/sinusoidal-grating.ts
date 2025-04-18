@@ -9,7 +9,7 @@
 import './epl-shims';
 import { NestedStimuli, stims, r } from './epl-shims';
 
-let repetitions = 25;
+let repetitions = 3; // 25
 let durations = [1];
 // 0 is 1 (max) contrast, -1 is 0.1 contrast, -2 is 0.01
 // -2.2 is minimal contrast, <=-2.3 is same color for 8 bit color
@@ -69,7 +69,7 @@ for (let size of widths) {
           id = r.uuid();
           before = new stims.Solid({ duration: 1, meta: { group: id } });
 
-          left = new stims.SinusoidalGrating({
+          left = new stims.SinGrating({
             duration: duration,
             bgColor: colorPair[0],
             speed: speed,
@@ -85,7 +85,7 @@ for (let size of widths) {
           stimuli.push([before, left, after]);
 
           id = r.uuid();
-          right = new stims.SinusoidalGrating({
+          right = new stims.SinGrating({
             duration: duration,
             bgColor: colorPair[0],
             speed: speed,

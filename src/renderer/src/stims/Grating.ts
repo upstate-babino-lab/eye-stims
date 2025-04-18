@@ -8,11 +8,11 @@ import {
 } from './stim-utils';
 
 export enum GratingType {
-  Sinusoidal = 'sinusoidal',
-  Bar = 'bar',
+  Sin = 'sin', // Sinusoidal
+  Sqr = 'sqr', // Square
 }
 export class Grating extends Stimulus {
-  gratingType: GratingType = GratingType.Sinusoidal;
+  gratingType: GratingType = GratingType.Sin;
   fgColor = 'white';
   speed: number = 10; // vmins per second
   width: number = 10; // vmins: percent of minimum viewport dimension
@@ -27,9 +27,9 @@ export class Grating extends Stimulus {
     angle,
   }: Partial<Grating> = {}) {
     super(
-      gratingType === GratingType.Sinusoidal
-        ? StimTypeName.SinusoidalGrating
-        : StimTypeName.BarGrating,
+      gratingType === GratingType.Sin
+        ? StimTypeName.SinGrating
+        : StimTypeName.SqrGrating,
       duration,
       bgColor
     );
@@ -52,7 +52,7 @@ export class Grating extends Stimulus {
 
     const draw = (pxOffset: number): void => {
       const patternCanvas =
-        this.gratingType === GratingType.Sinusoidal
+        this.gratingType === GratingType.Sin
           ? this.sinPatternCanvas(barWidth, vmax2, pxOffset % barWidth)
           : this.barPatternCanvas(barWidth, vmax2, pxOffset % barWidth);
       ctx.save();

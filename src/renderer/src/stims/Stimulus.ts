@@ -2,8 +2,8 @@ export enum StimTypeName {
   Uninitialized = 'Uninitialized',
   Solid = 'Solid',
   Bar = 'Bar',
-  SinusoidalGrating = 'SinusoidalGrating',
-  BarGrating = 'BarGrating',
+  SinGrating = 'SinGrating',
+  SqrGrating = 'SqrGrating',
   // TODO next: grating, letter, checkerboard, wait
 }
 

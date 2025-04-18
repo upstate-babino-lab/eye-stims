@@ -1,6 +1,6 @@
 import { Grating, GratingType } from './Grating';
 
-export class BarGrating extends Grating {
+export class SqrGrating extends Grating {
   constructor({
     duration,
     bgColor,
@@ -10,7 +10,7 @@ export class BarGrating extends Grating {
     angle,
   }: Partial<Grating> = {}) {
     super({
-      gratingType: GratingType.Bar,
+      gratingType: GratingType.Sqr,
       duration,
       bgColor,
       fgColor,
