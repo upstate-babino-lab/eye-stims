@@ -3,6 +3,7 @@ export enum StimTypeName {
   Solid = 'Solid',
   Bar = 'Bar',
   SinusoidalGrating = 'SinusoidalGrating',
+  BarGrating = 'BarGrating',
   // TODO next: grating, letter, checkerboard, wait
 }
 

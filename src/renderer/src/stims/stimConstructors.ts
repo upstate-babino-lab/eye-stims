@@ -1,3 +1,4 @@
+import { BarGrating } from './BarGrating';
 import { StimTypeName, Stimulus, Solid, Bar, SinusoidalGrating } from './index';
 
 // Should never actually be used.
@@ -37,6 +38,7 @@ export const stimConstructors: StimConstructors = {
   Solid: Solid,
   Bar: Bar,
   SinusoidalGrating: SinusoidalGrating,
+  BarGrating: BarGrating,
 };
 
 export function newStimulus(stim: Stimulus) {
