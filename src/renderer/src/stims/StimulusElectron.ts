@@ -3,12 +3,13 @@
   We do this in separate file so a simple ts-node
   program can import Stimulus without problems.
 
-  This file must be imported in addition to Stimulus.ts when
+  This file must be imported in addition to Stimulus.ts only when
   any of these additional methods are used.
 */
 import { Stimulus } from './Stimulus';
 import { Encoder } from '../Encoder';
 import { DisplayKey, displays } from '../../../displays';
+import { TONE_DURATION_MS } from '../../../constants';
 import { stableStringify } from '../utilities';
 
 // Extend the interface
@@ -34,7 +35,8 @@ Stimulus.prototype.saveToCacheAsync = async function (displayKey: DisplayKey) {
     return;
   }
   this._audioCacheFilename = await window.electron.ensureAudioCacheAsync(
-    this.duration
+    // Leave room for two half tones: one for the start and one for the end
+    this.duration * 1000 - TONE_DURATION_MS
   );
   const displayProps = displays[displayKey];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -14,8 +14,8 @@ export enum GratingType {
 export class Grating extends Stimulus {
   gratingType: GratingType = GratingType.Sin;
   fgColor = 'white';
-  speed: number = 10; // vmins per second
-  width: number = 10; // vmins: percent of minimum viewport dimension
+  speed: number = 10; // vmins per second // TODO: change to degrees per second
+  width: number = 10; // vmins: percent of minimum viewport dimension // TODO: change to degrees
   angle = 45; // degrees
   constructor({
     gratingType,

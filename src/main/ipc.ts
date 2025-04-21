@@ -114,9 +114,9 @@ export function setupIpcHandlers() {
     }
   );
 
-  ipcMain.handle('ensureAudioCache', async (_event, duration: number) => {
+  ipcMain.handle('ensureAudioCache', async (_event, durationMs: number) => {
     await ensureCacheDirAsync();
-    const filename = 'silence' + duration + '.m4a';
+    const filename = 'silence-' + durationMs + '.m4a';
     const filePath = path.join(stimsCacheDir, filename);
     try {
       await access(filePath); // Throws if file doesn't exist
@@ -127,7 +127,7 @@ export function setupIpcHandlers() {
       const args = [
         '-f', 'lavfi',
         '-i', `anullsrc=channel_layout=stereo:sample_rate=${SAMPLE_RATE}`, // Silence
-        '-t', `${duration}`,
+        '-t', `${durationMs * 1000}`,
         '-acodec', 'aac',
         filePath,
       ];

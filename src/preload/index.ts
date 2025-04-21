@@ -42,8 +42,9 @@ contextBridge.exposeInMainWorld('electron', {
       outputFullPathname
     );
   },
-  ensureAudioCacheAsync: (duration: number): Promise<string> => {
-    return ipcRenderer.invoke('ensureAudioCache', duration);
+  ensureAudioCacheAsync: (durationMs: number): Promise<string> => {
+    // Returns full path of silence file
+    return ipcRenderer.invoke('ensureAudioCache', durationMs);
   },
   saveBufferToCacheAsync: (buffer: ArrayBuffer, unhashedFilename: string) => {
     return ipcRenderer.invoke('saveBufferToCache', buffer, unhashedFilename);

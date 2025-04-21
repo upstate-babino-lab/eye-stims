@@ -8,6 +8,7 @@
 import * as fs from 'fs';
 import * as wav from 'node-wav';
 import * as path from 'path';
+import { TONE_DURATION_MS } from '../constants';
 import { spawnFfmpegAsync } from './spawn-ffmpeg';
 
 type DTMF = { tone: string; f1: number; f2: number };
@@ -38,9 +39,8 @@ export function toneFilenames(): string[] {
   return dtmfTones.map((tObj: DTMF) => toneFilename(tObj)).flat();
 }
 export const SAMPLE_RATE = 44100; // Samples per second
-const durationMs = 200; // Duration in milliseconds. Peak amplitude at half
-export const PEAK_OFFSET_MS = durationMs / 2;
-const numSamples = (SAMPLE_RATE * durationMs) / 1000;
+export const PEAK_OFFSET_MS = TONE_DURATION_MS / 2;
+const numSamples = (SAMPLE_RATE * TONE_DURATION_MS) / 1000;
 
 function generateDTMFSineWave(frequency1: number, frequency2: number): number[] {
   const samples: number[] = [];
@@ -71,7 +71,7 @@ async function createWavFileAsync(
     (s, i) => s * 0.5 * Math.sin((i / (samples.length - 1)) * Math.PI) ** 4
   );
   const wavData = wav.encode(
-    [scaledSamples], // Array for mono (not stereo)
+    [scaledSamples], // Single array for mono (not stereo)
     {
       sampleRate: SAMPLE_RATE,
     }
@@ -90,9 +90,7 @@ export async function generateDTMFWavFilesAsync(
     /* prettier-ignore */
     const args = [
       '-i', fullPathname, // Mono input
-      '-ac', '2', // Stereo output
-      '-map_channel', '0.0.0:0.0', // Left channel
-      // '-map_channel', '0.0.0:0.1', // Right channel
+      '-af', 'pan=stereo|c0=1*FC|c1=0*FC', // Full to left channel
       '-ar', SAMPLE_RATE.toString(),
       '-acodec', 'aac',
       path.join(destinationDirectory, toneFilename(tObj)[1]), // Stereo output

@@ -2,7 +2,7 @@ import { FixedSizeList as List, ListChildComponentProps } from 'react-window'; /
 import AutoSizer from 'react-virtualized-auto-sizer'; // Resizes list when container size changes
 import { Stimulus } from './stims/Stimulus';
 import { useTheStimSequence } from './StateContext';
-import { formatSeconds } from './utilities';
+import { formatSeconds, stableStringify } from './utilities';
 
 const ROW_HEIGHT = 30;
 const CELL_FORMAT = 'min-w-20 p-0.5 text-left';
@@ -57,8 +57,8 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   const { theStimSequence } = useTheStimSequence();
   const row = data.data[index];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { name, duration, bgColor, meta, _cachedFilename, ...partial } = row;
-  const partialJson = JSON.stringify(partial);
+  const { name, duration, bgColor, meta, ...partial } = row;
+  const partialJson = stableStringify(partial); // Excludes private props
 
   return (
     <div
