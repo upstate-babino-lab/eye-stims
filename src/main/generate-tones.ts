@@ -8,6 +8,7 @@
 import * as fs from 'fs';
 import * as wav from 'node-wav';
 import * as path from 'path';
+import { spawnFfmpegAsync } from './spawn-ffmpeg';
 
 type DTMF = { tone: string; f1: number; f2: number };
 // DTMF frequencies (Hz) and tone names
@@ -31,20 +32,20 @@ const dtmfTones: DTMF[] = [
 ];
 
 function toneFilename(toneObj: DTMF) {
-  return `dtmf-${toneObj.tone}.wav`;
+  return [`dtmf-${toneObj.tone}.wav`, `dtmf-${toneObj.tone}-left.m4a`];
 }
 export function toneFilenames(): string[] {
-  return dtmfTones.map((tObj: DTMF) => toneFilename(tObj));
+  return dtmfTones.map((tObj: DTMF) => toneFilename(tObj)).flat();
 }
-const sampleRate = 44100; // Samples per second
+export const SAMPLE_RATE = 44100; // Samples per second
 const durationMs = 200; // Duration in milliseconds. Peak amplitude at half
 export const PEAK_OFFSET_MS = durationMs / 2;
-const numSamples = (sampleRate * durationMs) / 1000;
+const numSamples = (SAMPLE_RATE * durationMs) / 1000;
 
 function generateDTMFSineWave(frequency1: number, frequency2: number): number[] {
   const samples: number[] = [];
   for (let i = 0; i < numSamples; i++) {
-    const time = i / sampleRate;
+    const time = i / SAMPLE_RATE;
     const sample =
       Math.sin(2 * Math.PI * frequency1 * time) +
       Math.sin(2 * Math.PI * frequency2 * time);
@@ -72,20 +73,35 @@ async function createWavFileAsync(
   const wavData = wav.encode(
     [scaledSamples], // Array for mono (not stereo)
     {
-      sampleRate: sampleRate,
+      sampleRate: SAMPLE_RATE,
     }
   );
   await fs.promises.writeFile(filename, wavData);
 }
 
 export async function generateDTMFWavFilesAsync(
-  destinationDirectory: string = __dirname
+  destinationDirectory: string
 ): Promise<void> {
   for (const tObj of dtmfTones) {
     const samples = generateDTMFSineWave(tObj.f1, tObj.f2);
-    const fullPathname = path.join(destinationDirectory, toneFilename(tObj));
+    const fullPathname = path.join(destinationDirectory, toneFilename(tObj)[0]);
     await createWavFileAsync(samples, fullPathname);
+    console.log(`>>>>> Created ${fullPathname}. Now converting to m4a...`);
+    /* prettier-ignore */
+    const args = [
+      '-i', fullPathname, // Mono input
+      '-ac', '2', // Stereo output
+      '-map_channel', '0.0.0:0.0', // Left channel
+      // '-map_channel', '0.0.0:0.1', // Right channel
+      '-ar', SAMPLE_RATE.toString(),
+      '-acodec', 'aac',
+      path.join(destinationDirectory, toneFilename(tObj)[1]), // Stereo output
+    ];
+    await spawnFfmpegAsync(args);
   }
 }
 
-generateDTMFWavFilesAsync().catch(console.error);
+// Only when running this script as a standalone
+if (require.main === module) {
+  generateDTMFWavFilesAsync(__dirname).catch(console.error);
+}

@@ -35,7 +35,7 @@
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@tailwindcss/postcss": "^4.0.12",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.13.13",
+    "@types/node": "^22.14.1",
     "@types/node-wav": "^0.0.4",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",

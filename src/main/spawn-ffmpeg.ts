@@ -3,7 +3,7 @@ import ffmpegPath from 'ffmpeg-static';
 import { stimsCacheDir, ensureCacheDirAsync } from './ipc';
 import { writeFile as writeFileAsync } from 'fs/promises';
 import * as path from 'path';
-import { PEAK_OFFSET_MS } from '../../tools/generate-tones';
+import { PEAK_OFFSET_MS } from './generate-tones';
 import { DisplayKey, displays } from '../displays';
 
 export async function spawnFfmpegAsync(args: string[]): Promise<string> {
@@ -14,7 +14,7 @@ export async function spawnFfmpegAsync(args: string[]): Promise<string> {
       return;
     }
 
-    console.log(`>>>>> cd ${stimsCacheDir}\n>>>>> ffmpeg ` + args.join(' '));
+    console.log(`>>>>> cd '${stimsCacheDir}'\n>>>>> ffmpeg ` + args.join(' '));
     const ffmpegProcess = spawn(ffmpegPath, args, { cwd: stimsCacheDir });
 
     let stdOutput: string = '';
@@ -72,7 +72,7 @@ export async function buildFromCacheAsync(
     'utf-8'
   );
 
-  const audioFilename = await generateAudioFile(startTimes);
+  const audioFilename = await generateAudioFileOld(startTimes);
   /* prettier-ignore */
   const args = [
     //'-i', audioFilename,
@@ -92,7 +92,7 @@ export async function buildFromCacheAsync(
 }
 
 // Returns name of generated audio file
-async function generateAudioFile(startTimes: number[]): Promise<string> {
+async function generateAudioFileOld(startTimes: number[]): Promise<string> {
   const filterComplexFilename = 'filter-complex.txt';
   const FILTER_PRE1 = '[mixed]';
   const FILTER_OUTPUT = '[left_stereo]'; //'[boosted]';

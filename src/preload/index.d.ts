@@ -13,12 +13,16 @@ export interface ElectronAPI {
     startTimes: number[],
     outputFilename: string
   ) => Promise<string>;
-  showSaveDialog: (
+  showSaveDialogAsync: (
     options: Electron.SaveDialogOptions
   ) => Promise<Electron.SaveDialogReturnValue>;
-  saveBufferToCache: (buffer: ArrayBuffer, filename: string) => Promise<string>;
+  saveBufferToCacheAsync: (
+    buffer: ArrayBuffer,
+    filename: string
+  ) => Promise<string>;
+  ensureAudioCacheAsync: (duration: number) => Promise<string>;
   readFromCache: (filename: string) => Promise<ArrayBuffer>;
-  isCached: (filename: string) => Promise<string>;
+  isCachedAsync: (unhashedFilename: string) => Promise<string>;
 }
 
 declare global {

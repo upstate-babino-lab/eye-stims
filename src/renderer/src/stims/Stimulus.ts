@@ -13,6 +13,7 @@ export abstract class Stimulus {
   bgColor: string = 'black';
   meta?: Record<string, unknown> = {};
   _cachedFilename: string = '';
+  _audioCacheFilename: string = '';
   constructor(
     name: StimTypeName,
     duration?: number,

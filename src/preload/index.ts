@@ -20,10 +20,11 @@ contextBridge.exposeInMainWorld('electron', {
   removeListener: (channel: string, callback: (...args: any[]) => void) => {
     ipcRenderer.removeListener(channel, callback);
   },
-  runFfmpeg: (args: string[]) => {
+
+  runFfmpegAsync: (args: string[]) => {
     return ipcRenderer.invoke('runFfmpeg', args);
   },
-  showSaveDialog: (
+  showSaveDialogAsync: (
     options: Electron.SaveDialogOptions
   ): Promise<Electron.SaveDialogReturnValue> =>
     ipcRenderer.invoke('showSaveDialog', options),
@@ -34,20 +35,23 @@ contextBridge.exposeInMainWorld('electron', {
     outputFullPathname: string
   ): Promise<string> => {
     return ipcRenderer.invoke(
-      'buildFromCacheAsync',
+      'buildFromCache',
       displayKey,
       stimFilenames,
       startTimes,
       outputFullPathname
     );
   },
-  saveBufferToCache: (buffer: ArrayBuffer, filename: string) => {
-    return ipcRenderer.invoke('saveBufferToCache', buffer, filename);
+  ensureAudioCacheAsync: (duration: number): Promise<string> => {
+    return ipcRenderer.invoke('ensureAudioCache', duration);
   },
-  readFromCache: (filename: string) => {
+  saveBufferToCacheAsync: (buffer: ArrayBuffer, unhashedFilename: string) => {
+    return ipcRenderer.invoke('saveBufferToCache', buffer, unhashedFilename);
+  },
+  readFromCacheAsync: (filename: string) => {
     return ipcRenderer.invoke('readFromCache', filename);
   },
-  isCached: (filename: string) => {
-    return ipcRenderer.invoke('isCached', filename);
+  isCachedAsync: (unhashedFilename: string) => {
+    return ipcRenderer.invoke('isCached', unhashedFilename);
   },
 });

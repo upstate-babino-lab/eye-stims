@@ -9,9 +9,12 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "cSpell.words": [
+    "acodec",
     "adelay",
     "amix",
+    "anullsrc",
     "Babino",
+    "lavfi",
     "libmp",
     "libopus",
     "muxer",

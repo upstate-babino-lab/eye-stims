@@ -84,7 +84,7 @@ export default class StimSequence {
   }
 
   private async saveFileDialogAsync(suggestedFilename: string): Promise<string> {
-    const result = await window.electron.showSaveDialog({
+    const result = await window.electron.showSaveDialogAsync({
       title: 'Save File',
       defaultPath: suggestedFilename,
       filters: [{ name: 'Stim videos', extensions: ['mp4'] }],

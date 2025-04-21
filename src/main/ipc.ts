@@ -8,21 +8,10 @@ import { theMainWindow } from '.';
 import { buildFromCacheAsync, spawnFfmpegAsync } from './spawn-ffmpeg';
 import {
   generateDTMFWavFilesAsync,
+  SAMPLE_RATE,
   toneFilenames,
-} from '../../tools/generate-tones';
+} from './generate-tones';
 import { DisplayKey } from '../displays';
-
-// Generate filename that's guaranteed to be valid on Windows, and of limited length.
-function hashFilename(unhashedFilename: string): string {
-  const extension = path.extname(unhashedFilename);
-  const filename =
-    crypto
-      .createHash('sha256')
-      .update(unhashedFilename)
-      .digest('hex')
-      .slice(0, 20) + extension;
-  return filename;
-}
 
 export const stimsCacheDir = path.join(app.getPath('userData'), 'stims-cache');
 
@@ -31,15 +20,23 @@ export const stimsCacheDir = path.join(app.getPath('userData'), 'stims-cache');
 export async function ensureCacheDirAsync() {
   try {
     await access(stimsCacheDir);
-    for (const filename of toneFilenames()) {
+    const filenames = toneFilenames();
+    const lastToneFilename = filenames.pop();
+    if (lastToneFilename) {
+      await access(lastToneFilename);
+    }
+    /*
+    for (const filename of filenames()) {
       const toneFilename = path.join(stimsCacheDir, filename);
-      //console.log(`>>>>> toneFilename=${toneFilename}`);
+      console.log(`>>>>> Checking for toneFilename=${toneFilename}`);
       await access(toneFilename);
     }
+    */
     return; // Everything looks good
   } catch {
     // Need to create directory and syncTones
     await mkdir(stimsCacheDir, { recursive: true });
+    console.log('>>>>> Created stim cacheDir ' + stimsCacheDir);
     await generateDTMFWavFilesAsync(stimsCacheDir);
   }
 }
@@ -75,7 +72,7 @@ export function setupIpcHandlers() {
   });
 
   ipcMain.handle(
-    'buildFromCacheAsync',
+    'buildFromCache',
     async (
       _event,
       displayKey: DisplayKey,
@@ -84,7 +81,7 @@ export function setupIpcHandlers() {
       outputFullPathname: string
     ) => {
       console.log(
-        `>>>>> main got 'buildFromCacheAsync' with outputFilename ${outputFullPathname})`
+        `>>>>> main got 'buildFromCache' with outputFilename ${outputFullPathname})`
       );
       await ensureCacheDirAsync();
       return await buildFromCacheAsync(
@@ -117,7 +114,28 @@ export function setupIpcHandlers() {
     }
   );
 
-  // Test if file exists in cache
+  ipcMain.handle('ensureAudioCache', async (_event, duration: number) => {
+    await ensureCacheDirAsync();
+    const filename = 'silence' + duration + '.m4a';
+    const filePath = path.join(stimsCacheDir, filename);
+    try {
+      await access(filePath); // Throws if file doesn't exist
+      return filePath; // Cache already there
+    } catch {
+      // If file doesn't exist, create it.
+      /* prettier-ignore */
+      const args = [
+        '-f', 'lavfi',
+        '-i', `anullsrc=channel_layout=stereo:sample_rate=${SAMPLE_RATE}`, // Silence
+        '-t', `${duration}`,
+        '-acodec', 'aac',
+        filePath,
+      ];
+      await spawnFfmpegAsync(args);
+      return filePath;
+    }
+  });
+
   ipcMain.handle('isCached', async (_event, unhashedFilename: string) => {
     // console.log(`>>>>> main got 'isCached'`);
     try {
@@ -141,4 +159,16 @@ export function setupIpcHandlers() {
       throw error;
     }
   });
+}
+
+// Generate filename that's guaranteed to be valid on Windows, and of limited length.
+function hashFilename(unhashedFilename: string): string {
+  const extension = path.extname(unhashedFilename);
+  const filename =
+    crypto
+      .createHash('sha256')
+      .update(unhashedFilename)
+      .digest('hex')
+      .slice(0, 20) + extension;
+  return filename;
 }

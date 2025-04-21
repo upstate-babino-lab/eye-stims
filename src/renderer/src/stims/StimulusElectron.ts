@@ -15,7 +15,7 @@ import { stableStringify } from '../utilities';
 declare module './Stimulus' {
   interface Stimulus {
     encode(encoder: Encoder): void;
-    saveToCacheAsync(displayKey: DisplayKey): void;
+    saveToCacheAsync(displayKey: DisplayKey): Promise<void>;
   }
 }
 
@@ -33,6 +33,9 @@ Stimulus.prototype.saveToCacheAsync = async function (displayKey: DisplayKey) {
     console.error('>>>>> saveToCacheAsync() called without electron');
     return;
   }
+  this._audioCacheFilename = await window.electron.ensureAudioCacheAsync(
+    this.duration
+  );
   const displayProps = displays[displayKey];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { meta, _cachedFilename, ...filteredProps } = this; // Exclude props that don't affect encoding
@@ -40,7 +43,7 @@ Stimulus.prototype.saveToCacheAsync = async function (displayKey: DisplayKey) {
     `${displayProps.width}x${displayProps.height}-${displayProps.fps}` +
     stableStringify(filteredProps) +
     '.mp4';
-  this._cachedFilename = await window.electron.isCached(unhashedFilename);
+  this._cachedFilename = await window.electron.isCachedAsync(unhashedFilename);
   if (this._cachedFilename) {
     console.log('>>>>> Stim already cached');
     return; // Nothing more to do
@@ -48,7 +51,7 @@ Stimulus.prototype.saveToCacheAsync = async function (displayKey: DisplayKey) {
   const encoder = new Encoder(displayKey);
   this.encode(encoder);
   try {
-    const path = await window.electron.saveBufferToCache(
+    const path = await window.electron.saveBufferToCacheAsync(
       await encoder.getBufferAsync(),
       unhashedFilename
     );
