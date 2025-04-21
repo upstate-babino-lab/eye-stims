@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import { theMainWindow } from '.';
 import { buildFromCacheAsync, spawnFfmpegAsync } from './spawn-ffmpeg';
 import {
-  generateDTMFWavFilesAsync,
+  generateToneFilesAsync,
   SAMPLE_RATE,
   toneFilenames,
 } from './generate-tones';
@@ -22,22 +22,17 @@ export async function ensureCacheDirAsync() {
     await access(stimsCacheDir);
     const filenames = toneFilenames();
     const lastToneFilename = filenames.pop();
-    if (lastToneFilename) {
-      await access(lastToneFilename);
-    }
-    /*
-    for (const filename of filenames()) {
-      const toneFilename = path.join(stimsCacheDir, filename);
-      console.log(`>>>>> Checking for toneFilename=${toneFilename}`);
-      await access(toneFilename);
-    }
-    */
-    return; // Everything looks good
+    const lastTonePathname = path.join(
+      stimsCacheDir,
+      lastToneFilename || 'error-with-lastToneFilename'
+    );
+    await access(lastTonePathname); // Check for last tone file
+    return; // No error so it's there
   } catch {
     // Need to create directory and syncTones
     await mkdir(stimsCacheDir, { recursive: true });
     console.log('>>>>> Created stim cacheDir ' + stimsCacheDir);
-    await generateDTMFWavFilesAsync(stimsCacheDir);
+    await generateToneFilesAsync(stimsCacheDir);
   }
 }
 
@@ -77,7 +72,7 @@ export function setupIpcHandlers() {
       _event,
       displayKey: DisplayKey,
       stimFiles: string[],
-      startTimes: number[],
+      durations: number[],
       outputFullPathname: string
     ) => {
       console.log(
@@ -87,7 +82,7 @@ export function setupIpcHandlers() {
       return await buildFromCacheAsync(
         displayKey,
         stimFiles,
-        startTimes,
+        durations,
         outputFullPathname
       );
     }
@@ -115,33 +110,16 @@ export function setupIpcHandlers() {
   );
 
   ipcMain.handle('ensureAudioCache', async (_event, durationMs: number) => {
-    await ensureCacheDirAsync();
-    const filename = 'silence-' + durationMs + '.m4a';
-    const filePath = path.join(stimsCacheDir, filename);
-    try {
-      await access(filePath); // Throws if file doesn't exist
-      return filePath; // Cache already there
-    } catch {
-      // If file doesn't exist, create it.
-      /* prettier-ignore */
-      const args = [
-        '-f', 'lavfi',
-        '-i', `anullsrc=channel_layout=stereo:sample_rate=${SAMPLE_RATE}`, // Silence
-        '-t', `${durationMs * 1000}`,
-        '-acodec', 'aac',
-        filePath,
-      ];
-      await spawnFfmpegAsync(args);
-      return filePath;
-    }
+    return await ensureSilentFileAsync(durationMs);
   });
 
   ipcMain.handle('isCached', async (_event, unhashedFilename: string) => {
     // console.log(`>>>>> main got 'isCached'`);
     try {
-      const filePath = path.join(stimsCacheDir, hashFilename(unhashedFilename));
+      const hashedFilename = hashFilename(unhashedFilename);
+      const filePath = path.join(stimsCacheDir, hashedFilename);
       await access(filePath); // Throws if file doesn't exist
-      return filePath;
+      return hashedFilename;
     } catch {
       return false;
     }
@@ -171,4 +149,42 @@ function hashFilename(unhashedFilename: string): string {
       .digest('hex')
       .slice(0, 20) + extension;
   return filename;
+}
+
+export function formatNumberWithLeadingZero(
+  num: number,
+  decimalPlaces: number
+): string {
+  const formatted = num.toFixed(decimalPlaces);
+  if (Math.abs(num) < 1 && formatted.startsWith('.')) {
+    return '0' + formatted;
+  }
+  return formatted;
+}
+
+export function silentFilename(durationMs: number): string {
+  return 'silence-' + Math.round(durationMs) + '.m4a';
+}
+
+export async function ensureSilentFileAsync(durationMs: number) {
+  await ensureCacheDirAsync();
+  const filename = silentFilename(durationMs);
+  const filePath = path.join(stimsCacheDir, filename);
+  try {
+    await access(filePath); // Throws if file doesn't exist
+    return filePath; // Cache already there
+  } catch {
+    // If file doesn't exist, create it.
+    /* prettier-ignore */
+    const args = [
+      '-f', 'lavfi',
+      '-i', `anullsrc=channel_layout=stereo:sample_rate=${SAMPLE_RATE}`, // Silence
+      '-t', `${formatNumberWithLeadingZero(durationMs / 1000, 6)}`, // Seconds
+      '-acodec', 'aac',
+      '-b:a', '192k', // Constant bitrate
+      filename,
+    ];
+    await spawnFfmpegAsync(args);
+    return filePath;
+  }
 }

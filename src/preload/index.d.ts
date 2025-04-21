@@ -10,7 +10,7 @@ export interface ElectronAPI {
   buildFromCacheAsync: (
     displayKey: DisplayKey,
     stimFilenames: string[],
-    startTimes: number[],
+    durations: number[],
     outputFilename: string
   ) => Promise<string>;
   showSaveDialogAsync: (

@@ -113,7 +113,8 @@ export default class StimSequence {
     const result = await window.electron.buildFromCacheAsync(
       displayKey,
       this.stimuli.map((stim) => stim._cachedFilename),
-      this.startTimes,
+      //this.startTimes,
+      this.stimuli.map((s) => s.duration),
       outputFilename
     );
     if (cbProgress) {

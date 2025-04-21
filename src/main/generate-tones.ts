@@ -11,35 +11,40 @@ import * as path from 'path';
 import { TONE_DURATION_MS } from '../constants';
 import { spawnFfmpegAsync } from './spawn-ffmpeg';
 
+export const SAMPLE_RATE = 44100; // Samples per second
+
 type DTMF = { tone: string; f1: number; f2: number };
 // DTMF frequencies (Hz) and tone names
 const dtmfTones: DTMF[] = [
+  { tone: '0', f1: 941, f2: 1336 },
   { tone: '1', f1: 697, f2: 1209 },
   { tone: '2', f1: 697, f2: 1336 },
   { tone: '3', f1: 697, f2: 1477 },
-  { tone: 'A', f1: 697, f2: 1633 },
   { tone: '4', f1: 770, f2: 1209 },
   { tone: '5', f1: 770, f2: 1336 },
   { tone: '6', f1: 770, f2: 1477 },
-  { tone: 'B', f1: 770, f2: 1633 },
   { tone: '7', f1: 852, f2: 1209 },
   { tone: '8', f1: 852, f2: 1336 },
   { tone: '9', f1: 852, f2: 1477 },
+  { tone: 'A', f1: 697, f2: 1633 },
+  { tone: 'B', f1: 770, f2: 1633 },
   { tone: 'C', f1: 852, f2: 1633 },
   { tone: 'x', f1: 941, f2: 1209 }, // Because '*' is not valid filename character in Windows
-  { tone: '0', f1: 941, f2: 1336 },
   { tone: '#', f1: 941, f2: 1477 },
   { tone: 'D', f1: 941, f2: 1633 },
 ];
 
-function toneFilename(toneObj: DTMF) {
+function toneFilenamePair(toneObj: DTMF) {
   return [`dtmf-${toneObj.tone}.wav`, `dtmf-${toneObj.tone}-left.m4a`];
 }
 export function toneFilenames(): string[] {
-  return dtmfTones.map((tObj: DTMF) => toneFilename(tObj)).flat();
+  return dtmfTones.map((tObj: DTMF) => toneFilenamePair(tObj)).flat();
 }
-export const SAMPLE_RATE = 44100; // Samples per second
-export const PEAK_OFFSET_MS = TONE_DURATION_MS / 2;
+
+export function toneFilename(int: number): string {
+  return toneFilenamePair(dtmfTones[int])[1];
+}
+
 const numSamples = (SAMPLE_RATE * TONE_DURATION_MS) / 1000;
 
 function generateDTMFSineWave(frequency1: number, frequency2: number): number[] {
@@ -61,7 +66,7 @@ function generateDTMFSineWave(frequency1: number, frequency2: number): number[] 
 
 async function createWavFileAsync(
   samples: number[],
-  filename: string
+  pathname: string
 ): Promise<void> {
   // See plot-tone-amplitude.py
   // We want centered peak to be a bit more than 50 milliseconds wide
@@ -76,24 +81,26 @@ async function createWavFileAsync(
       sampleRate: SAMPLE_RATE,
     }
   );
-  await fs.promises.writeFile(filename, wavData);
+  await fs.promises.writeFile(pathname, wavData);
 }
 
-export async function generateDTMFWavFilesAsync(
+export async function generateToneFilesAsync(
   destinationDirectory: string
 ): Promise<void> {
   for (const tObj of dtmfTones) {
     const samples = generateDTMFSineWave(tObj.f1, tObj.f2);
-    const fullPathname = path.join(destinationDirectory, toneFilename(tObj)[0]);
+    const filename = toneFilenamePair(tObj)[0];
+    const fullPathname = path.join(destinationDirectory, filename);
     await createWavFileAsync(samples, fullPathname);
-    console.log(`>>>>> Created ${fullPathname}. Now converting to m4a...`);
+    console.log(`>>>>> Created ${fullPathname}. Converting to m4a...`);
     /* prettier-ignore */
     const args = [
       '-i', fullPathname, // Mono input
       '-af', 'pan=stereo|c0=1*FC|c1=0*FC', // Full to left channel
       '-ar', SAMPLE_RATE.toString(),
       '-acodec', 'aac',
-      path.join(destinationDirectory, toneFilename(tObj)[1]), // Stereo output
+      '-b:a', '192k', // Constant bitrate
+      toneFilenamePair(tObj)[1], // Stereo output (in cache directory)
     ];
     await spawnFfmpegAsync(args);
   }
@@ -101,5 +108,5 @@ export async function generateDTMFWavFilesAsync(
 
 // Only when running this script as a standalone
 if (require.main === module) {
-  generateDTMFWavFilesAsync(__dirname).catch(console.error);
+  generateToneFilesAsync(__dirname).catch(console.error);
 }

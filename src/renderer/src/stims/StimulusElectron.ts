@@ -43,7 +43,7 @@ Stimulus.prototype.saveToCacheAsync = async function (displayKey: DisplayKey) {
   const { meta, _cachedFilename, ...filteredProps } = this; // Exclude props that don't affect encoding
   const unhashedFilename =
     `${displayProps.width}x${displayProps.height}-${displayProps.fps}` +
-    stableStringify(filteredProps) +
+    stableStringify(filteredProps) + // Excludes private props
     '.mp4';
   this._cachedFilename = await window.electron.isCachedAsync(unhashedFilename);
   if (this._cachedFilename) {

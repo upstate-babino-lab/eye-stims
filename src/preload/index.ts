@@ -31,14 +31,14 @@ contextBridge.exposeInMainWorld('electron', {
   buildFromCacheAsync: (
     displayKey: DisplayKey,
     stimFilenames: string[],
-    startTimes: number[],
+    durations: number[],
     outputFullPathname: string
   ): Promise<string> => {
     return ipcRenderer.invoke(
       'buildFromCache',
       displayKey,
       stimFilenames,
-      startTimes,
+      durations,
       outputFullPathname
     );
   },
@@ -53,6 +53,7 @@ contextBridge.exposeInMainWorld('electron', {
     return ipcRenderer.invoke('readFromCache', filename);
   },
   isCachedAsync: (unhashedFilename: string) => {
+    // Returns filename (without full path)
     return ipcRenderer.invoke('isCached', unhashedFilename);
   },
 });
