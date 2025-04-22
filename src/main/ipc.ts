@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import { theMainWindow } from '.';
 import { buildFromCacheAsync, spawnFfmpegAsync } from './spawn-ffmpeg';
 import {
+  AUDIO_EXT,
   generateToneFilesAsync,
   SAMPLE_RATE,
   toneFilenames,
@@ -163,7 +164,7 @@ export function formatNumberWithLeadingZero(
 }
 
 export function silentFilename(durationMs: number): string {
-  return 'silence-' + Math.round(durationMs) + '.m4a';
+  return 'silence-' + Math.round(durationMs) + `.${AUDIO_EXT}`;
 }
 
 export async function ensureSilentFileAsync(durationMs: number) {
@@ -179,9 +180,10 @@ export async function ensureSilentFileAsync(durationMs: number) {
     const args = [
       '-f', 'lavfi',
       '-i', `anullsrc=channel_layout=stereo:sample_rate=${SAMPLE_RATE}`, // Silence
-      '-t', `${formatNumberWithLeadingZero(durationMs / 1000, 6)}`, // Seconds
-      '-acodec', 'aac',
-      '-b:a', '192k', // Constant bitrate
+      '-t', `${formatNumberWithLeadingZero(durationMs / 1000, 4)}`, // Seconds
+      //'-c:a', 'aac', '-b:a', '192k',
+      // '-c:a', 'libopus', '-b:a', '128k',
+      '-c:a', 'pcm_s16le',
       filename,
     ];
     await spawnFfmpegAsync(args);

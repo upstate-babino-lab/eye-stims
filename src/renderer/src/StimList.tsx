@@ -5,8 +5,9 @@ import { useTheStimSequence } from './StateContext';
 import { formatSeconds, stableStringify } from './utilities';
 
 const ROW_HEIGHT = 30;
-const CELL_FORMAT = 'min-w-20 p-0.5 text-left';
+const CELL_FORMAT = 'min-w-16 p-0.5 text-left';
 const TYPE_FORMAT = CELL_FORMAT + ' min-w-25'; // Typename column a bit wider
+const DURATION_FORMAT = CELL_FORMAT + ' min-w-27'; // Typename column a bit wider
 
 const StimList = ({
   data,
@@ -22,10 +23,10 @@ const StimList = ({
         style={{ height: ROW_HEIGHT }}
       >
         <div className={CELL_FORMAT}>Index</div>
-        <div className="min-w-30 p-0.5 text-left">h:m:s</div>
+        <div className="min-w-30 p-0.5 text-left">h:m:s.ms</div>
         <div className={TYPE_FORMAT}>Type</div>
         <div className="group relative">
-          <div className={CELL_FORMAT + ' w-25'}>duration</div>
+          <div className={DURATION_FORMAT}>Duration</div>
           <div className=" bg-gray-700 px-2 rounded-md invisible group-hover:visible font-normal">
             seconds
           </div>
@@ -57,7 +58,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   const { theStimSequence } = useTheStimSequence();
   const row = data.data[index];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { name, duration, bgColor, meta, ...partial } = row;
+  const { name, durationMs, bgColor, meta, ...partial } = row;
   const partialJson = stableStringify(partial); // Excludes private props
 
   return (
@@ -68,10 +69,12 @@ function Row({ index, style, data, }: ListChildComponentProps<{
     >
       <div className={CELL_FORMAT}>{index}</div>
       <div className="min-w-30 p-0.5 text-left">
-        {formatSeconds(theStimSequence ? theStimSequence.startTimes[index] : 0)}
+        {formatSeconds(
+          theStimSequence ? theStimSequence.startTimes[index] / 1000 : 0
+        )}
       </div>
       <div className={TYPE_FORMAT}>{row.name}</div>
-      <div className={CELL_FORMAT}>{row.duration.toFixed(2)}</div>
+      <div className={DURATION_FORMAT}>{(row.durationMs / 1000).toFixed(3)}</div>
       <div className={CELL_FORMAT}>{row.bgColor}</div>
       {partialJson !== '{}' && (
         <div className="grow p-0.5 text-left">{partialJson}</div>

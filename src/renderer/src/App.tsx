@@ -26,7 +26,7 @@ export default function App(): JSX.Element {
                 <div className="text-gray-500">
                   {theStimSequence.fileBasename + ' | '}
                   Count: {theStimSequence.stimuli.length + ' | '}
-                  Duration: {formatSeconds(theStimSequence.duration())}
+                  Duration: {formatSeconds(theStimSequence.duration() / 1000)}
                 </div>
               </div>
             </>

@@ -3,14 +3,14 @@ import { StimTypeName, Stimulus, Solid, Bar, SinGrating } from './index';
 
 // Should never actually be used.
 class Uninitialized extends Stimulus {
-  constructor({ duration, bgColor }: Partial<Uninitialized> = {}) {
-    super(StimTypeName.Uninitialized, duration, bgColor);
+  constructor({ durationMs, bgColor }: Partial<Uninitialized> = {}) {
+    super(StimTypeName.Uninitialized, durationMs, bgColor);
   }
   renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     ageSeconds: number
   ): void {
-    if (ageSeconds < 0 || ageSeconds > this.duration) {
+    if (ageSeconds < 0 || ageSeconds > this.durationMs / 1000) {
       return;
     }
     ctx.fillStyle = this.bgColor;

@@ -29,13 +29,14 @@ export default class StimSequence {
   }
 
   // Calculate total duration AND populate times array in the same loop
+  // Returns total milliseconds
   duration(): number {
     if (this.cachedDuration >= 0) {
       return this.cachedDuration;
     }
     this.startTimes = new Array(this.stimuli.length);
     const total = this.stimuli
-      .map((s) => s.duration)
+      .map((s) => s.durationMs)
       .reduce((accumulator, currentValue, currentIndex) => {
         this.startTimes[currentIndex] = accumulator;
         return accumulator + currentValue;
@@ -102,7 +103,7 @@ export default class StimSequence {
   ) {
     const [outputFilename] = await Promise.all([
       this.saveFileDialogAsync(this.fileBasename + '.mp4'),
-      this.saveToCacheAsync(displayKey, cbProgress),
+      this.saveToCacheAsync(displayKey, cbProgress), // Can start while user is choosing filename
     ]);
     if (!outputFilename) {
       return 'Canceled';
@@ -112,9 +113,9 @@ export default class StimSequence {
     }
     const result = await window.electron.buildFromCacheAsync(
       displayKey,
-      this.stimuli.map((stim) => stim._cachedFilename),
+      this.stimuli.map((stim) => stim._cachedFilename || ''),
       //this.startTimes,
-      this.stimuli.map((s) => s.duration),
+      this.stimuli.map((s) => s.durationMs),
       outputFilename
     );
     if (cbProgress) {
@@ -143,8 +144,8 @@ export default class StimSequence {
       for (let iStim = 0; iStim < this.stimuli.length; iStim++) {
         const stimulus = this.stimuli[iStim];
         stimulus.encode(encoder);
-        encodedSecondsSoFar += stimulus.duration;
-        const secondsRemainingToEncode = duration - encodedSecondsSoFar;
+        encodedSecondsSoFar += stimulus.durationMs;
+        const secondsRemainingToEncode = (duration - encodedSecondsSoFar) / 1000;
         if ((iStim && iStim % 200 === 0) || iStim >= this.stimuli.length) {
           // Periodically flush and log
           await encoder.videoEncoder.flush();

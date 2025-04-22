@@ -11,7 +11,8 @@ import * as path from 'path';
 import { TONE_DURATION_MS } from '../constants';
 import { spawnFfmpegAsync } from './spawn-ffmpeg';
 
-export const SAMPLE_RATE = 44100; // Samples per second
+export const SAMPLE_RATE = 44100; // 16000; // 48000; // 44100; // Samples per second
+export const AUDIO_EXT = 'wav'; // m4a for aac
 
 type DTMF = { tone: string; f1: number; f2: number };
 // DTMF frequencies (Hz) and tone names
@@ -35,7 +36,7 @@ const dtmfTones: DTMF[] = [
 ];
 
 function toneFilenamePair(toneObj: DTMF) {
-  return [`dtmf-${toneObj.tone}.wav`, `dtmf-${toneObj.tone}-left.m4a`];
+  return [`dtmf-${toneObj.tone}.wav`, `dtmf-${toneObj.tone}-left.${AUDIO_EXT}`];
 }
 export function toneFilenames(): string[] {
   return dtmfTones.map((tObj: DTMF) => toneFilenamePair(tObj)).flat();
@@ -92,17 +93,21 @@ export async function generateToneFilesAsync(
     const filename = toneFilenamePair(tObj)[0];
     const fullPathname = path.join(destinationDirectory, filename);
     await createWavFileAsync(samples, fullPathname);
-    console.log(`>>>>> Created ${fullPathname}. Converting to m4a...`);
-    /* prettier-ignore */
-    const args = [
+
+    if (AUDIO_EXT !== 'wav') {
+      console.log(`>>>>> Created ${fullPathname}. Now encoding...`);
+      /* prettier-ignore */
+      const args = [
       '-i', fullPathname, // Mono input
       '-af', 'pan=stereo|c0=1*FC|c1=0*FC', // Full to left channel
       '-ar', SAMPLE_RATE.toString(),
-      '-acodec', 'aac',
-      '-b:a', '192k', // Constant bitrate
+      // '-acodec', 'aac', '-b:a', '192k',
+      //'-c:a', 'libopus', '-b:a', '128k',
+      '-c:a', 'pcm_s16le',
       toneFilenamePair(tObj)[1], // Stereo output (in cache directory)
     ];
-    await spawnFfmpegAsync(args);
+      await spawnFfmpegAsync(args);
+    }
   }
 }
 

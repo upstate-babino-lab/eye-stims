@@ -10,7 +10,7 @@ import './epl-shims';
 import { NestedStimuli, stims, r } from './epl-shims';
 
 let repetitions = 3; // 25
-let durations = [1];
+let durations = [1000];
 // 0 is 1 (max) contrast, -1 is 0.1 contrast, -2 is 0.01
 // -2.2 is minimal contrast, <=-2.3 is same color for 8 bit color
 let startLogContrast = 0;
@@ -64,13 +64,13 @@ let cohort;
 for (let size of widths) {
   for (let angle of angles) {
     for (let colorPair of colors) {
-      for (let duration of durations) {
+      for (let durationMs of durations) {
         for (let i = 0; i < repetitions; i++) {
           id = r.uuid();
-          before = new stims.Solid({ duration: 1, meta: { group: id } });
+          before = new stims.Solid({ durationMs: 1000, meta: { group: id } });
 
           left = new stims.SinGrating({
-            duration: duration,
+            durationMs: Math.round(durationMs),
             bgColor: colorPair[0],
             speed: speed,
             width: size,
@@ -79,14 +79,14 @@ for (let size of widths) {
             meta: { group: id, cohort: cohort, class: 'FORWARD', block: true },
           });
           after = new stims.Solid({
-            duration: r.randi(60, 75) / 60,
+            durationMs: Math.round((1000 * r.randi(60, 75)) / 60),
             meta: { group: id, block: true },
           });
           stimuli.push([before, left, after]);
 
           id = r.uuid();
           right = new stims.SinGrating({
-            duration: duration,
+            durationMs: durationMs,
             bgColor: colorPair[0],
             speed: speed,
             width: size,
@@ -95,7 +95,7 @@ for (let size of widths) {
             meta: { group: id, cohort: cohort, class: 'REVERSE', block: true },
           });
           after = new stims.Solid({
-            duration: r.randi(60, 75) / 60,
+            durationMs: Math.round((1000 * r.randi(60, 75)) / 60),
             meta: { group: id, block: true },
           });
           stimuli.push([before, right, after]);

@@ -19,7 +19,7 @@ export class Grating extends Stimulus {
   angle = 45; // degrees
   constructor({
     gratingType,
-    duration,
+    durationMs,
     bgColor,
     fgColor,
     speed,
@@ -30,7 +30,7 @@ export class Grating extends Stimulus {
       gratingType === GratingType.Sin
         ? StimTypeName.SinGrating
         : StimTypeName.SqrGrating,
-      duration,
+      durationMs,
       bgColor
     );
     this.gratingType = gratingType ?? this.gratingType;
@@ -43,7 +43,7 @@ export class Grating extends Stimulus {
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     ageSeconds: number
   ): void {
-    if (ageSeconds < 0 || ageSeconds > this.duration) {
+    if (ageSeconds < 0 || ageSeconds > this.durationMs / 1000) {
       return;
     }
     const barWidth = vminsToPx(this.width, ctx);

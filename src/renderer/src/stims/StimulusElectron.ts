@@ -21,7 +21,7 @@ declare module './Stimulus' {
 }
 
 Stimulus.prototype.encode = function (encoder: Encoder): void {
-  const nFrames = this.duration * encoder.fps;
+  const nFrames = Math.round((this.durationMs / 1000) * encoder.fps);
   for (let iFrame = 0; iFrame < nFrames; iFrame++) {
     const age = iFrame && iFrame / encoder.fps;
     this.renderFrame(encoder.ctx, age);
@@ -36,7 +36,7 @@ Stimulus.prototype.saveToCacheAsync = async function (displayKey: DisplayKey) {
   }
   this._audioCacheFilename = await window.electron.ensureAudioCacheAsync(
     // Leave room for two half tones: one for the start and one for the end
-    this.duration * 1000 - TONE_DURATION_MS
+    this.durationMs - TONE_DURATION_MS
   );
   const displayProps = displays[displayKey];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

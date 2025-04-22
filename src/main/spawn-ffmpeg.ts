@@ -10,7 +10,7 @@ import { writeFile as writeFileAsync } from 'fs/promises';
 import * as path from 'path';
 import { DisplayKey, displays } from '../displays';
 import { PEAK_OFFSET_MS, TONE_DURATION_MS } from '../constants';
-import { toneFilename } from './generate-tones';
+import { AUDIO_EXT, toneFilename } from './generate-tones';
 
 export async function spawnFfmpegAsync(args: string[]): Promise<string> {
   const startTime = new Date().getTime();
@@ -88,7 +88,7 @@ export async function buildFromCacheAsync(
     '-i', audioFilename,
     '-c', 'copy', // copy the streams directly without re-encoding
     '-r', displayProps.fps.toString(),
-    '-vsync', 'cfr', // Constant frame rate
+    //'-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
     '-y', // Force overwrite and avoid y/N prompt
     outputPath,
@@ -98,15 +98,13 @@ export async function buildFromCacheAsync(
 }
 
 // Returns name of generated audio file  // Should be uuid??
-async function generateAudioFileNew(durationsSec: number[]): Promise<string> {
-  const AUDIO_FILENAME = 'audio.m4a'; //.m4a for aac
+async function generateAudioFileNew(durationsMs: number[]): Promise<string> {
+  const AUDIO_FILENAME = `audio.${AUDIO_EXT}`;
 
   // TODO: uuid name to allow more than one call to ffmpeg (e.g. for multiple displays)
   const inputListFilename: string = 'a-input-list.txt';
 
-  const silentDurations = durationsSec.map(
-    (dSec) => dSec * 1000 - TONE_DURATION_MS
-  );
+  const silentDurations = durationsMs.map((dMs) => dMs - TONE_DURATION_MS);
   silentDurations[0] += PEAK_OFFSET_MS; // First stim does not start with tone
   await ensureSilentFileAsync(silentDurations[0]); // In case it was not created
 
@@ -133,7 +131,7 @@ async function generateAudioFileNew(durationsSec: number[]): Promise<string> {
       '-i', inputListFilename,
       '-c', 'copy', // copy the streams directly without re-encoding
       // '-copyts',
-      '-vsync', 'cfr', // Constant frame rate
+      // '-vsync', 'cfr', // Constant frame rate
       AUDIO_FILENAME,
     ];
   await spawnFfmpegAsync(args);

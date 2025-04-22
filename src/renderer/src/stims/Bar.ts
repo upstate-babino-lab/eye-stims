@@ -9,7 +9,7 @@ export class Bar extends Stimulus {
   angle: number = 0; // Degrees
 
   constructor({
-    duration,
+    durationMs,
     bgColor,
     fgColor,
     speed,
@@ -17,7 +17,7 @@ export class Bar extends Stimulus {
     angle,
   }: Partial<Bar> = {}) {
     // console.log(`>>>>> constructor Bar(duration=${duration}, bgColor=${bgColor}, ...)`);
-    super(StimTypeName.Bar, duration, bgColor);
+    super(StimTypeName.Bar, durationMs, bgColor);
     this.fgColor = fgColor ?? this.fgColor;
     this.speed = speed ?? this.speed;
     this.width = width ?? this.width;
@@ -28,7 +28,7 @@ export class Bar extends Stimulus {
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     ageSeconds: number
   ): void {
-    if (ageSeconds < 0 || ageSeconds > this.duration) {
+    if (ageSeconds < 0 || ageSeconds > this.durationMs / 1000) {
       return;
     }
     const barWidth = vminsToPx(this.width, ctx);

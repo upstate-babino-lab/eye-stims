@@ -2,7 +2,7 @@ import { Grating, GratingType } from './Grating';
 
 export class SinGrating extends Grating {
   constructor({
-    duration,
+    durationMs,
     bgColor,
     fgColor,
     speed,
@@ -11,7 +11,7 @@ export class SinGrating extends Grating {
   }: Partial<Grating> = {}) {
     super({
       gratingType: GratingType.Sin,
-      duration,
+      durationMs,
       bgColor,
       fgColor,
       speed,
