@@ -1,4 +1,4 @@
-import { capitalize } from '@renderer/utilities';
+import { capitalize } from '@renderer/render-utils';
 import React, { useState } from 'react';
 import Button from './Button';
 

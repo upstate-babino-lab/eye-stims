@@ -2,7 +2,7 @@ import { Stimulus } from './stims/Stimulus';
 import './stims/StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../../displays';
-//import { deepDeduplicate } from './utilities';
+import { getStartTimes } from '../../shared-utils';
 
 type ProgressCallback = (label: string, nDone: number, nTotal: number) => void;
 export default class StimSequence {
@@ -10,7 +10,7 @@ export default class StimSequence {
   name: string = 'Uninitialized StimSequence';
   readonly description: string = '';
   readonly stimuli: Stimulus[] = [];
-  startTimes: number[] = []; // Seconds into sequence
+  startTimes: number[] = []; // Milliseconds into sequence
   private cachedDuration: number = -1; // Sum of all stimuli durations
   private cancelSaving: boolean = false; // Set to true to cancel saving
   private isEncoding: boolean = false;
@@ -28,21 +28,17 @@ export default class StimSequence {
     this.stimuli = stims; // deepDeduplicate(stims);
   }
 
-  // Calculate total duration AND populate times array in the same loop
+  // Calculate total duration and populate startTimes array
   // Returns total milliseconds
   duration(): number {
     if (this.cachedDuration >= 0) {
       return this.cachedDuration;
     }
-    this.startTimes = new Array(this.stimuli.length);
-    const total = this.stimuli
-      .map((s) => s.durationMs)
-      .reduce((accumulator, currentValue, currentIndex) => {
-        this.startTimes[currentIndex] = accumulator;
-        return accumulator + currentValue;
-      }, 0);
-    this.cachedDuration = total;
-    return total;
+    this.startTimes = getStartTimes(this.stimuli.map((s) => s.durationMs));
+    const iLastStim = this.stimuli.length - 1;
+    this.cachedDuration =
+      this.startTimes[iLastStim] + this.stimuli[iLastStim].durationMs;
+    return this.cachedDuration;
   }
 
   async saveToCacheAsync(displayKey: DisplayKey, cbProgress?: ProgressCallback) {

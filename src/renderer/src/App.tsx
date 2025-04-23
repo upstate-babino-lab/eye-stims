@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
 import SequencePreviewTab from './SequencePreviewTab';
-import { formatSeconds } from './utilities';
+import { formatSeconds } from './render-utils';
 import RunTab from './RunTab';
 import { BuildTab } from './BuildTab';
 

@@ -1,5 +1,5 @@
 export type DisplayProps = {
-  name?: string;
+  //name?: string;
   width: number;
   height: number;
   pxPerDegree: number;

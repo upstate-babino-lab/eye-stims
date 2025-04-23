@@ -17,7 +17,7 @@ const nStimuli = +process.argv[3];
 const stimuli = new Array(nStimuli);
 
 for (let i = 0; i < nStimuli; i++) {
-  const stim = new Solid({ bgColor: i % 2 ? 'black' : 'white' });
+  const stim = new Solid({ durationMs: 1000, bgColor: i % 2 ? 'black' : 'white' });
   stimuli[i] = stim;
 }
 console.log(

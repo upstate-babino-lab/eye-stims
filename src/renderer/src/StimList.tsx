@@ -2,7 +2,7 @@ import { FixedSizeList as List, ListChildComponentProps } from 'react-window'; /
 import AutoSizer from 'react-virtualized-auto-sizer'; // Resizes list when container size changes
 import { Stimulus } from './stims/Stimulus';
 import { useTheStimSequence } from './StateContext';
-import { formatSeconds, stableStringify } from './utilities';
+import { formatSeconds, stableStringify } from './render-utils';
 
 const ROW_HEIGHT = 30;
 const CELL_FORMAT = 'min-w-16 p-0.5 text-left';

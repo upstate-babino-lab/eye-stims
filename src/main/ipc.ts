@@ -7,12 +7,12 @@ import * as fs from 'fs';
 import { theMainWindow } from '.';
 import { buildFromCacheAsync, spawnFfmpegAsync } from './spawn-ffmpeg';
 import {
-  AUDIO_EXT,
+  audioChoices,
   generateToneFilesAsync,
-  SAMPLE_RATE,
-  toneFilenames,
+  toneBasename,
 } from './generate-tones';
 import { DisplayKey } from '../displays';
+import { AudioKey, CHOSEN_AUDIO_KEY } from '../constants';
 
 export const stimsCacheDir = path.join(app.getPath('userData'), 'stims-cache');
 
@@ -21,8 +21,8 @@ export const stimsCacheDir = path.join(app.getPath('userData'), 'stims-cache');
 export async function ensureCacheDirAsync() {
   try {
     await access(stimsCacheDir);
-    const filenames = toneFilenames();
-    const lastToneFilename = filenames.pop();
+    const lastToneFilename =
+      toneBasename(15) + audioChoices[CHOSEN_AUDIO_KEY].fileExtension;
     const lastTonePathname = path.join(
       stimsCacheDir,
       lastToneFilename || 'error-with-lastToneFilename'
@@ -33,7 +33,7 @@ export async function ensureCacheDirAsync() {
     // Need to create directory and syncTones
     await mkdir(stimsCacheDir, { recursive: true });
     console.log('>>>>> Created stim cacheDir ' + stimsCacheDir);
-    await generateToneFilesAsync(stimsCacheDir);
+    await generateToneFilesAsync(stimsCacheDir, CHOSEN_AUDIO_KEY);
   }
 }
 
@@ -163,13 +163,17 @@ export function formatNumberWithLeadingZero(
   return formatted;
 }
 
-export function silentFilename(durationMs: number): string {
-  return 'silence-' + Math.round(durationMs) + `.${AUDIO_EXT}`;
+export function silentBasename(durationMs: number): string {
+  return 'silence-' + Math.round(durationMs);
 }
 
-export async function ensureSilentFileAsync(durationMs: number) {
+export async function ensureSilentFileAsync(
+  durationMs: number,
+  audioKey: AudioKey = CHOSEN_AUDIO_KEY
+) {
   await ensureCacheDirAsync();
-  const filename = silentFilename(durationMs);
+  const audioProps = audioChoices[audioKey];
+  const filename = silentBasename(durationMs) + audioProps.fileExtension;
   const filePath = path.join(stimsCacheDir, filename);
   try {
     await access(filePath); // Throws if file doesn't exist
@@ -178,14 +182,12 @@ export async function ensureSilentFileAsync(durationMs: number) {
     // If file doesn't exist, create it.
     /* prettier-ignore */
     const args = [
-      '-f', 'lavfi',
-      '-i', `anullsrc=channel_layout=stereo:sample_rate=${SAMPLE_RATE}`, // Silence
+      '-f', 'lavfi', // Use virtual input device
+      '-i', `anullsrc=channel_layout=stereo:sample_rate=${audioProps.sampleRate}`, // Silence
       '-t', `${formatNumberWithLeadingZero(durationMs / 1000, 4)}`, // Seconds
-      //'-c:a', 'aac', '-b:a', '192k',
-      // '-c:a', 'libopus', '-b:a', '128k',
-      '-c:a', 'pcm_s16le',
-      filename,
-    ];
+    ].concat(audioProps.ffEncode);
+    args.push(filename);
+
     await spawnFfmpegAsync(args);
     return filePath;
   }

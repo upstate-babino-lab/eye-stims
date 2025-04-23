@@ -3,14 +3,20 @@ import ffmpegPath from 'ffmpeg-static';
 import {
   stimsCacheDir,
   ensureCacheDirAsync,
-  silentFilename,
+  silentBasename,
   ensureSilentFileAsync,
 } from './ipc';
 import { writeFile as writeFileAsync } from 'fs/promises';
 import * as path from 'path';
+import { audioChoices, AudioProps, toneBasename } from './generate-tones';
 import { DisplayKey, displays } from '../displays';
-import { PEAK_OFFSET_MS, TONE_DURATION_MS } from '../constants';
-import { AUDIO_EXT, toneFilename } from './generate-tones';
+import {
+  PEAK_OFFSET_MS,
+  TONE_DURATION_MS,
+  AudioKey,
+  CHOSEN_AUDIO_KEY,
+} from '../constants';
+import { getStartTimes } from '../shared-utils';
 
 export async function spawnFfmpegAsync(args: string[]): Promise<string> {
   const startTime = new Date().getTime();
@@ -32,14 +38,14 @@ export async function spawnFfmpegAsync(args: string[]): Promise<string> {
     let errorOutput: string = '';
     ffmpegProcess.stderr.on('data', (data) => {
       const dataStr = data.toString();
-      errorOutput += dataStr;
       /*
+      errorOutput += dataStr;
       if (!dataStr.includes('Auto-inserting h264_mp4toannexb bitstream filter')) {
         console.error('ffmpeg stderr:', data.toString());
       }
       errorOutput += dataStr;
       */
-      //errorOutput = dataStr; // Ignoring all but last stderr for now
+      errorOutput = dataStr; // Ignoring all but last stderr for now
     });
 
     ffmpegProcess.on('close', (code) => {
@@ -64,9 +70,12 @@ export async function buildFromCacheAsync(
   displayKey: DisplayKey,
   inputFilenames: string[],
   durations: number[],
-  outputPath: string
+  outputPath: string,
+  audioKey: AudioKey = CHOSEN_AUDIO_KEY // TODO: Choose from GUI
+  //reEncodeAudio: boolean,
 ): Promise<string> {
   const displayProps = displays[displayKey];
+  const audioProps = audioChoices[audioKey];
   await ensureCacheDirAsync();
   // TODO: uuid name to allow more than one call to ffmpeg (e.g. for multiple displays)
   const inputListFilename: string = 'v-input-list.txt';
@@ -79,7 +88,7 @@ export async function buildFromCacheAsync(
     'utf-8'
   );
 
-  const audioFilename = await generateAudioFileNew(durations);
+  const audioFilename = await assembleAudioFile(durations, audioProps);
   /* prettier-ignore */
   const args = [
     '-f', 'concat',
@@ -87,20 +96,20 @@ export async function buildFromCacheAsync(
     '-i', inputListFilename,
     '-i', audioFilename,
     '-c', 'copy', // copy the streams directly without re-encoding
-    '-r', displayProps.fps.toString(),
+    '-r', displayProps.fps.toString(), // Video framerate
     //'-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
-    '-y', // Force overwrite and avoid y/N prompt
-    outputPath,
-  ];
-  //args = ['-version'];
+  ].concat(audioProps.ffEncode);
+  args.push(outputPath);
   return await spawnFfmpegAsync(args);
 }
 
-// Returns name of generated audio file  // Should be uuid??
-async function generateAudioFileNew(durationsMs: number[]): Promise<string> {
-  const AUDIO_FILENAME = `audio.${AUDIO_EXT}`;
-
+// FAST way to assemble audio file from segments (but tones are getting clipped!)
+async function assembleAudioFile(
+  durationsMs: number[],
+  audioProps: AudioProps,
+  reEncodeAudio: boolean = true // Prevents tone clipping
+): Promise<string> {
   // TODO: uuid name to allow more than one call to ffmpeg (e.g. for multiple displays)
   const inputListFilename: string = 'a-input-list.txt';
 
@@ -108,11 +117,13 @@ async function generateAudioFileNew(durationsMs: number[]): Promise<string> {
   silentDurations[0] += PEAK_OFFSET_MS; // First stim does not start with tone
   await ensureSilentFileAsync(silentDurations[0]); // In case it was not created
 
+  // All audio files must use same encoding
   const fileList: string =
     silentDurations
       .map(
         (dMs, index) =>
-          `file '${silentFilename(dMs)}'\nfile '${toneFilename((index + 1) % 10)}'`
+          `file '${silentBasename(dMs) + audioProps.fileExtension}'\n` +
+          `file '${toneBasename((index + 1) % 10) + audioProps.fileExtension}'`
       )
       .join('\n') + '\n';
 
@@ -122,30 +133,36 @@ async function generateAudioFileNew(durationsMs: number[]): Promise<string> {
     'utf-8'
   );
 
-  // All audio files must use same encoding
-
+  const AUDIO_FILENAME = 'audio' + audioProps.fileExtension; // Should be uuid??
   /* prettier-ignore */
   const args = [
       '-f', 'concat',
       '-safe', '0', // Allows relative or absolute paths in the input list
       '-i', inputListFilename,
-      '-c', 'copy', // copy the streams directly without re-encoding
       // '-copyts',
-      // '-vsync', 'cfr', // Constant frame rate
-      AUDIO_FILENAME,
-    ];
+    ].concat(audioProps.ffEncode);
+  if (!reEncodeAudio) {
+    args.push('-c');
+    args.push('copy'); // copy the streams directly without re-encoding
+  }
+  args.push(AUDIO_FILENAME);
+
   await spawnFfmpegAsync(args);
   return AUDIO_FILENAME;
 }
 
-/*
-// Returns name of generated audio file
-async function generateAudioFileOld(startTimes: number[]): Promise<string> {
+// SLOW way to generate audio file from scratch
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function generateAudioFile(
+  durationsMs: number[],
+  audioProps: AudioProps
+): Promise<string> {
   const filterComplexFilename = 'filter-complex.txt';
   const FILTER_PRE1 = '[mixed]';
   const FILTER_OUTPUT = '[left_stereo]'; //'[boosted]';
 
   // Create delayed audio instances
+  const startTimes = getStartTimes(durationsMs);
   const filterComplex: string[] = startTimes
     .filter((st) => st >= 0.1)
     .map((st, i) => {
@@ -171,8 +188,8 @@ async function generateAudioFileOld(startTimes: number[]): Promise<string> {
   await writeFileAsync(filterComplexPathname, filterComplex.join('\n'));
   console.log(`>>>>> filterComplex written to ${filterComplexPathname}`);
 
-  const AUDIO_FILENAME = 'audio.m4a'; //.m4a for aac
-   prettier-ignore
+  const AUDIO_FILENAME = `audio.${audioProps.fileExtension}`; // Should be uuid??
+  /* prettier-ignore */
   const args = [
       '-i', 'dtmf-0.wav',
       '-filter_complex_script', filterComplexFilename,
@@ -184,4 +201,3 @@ async function generateAudioFileOld(startTimes: number[]): Promise<string> {
   await spawnFfmpegAsync(args);
   return AUDIO_FILENAME;
 }
-*/

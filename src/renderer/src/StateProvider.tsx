@@ -3,7 +3,7 @@ import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './StimSequence';
 import { newStimulus } from './stims/stimConstructors';
-import { capitalize } from './utilities';
+import { capitalize } from './render-utils';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(

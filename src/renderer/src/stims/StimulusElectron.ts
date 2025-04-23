@@ -10,7 +10,7 @@ import { Stimulus } from './Stimulus';
 import { Encoder } from '../Encoder';
 import { DisplayKey, displays } from '../../../displays';
 import { TONE_DURATION_MS } from '../../../constants';
-import { stableStringify } from '../utilities';
+import { stableStringify } from '../render-utils';
 
 // Extend the interface
 declare module './Stimulus' {
