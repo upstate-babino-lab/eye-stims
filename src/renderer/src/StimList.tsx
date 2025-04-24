@@ -5,7 +5,7 @@ import { useTheStimSequence } from './StateContext';
 import { formatSeconds, stableStringify } from './render-utils';
 
 const ROW_HEIGHT = 30;
-const CELL_FORMAT = 'min-w-16 p-0.5 text-left';
+const CELL_FORMAT = 'min-w-19 p-0.5 text-left';
 const TYPE_FORMAT = CELL_FORMAT + ' min-w-25'; // Typename column a bit wider
 const DURATION_FORMAT = CELL_FORMAT + ' min-w-22'; // Duration column a bit wider
 
