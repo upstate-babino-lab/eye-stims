@@ -95,20 +95,23 @@ export async function buildFromCacheAsync(
     '-safe', '0', // Allows relative or absolute paths in the input list
     '-i', vInputListFilename,
     '-i', audioFilename,
-    '-c', 'copy', // copy the streams directly without re-encoding
+    '-map', '0:v',
+    '-map', '1:a',
+    '-c:v', 'copy', // copy directly without re-encoding to go faster
+    '-copyts',
     '-r', displayProps.fps.toString(), // Video framerate
     //'-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
-  ].concat(audioProps.ffEncode);
+  ];
   args.push(outputPath);
   return await spawnFfmpegAsync(args);
 }
 
-// FAST way to assemble audio file from segments (but tones are getting clipped!)
+// FAST way to assemble audio file from segments (but tones can get clipped)
 async function assembleAudioFile(
   durationsMs: number[],
   audioProps: AudioProps,
-  reEncodeAudio: boolean = true // Prevents tone clipping
+  reEncodeAudio: boolean = true // Slower but prevents tone clipping
 ): Promise<string> {
   // TODO: uuid name to allow more than one call to ffmpeg (e.g. for multiple displays)
   const inputListFilename: string = 'a-input-list.txt';
@@ -139,11 +142,11 @@ async function assembleAudioFile(
       '-f', 'concat',
       '-safe', '0', // Allows relative or absolute paths in the input list
       '-i', inputListFilename,
-      // '-copyts',
     ].concat(audioProps.ffEncode);
   if (!reEncodeAudio) {
     args.push('-c');
     args.push('copy'); // copy the streams directly without re-encoding
+    args.push('-copyts');
   }
   args.push(AUDIO_FILENAME);
 
