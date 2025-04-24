@@ -7,7 +7,7 @@ import { formatSeconds, stableStringify } from './render-utils';
 const ROW_HEIGHT = 30;
 const CELL_FORMAT = 'min-w-16 p-0.5 text-left';
 const TYPE_FORMAT = CELL_FORMAT + ' min-w-25'; // Typename column a bit wider
-const DURATION_FORMAT = CELL_FORMAT + ' min-w-27'; // Typename column a bit wider
+const DURATION_FORMAT = CELL_FORMAT + ' min-w-22'; // Duration column a bit wider
 
 const StimList = ({
   data,
@@ -23,7 +23,7 @@ const StimList = ({
         style={{ height: ROW_HEIGHT }}
       >
         <div className={CELL_FORMAT}>Index</div>
-        <div className="min-w-30 p-0.5 text-left">h:m:s.ms</div>
+        <div className="min-w-30 p-0.5 text-left">h:m:s.cs</div>
         <div className={TYPE_FORMAT}>Type</div>
         <div className="group relative">
           <div className={DURATION_FORMAT}>Duration</div>
@@ -74,7 +74,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
         )}
       </div>
       <div className={TYPE_FORMAT}>{row.name}</div>
-      <div className={DURATION_FORMAT}>{(row.durationMs / 1000).toFixed(3)}</div>
+      <div className={DURATION_FORMAT}>{(row.durationMs / 1000).toFixed(2)}</div>
       <div className={CELL_FORMAT}>{row.bgColor}</div>
       {partialJson !== '{}' && (
         <div className="grow p-0.5 text-left">{partialJson}</div>

@@ -17,12 +17,12 @@ export const displays: Record<DisplayKey, DisplayProps> = {
     width: 1280,
     height: 720,
     pxPerDegree: 12.524,
-    fps: 30,
+    fps: 50, // Aligns with 2-centisecond duration boundaries
   },
   HD: {
     width: 1920,
     height: 1080,
     pxPerDegree: 12.524,
-    fps: 60,
+    fps: 50,
   },
 };

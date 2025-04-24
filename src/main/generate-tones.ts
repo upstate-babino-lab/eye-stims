@@ -98,7 +98,11 @@ function generateDTMFSineWave(
   // the peak amplitude by finding the centerpoint of region that
   // exceeds threshold amplitude.
   // We use a sine wave to the power 4 to create steep ramps with soft start and stop.
-  return samples;
+  // See plot-tone-amplitude.py
+
+  return samples.map(
+    (s, i) => s * 0.5 * Math.sin((i / (samples.length - 1)) * Math.PI) ** 4
+  );
 }
 
 async function createWavFileAsync(
@@ -106,15 +110,8 @@ async function createWavFileAsync(
   pathname: string,
   sampleRate: number
 ): Promise<void> {
-  // See plot-tone-amplitude.py
-  // We want centered peak to be a bit more than 50 milliseconds wide
-  // to ensure accurate positioning at any threshold and enough duration
-  // to reliably identify the DTMF
-  const scaledSamples = samples.map(
-    (s, i) => s * 0.5 * Math.sin((i / (samples.length - 1)) * Math.PI) ** 4
-  );
   const wavData = wav.encode(
-    [scaledSamples], // Single array for mono (not stereo)
+    [samples], // Single array for mono (not stereo)
     {
       sampleRate: sampleRate,
     }

@@ -78,12 +78,12 @@ export async function buildFromCacheAsync(
   const audioProps = audioChoices[audioKey];
   await ensureCacheDirAsync();
   // TODO: uuid name to allow more than one call to ffmpeg (e.g. for multiple displays)
-  const inputListFilename: string = 'v-input-list.txt';
+  const vInputListFilename: string = 'v-input-list.txt';
   const fileList: string = inputFilenames
     .map((name) => `file '${name}'`)
     .join('\n');
   await writeFileAsync(
-    path.join(stimsCacheDir, inputListFilename),
+    path.join(stimsCacheDir, vInputListFilename),
     fileList,
     'utf-8'
   );
@@ -93,7 +93,7 @@ export async function buildFromCacheAsync(
   const args = [
     '-f', 'concat',
     '-safe', '0', // Allows relative or absolute paths in the input list
-    '-i', inputListFilename,
+    '-i', vInputListFilename,
     '-i', audioFilename,
     '-c', 'copy', // copy the streams directly without re-encoding
     '-r', displayProps.fps.toString(), // Video framerate

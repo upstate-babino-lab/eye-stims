@@ -4,13 +4,12 @@ export enum StimTypeName {
   Bar = 'Bar',
   SinGrating = 'SinGrating',
   SqrGrating = 'SqrGrating',
-  // TODO next: grating, letter, checkerboard, wait
 }
 
-// Needed for now to avoid rounding of audio file durations
-// Other option may be to use a fixed-rate audio codec?
-export function roundToNearestTen(num: number): number {
-  return Math.round(num / 10) * 10;
+// Make sure durations align with 50fps frame rate
+// (multiples of 20 milliseconds)
+export function roundToNearestTwenty(num: number): number {
+  return Math.round(num / 20) * 20;
 }
 
 export abstract class Stimulus {
@@ -28,7 +27,7 @@ export abstract class Stimulus {
   ) {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
     this.name = name;
-    this.durationMs = roundToNearestTen(durationMs ?? this.durationMs);
+    this.durationMs = roundToNearestTwenty(durationMs ?? this.durationMs);
     this.bgColor = bgColor ?? this.bgColor;
     this.meta = meta ?? this.meta;
   }

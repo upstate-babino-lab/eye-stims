@@ -12,9 +12,10 @@ export function formatSeconds(seconds: number): string {
 
   const formattedHours = String(hours).padStart(2, '0');
   const formattedMinutes = String(minutes).padStart(2, '0');
-  const formattedSeconds = (
-    remainingSeconds % 1 ? remainingSeconds.toFixed(3) : String(remainingSeconds)
-  ).padStart(2, '0');
+  const formattedSeconds =
+    remainingSeconds % 1
+      ? remainingSeconds.toFixed(2).padStart(5, '0') // partial second
+      : String(remainingSeconds).padStart(2, '0');
 
   return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 }

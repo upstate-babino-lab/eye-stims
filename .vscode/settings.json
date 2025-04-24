@@ -16,6 +16,7 @@
     "audiowaveform",
     "Babino",
     "bitstream",
+    "centisecond",
     "copyts",
     "lavfi",
     "libmp",
