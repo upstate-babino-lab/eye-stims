@@ -17,28 +17,19 @@ export class Grating extends Stimulus {
   speed: number = 10; // vmins per second // TODO: change to degrees per second
   width: number = 10; // vmins: percent of minimum viewport dimension // TODO: change to degrees
   angle = 45; // degrees
-  constructor({
-    gratingType,
-    durationMs,
-    bgColor,
-
-    fgColor,
-    speed,
-    width,
-    angle,
-  }: Partial<Grating> = {}) {
-    super(
-      gratingType === GratingType.Sin
-        ? StimTypeName.SinGrating
-        : StimTypeName.SqrGrating,
-      durationMs,
-      bgColor
-    );
-    this.gratingType = gratingType ?? this.gratingType;
-    this.fgColor = fgColor ?? this.fgColor;
-    this.speed = speed ?? this.speed;
-    this.width = width ?? this.width;
-    this.angle = angle ?? this.angle;
+  constructor(props: Partial<Grating> = {}) {
+    super({
+      ...props,
+      name:
+        props.gratingType === GratingType.Sin
+          ? StimTypeName.SinGrating
+          : StimTypeName.SqrGrating,
+    });
+    this.gratingType = props.gratingType ?? this.gratingType;
+    this.fgColor = props.fgColor ?? this.fgColor;
+    this.speed = props.speed ?? this.speed;
+    this.width = props.width ?? this.width;
+    this.angle = props.angle ?? this.angle;
   }
   renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,

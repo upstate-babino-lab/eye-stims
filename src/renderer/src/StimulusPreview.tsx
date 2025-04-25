@@ -66,8 +66,13 @@ function StimForm(props: {
   const stimTypeNames = Object.keys(StimTypeName); //.filter((key) => isNaN(Number(key)));
 
   function setNewStimulus(stimTypeName: StimTypeName, overrides?: object) {
+    const oldStimulus = stimulus;
+    // Remove for interactive preview
+    delete oldStimulus.headMs;
+    delete oldStimulus.bodyMs;
+    delete oldStimulus.tailMs;
     const newStim = new stimConstructors[stimTypeName]({
-      ...stimulus, // properties that remain the same
+      ...oldStimulus, // properties that remain the same
       ...overrides, // last properties win
     });
     setStimulus(newStim);
@@ -94,7 +99,11 @@ function StimForm(props: {
   const stimKeys = Reflect.ownKeys(stimulus) // Subclass and superclass props including symbols
     .filter((k) => typeof k !== 'symbol')
     .filter((k) => k.startsWith('_') === false)
-    .filter((k) => !['name', 'gratingType', 'meta'].includes(k)); // Hide some props
+    .filter(
+      // Hide props that are not to be interacted with
+      (k) =>
+        !['name', 'headMs', 'bodyMs', 'tailMs', 'gratingType', 'meta'].includes(k)
+    );
 
   return (
     <div className="flex flex-row gap-4 text-gray-400">
@@ -125,7 +134,8 @@ function StimForm(props: {
             key={propName}
             value={stimulus[propName]}
             className={formStyle}
-            formatNumber={propName === 'duration'}
+            step={propName.endsWith('Ms') ? '20' : undefined}
+            //min={propName.endsWith('Ms') ? '0' : undefined}
             onChange={(newValue) => handleStimPropChange(propName, newValue)}
           />
         ))}

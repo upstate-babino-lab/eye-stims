@@ -8,20 +8,13 @@ export class Bar extends Stimulus {
   speed: number = 10; // vmins per second
   angle: number = 0; // Degrees
 
-  constructor({
-    durationMs,
-    bgColor,
-    fgColor,
-    speed,
-    width,
-    angle,
-  }: Partial<Bar> = {}) {
+  constructor(props: Partial<Bar> = {}) {
     // console.log(`>>>>> constructor Bar(duration=${duration}, bgColor=${bgColor}, ...)`);
-    super(StimTypeName.Bar, durationMs, bgColor);
-    this.fgColor = fgColor ?? this.fgColor;
-    this.speed = speed ?? this.speed;
-    this.width = width ?? this.width;
-    this.angle = angle ?? this.angle;
+    super({ ...props, name: StimTypeName.Bar });
+    this.fgColor = props.fgColor ?? this.fgColor;
+    this.speed = props.speed ?? this.speed;
+    this.width = props.width ?? this.width;
+    this.angle = props.angle ?? this.angle;
   }
 
   renderFrame(

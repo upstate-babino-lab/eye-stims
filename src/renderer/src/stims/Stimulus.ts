@@ -14,6 +14,15 @@ export function roundToNearestTwenty(num: number): number {
   return Math.round(num / 20) * 20;
 }
 
+type StimProps = {
+  name: StimTypeName;
+  durationMs?: number;
+  bgColor?: string;
+  headMs?: number;
+  bodyMs?: number;
+  tailMs?: number;
+  meta?: Record<string, unknown>;
+};
 export abstract class Stimulus {
   name: StimTypeName;
   durationMs: number = 10_000; //  Multiple of 20
@@ -26,26 +35,18 @@ export abstract class Stimulus {
   meta?: Record<string, unknown> = {};
   _videoCacheFilename?: string;
   _silentCacheFilename?: string;
-  constructor(
-    name: StimTypeName,
-    durationMs?: number,
-    bgColor?: string,
-    headMs?: number,
-    bodyMs?: number,
-    tailMs?: number,
-    meta?: Record<string, unknown>
-  ) {
+  constructor(props: StimProps) {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
-    this.name = name;
-    this.durationMs = roundToNearestTwenty(durationMs ?? this.durationMs);
-    this.bgColor = bgColor ?? this.bgColor;
+    this.name = props.name;
+    this.durationMs = roundToNearestTwenty(props.durationMs ?? this.durationMs);
+    this.bgColor = props.bgColor ?? this.bgColor;
     [this.headMs, this.bodyMs, this.tailMs] = calculateDurations(
       this.durationMs,
-      headMs,
-      bodyMs,
-      tailMs
+      props.headMs,
+      props.bodyMs,
+      props.tailMs
     );
-    this.meta = meta ?? this.meta;
+    this.meta = props.meta ?? this.meta;
   }
 
   abstract renderFrame(
