@@ -21,10 +21,10 @@ declare module './Stimulus' {
 }
 
 Stimulus.prototype.encode = function (encoder: Encoder): void {
-  const nFrames = Math.round((this.durationMs / 1000) * encoder.fps);
+  const nFrames = Math.round((this.durationMs / 1000) * encoder.displayProps.fps);
   for (let iFrame = 0; iFrame < nFrames; iFrame++) {
-    const age = iFrame && iFrame / encoder.fps;
-    this.renderFrame(encoder.ctx, age);
+    const age = iFrame && iFrame / encoder.displayProps.fps;
+    this.renderFrame(encoder.ctx, encoder.displayProps.pxPerDegree, age);
     encoder.encodeOneFrame();
   }
 };

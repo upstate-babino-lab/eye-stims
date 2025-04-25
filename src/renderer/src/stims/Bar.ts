@@ -1,11 +1,11 @@
 import { StimTypeName, Stimulus } from './Stimulus';
-import { degreesToRadians, diagonalLength, vminsToPx } from './stim-utils';
+import { degreesToRadians, diagonalLength } from './stim-utils';
 
 export class Bar extends Stimulus {
   // TODO: change parameters to match eye-candy
   fgColor: string = 'white';
-  width: number = 10; // CSS vmin units (percent of display's smallest side)
-  speed: number = 10; // vmins per second
+  width: number = 10; // Degrees
+  speed: number = 10; // Degrees per second
   angle: number = 0; // Degrees
 
   constructor(props: Partial<Bar> = {}) {
@@ -19,13 +19,14 @@ export class Bar extends Stimulus {
 
   renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+    pxPerDegree: number,
     ageSeconds: number
   ): void {
     if (ageSeconds < 0 || ageSeconds > this.durationMs / 1000) {
       return;
     }
-    const barWidth = vminsToPx(this.width, ctx);
-    const diagonal = diagonalLength(ctx) + barWidth / 2;
+    const barWidthPx = this.width * pxPerDegree;
+    const diagonal = diagonalLength(ctx) + barWidthPx / 2;
     const barLength = diagonal * 2; // Extra to be sure it's long enough
     const angleRadians = degreesToRadians(this.angle);
 
@@ -46,11 +47,11 @@ export class Bar extends Stimulus {
 
       ctx.fillStyle = this.fgColor;
       // Rectangle centered on origin
-      ctx.fillRect(-barLength / 2, -barWidth / 2, barLength, barWidth);
+      ctx.fillRect(-barLength / 2, -barWidthPx / 2, barLength, barWidthPx);
 
       ctx.restore();
     };
 
-    draw(Math.round(ageSeconds * vminsToPx(this.speed, ctx)) % (diagonal * 1.1));
+    draw(Math.round(ageSeconds * this.speed * pxPerDegree) % (diagonal * 1.1));
   }
 }

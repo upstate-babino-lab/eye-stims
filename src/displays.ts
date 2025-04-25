@@ -16,7 +16,7 @@ export const displays: Record<DisplayKey, DisplayProps> = {
   SD: {
     width: 1280,
     height: 720,
-    pxPerDegree: 12.524,
+    pxPerDegree: 12.524, // Ok to assume square pixels?
     fps: 50, // Aligns with 2-centisecond duration boundaries
   },
   HD: {

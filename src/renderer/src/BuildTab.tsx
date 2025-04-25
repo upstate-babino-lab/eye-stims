@@ -109,7 +109,7 @@ function DisplaysDropdown(props: {
     >
       {Object.entries(displays).map(([key, displayProps]) => (
         <option key={key} value={key}>
-          {key} ({displayProps.width}x{displayProps.height} {displayProps.fps}fps)
+          {key}: {displayProps.width}x{displayProps.height} {displayProps.fps}fps
         </option>
       ))}
     </select>

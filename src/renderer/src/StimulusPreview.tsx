@@ -199,7 +199,6 @@ function PreviewCanvas() {
   );
 }
 
-
 function PreviewStim(stimulus: Stimulus) {
   // console.log('>>>>> handlePreviewClick() with stim=' + JSON.stringify(stim));
   const canvasContainer = document.getElementById('canvas-container');
@@ -214,7 +213,7 @@ function PreviewStim(stimulus: Stimulus) {
     throw new Error('Invalid context from canvas');
   }
   stimulus.preview(ctx, () => {
-    // Clear back to default
+    // Clear back to default when done
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   });
 }

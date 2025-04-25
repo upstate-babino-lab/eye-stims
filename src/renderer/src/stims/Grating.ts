@@ -1,11 +1,5 @@
 import { StimTypeName, Stimulus } from './Stimulus';
-import {
-  colorToRGB,
-  degreesToRadians,
-  rgbToHex,
-  vmax,
-  vminsToPx,
-} from './stim-utils';
+import { colorToRGB, degreesToRadians, rgbToHex, vmax } from './stim-utils';
 
 export enum GratingType {
   Sin = 'sin', // Sinusoidal
@@ -14,8 +8,8 @@ export enum GratingType {
 export class Grating extends Stimulus {
   gratingType: GratingType = GratingType.Sin;
   fgColor = 'white';
-  speed: number = 10; // vmins per second // TODO: change to degrees per second
-  width: number = 10; // vmins: percent of minimum viewport dimension // TODO: change to degrees
+  speed: number = 10; // degrees per second
+  width: number = 10; // degrees
   angle = 45; // degrees
   constructor(props: Partial<Grating> = {}) {
     super({
@@ -33,20 +27,21 @@ export class Grating extends Stimulus {
   }
   renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+    pxPerDegree: number,
     ageSeconds: number
   ): void {
     if (ageSeconds < 0 || ageSeconds > this.durationMs / 1000) {
       return;
     }
-    const barWidth = vminsToPx(this.width, ctx);
+    const barWidthPx = this.width * pxPerDegree;
     const angleRadians = degreesToRadians(this.angle);
     const vmax2 = 2 * vmax(ctx);
 
     const draw = (pxOffset: number): void => {
       const patternCanvas =
         this.gratingType === GratingType.Sin
-          ? this.sinPatternCanvas(barWidth, vmax2, pxOffset % barWidth)
-          : this.barPatternCanvas(barWidth, vmax2, pxOffset % barWidth);
+          ? this.sinPatternCanvas(barWidthPx, vmax2, pxOffset % barWidthPx)
+          : this.barPatternCanvas(barWidthPx, vmax2, pxOffset % barWidthPx);
       ctx.save();
       const pattern = ctx.createPattern(patternCanvas, 'repeat');
       if (!pattern) {
@@ -59,7 +54,7 @@ export class Grating extends Stimulus {
       ctx.restore();
     };
 
-    draw(Math.round(ageSeconds * vminsToPx(this.speed, ctx)));
+    draw(Math.round(ageSeconds * this.speed * pxPerDegree));
   }
 
   barPatternCanvas(

@@ -51,10 +51,11 @@ export abstract class Stimulus {
 
   abstract renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+    pxPerDegree: number,
     ageSeconds: number
   ): void;
 
-  // Animate used only for on-screen context (concrete method)
+  // Animate used only for live on-screen context (concrete method)
   preview(ctx: CanvasRenderingContext2D, onAllFramesDone?: () => void) {
     let lastTimestamp = 0;
     const animate = (newTimestamp: number): void => {
@@ -63,7 +64,7 @@ export abstract class Stimulus {
       }
       const ageSeconds = (newTimestamp - lastTimestamp) / 1000; // Seconds
       if (ageSeconds < this.durationMs / 1000) {
-        this.renderFrame(ctx, ageSeconds);
+        this.renderFrame(ctx, 12, ageSeconds); // Unknown pxPerDegree on user's screen
         requestAnimationFrame(animate);
       } else {
         if (onAllFramesDone) {

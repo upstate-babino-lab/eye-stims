@@ -7,6 +7,7 @@ export class Solid extends Stimulus {
   }
   renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+    _pxPerDegree: number,
     ageSeconds: number
   ): void {
     const ageMs = ageSeconds * 1000;

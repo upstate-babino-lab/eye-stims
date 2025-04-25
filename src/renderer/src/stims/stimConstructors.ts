@@ -3,11 +3,12 @@ import { StimTypeName, Stimulus, Solid, Bar, SinGrating } from './index';
 
 // Should never actually be used.
 class Uninitialized extends Stimulus {
-  constructor({ durationMs, bgColor }: Partial<Uninitialized> = {}) {
-    super(StimTypeName.Uninitialized, durationMs, bgColor);
+  constructor(props: Partial<Uninitialized> = {}) {
+    super({ ...props, name: StimTypeName.Uninitialized });
   }
   renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+    _pxPerDegree: number,
     ageSeconds: number
   ): void {
     if (ageSeconds < 0 || ageSeconds > this.durationMs / 1000) {

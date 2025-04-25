@@ -1,5 +1,5 @@
 import * as Mp4Muxer from 'mp4-muxer';
-import { DisplayKey, displays } from '../../displays';
+import { DisplayKey, DisplayProps, displays } from '../../displays';
 
 // See https://dmnsgn.github.io/media-codecs for list of codecs that browser supports
 // TODO: Try vp8 because it's supposed to be faster
@@ -13,7 +13,7 @@ avc1.64001f: High, Level 4.2 resolutions up to 1920x1080 at 60fps.
 avc1.640028: Level 4.1 can handle 1920x1088 (padding out to multiple of 16)
 */
 export class Encoder {
-  readonly fps: number; // frames per second
+  readonly displayProps: DisplayProps;
   readonly canvas: OffscreenCanvas;
   readonly ctx: OffscreenCanvasRenderingContext2D;
   readonly muxer: Mp4Muxer.Muxer<
@@ -24,9 +24,11 @@ export class Encoder {
   lastFrame: number = 0; // Frames rendered so far
 
   constructor(displayKey: DisplayKey, fileStream?: FileSystemWritableFileStream) {
-    const displayProps = displays[displayKey];
-    this.fps = displayProps.fps;
-    this.canvas = new OffscreenCanvas(displayProps.width, displayProps.height);
+    this.displayProps = displays[displayKey];
+    this.canvas = new OffscreenCanvas(
+      this.displayProps.width,
+      this.displayProps.height
+    );
     const ctx = this.canvas.getContext('2d', {
       // TODO: Figure out best attributes to maximize speed
       willReadFrequently: true,
@@ -45,8 +47,8 @@ export class Encoder {
         : new Mp4Muxer.ArrayBufferTarget(),
       video: {
         codec: CODEC_BASE,
-        width: displayProps.width,
-        height: displayProps.height,
+        width: this.displayProps.width,
+        height: this.displayProps.height,
       },
       fastStart: this.fileStream
         ? false // Recommended for large, unbounded files that are streamed directly to disk
@@ -60,9 +62,9 @@ export class Encoder {
 
     this.videoEncoder.configure({
       codec: CODEC,
-      width: displayProps.width,
-      height: displayProps.height,
-      framerate: displayProps.fps,
+      width: this.displayProps.width,
+      height: this.displayProps.height,
+      framerate: this.displayProps.fps,
       //bitrate: 500_000,
       latencyMode: 'realtime', // Prioritize low latency encoding over compression quality
     });
@@ -71,7 +73,7 @@ export class Encoder {
   // Encode current state of the canvas as one additional frame
   encodeOneFrame(): void {
     const frame = new VideoFrame(this.canvas, {
-      timestamp: Math.round((this.lastFrame * 1e6) / this.fps), // Microseconds
+      timestamp: Math.round((this.lastFrame * 1e6) / this.displayProps.fps), // Microseconds
       //transfer: true, // Avoids unnecessary data copying
     });
     this.videoEncoder.encode(frame);
