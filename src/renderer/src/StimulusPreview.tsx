@@ -135,7 +135,6 @@ function StimForm(props: {
             value={stimulus[propName]}
             className={formStyle}
             step={propName.endsWith('Ms') ? '20' : undefined}
-            //min={propName.endsWith('Ms') ? '0' : undefined}
             onChange={(newValue) => handleStimPropChange(propName, newValue)}
           />
         ))}

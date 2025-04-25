@@ -10,7 +10,7 @@ export default function SequencePreviewTab() {
     <div className="grow flex flex-col p-2 gap-2">
       {theStimSequence && (
         <>
-          <div className="h-[100%] bg-gray-950 rounded-md p-2 text-center text-lg">
+          <div className="flex-grow bg-gray-950 rounded-md p-2 text-center text-lg">
             <StimList
               data={theStimSequence.stimuli}
               onRowClick={(index) => {
@@ -21,7 +21,7 @@ export default function SequencePreviewTab() {
           </div>
           {selectedStimIndex >= 0 && (
             <StimulusPreview
-              className="min-h-[30%] flex-shrink-0 bg-gray-950 rounded-md border-0 border-gray-800"
+              className="max-h-[40vh] overflow-y-auto bg-gray-950 rounded-md border-0 border-gray-800"
               stimIndex={selectedStimIndex}
               onClose={() => setSelectedStimIndex(-1)}
             />

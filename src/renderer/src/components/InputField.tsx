@@ -16,7 +16,6 @@ const InputField: React.FC<InputFieldProps> = ({
 
   const handleNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newNumber = parseFloat(e.target.value);
-    console.log('>>>>> newNumber=' + newNumber)
     onChange(newNumber);
   };
 
@@ -25,7 +24,6 @@ const InputField: React.FC<InputFieldProps> = ({
     onChange(newString);
   };
 
-  //const formatNumberInput = formatNumber ? numberFormatter : () => {};
   switch (valueType) {
     case 'number':
       return (
@@ -35,8 +33,6 @@ const InputField: React.FC<InputFieldProps> = ({
           step={step}
           value={value as number}
           onChange={handleNumber}
-          //onBlur={formatNumberInput}
-          //onFocus={formatNumberInput}
         />
       );
     case 'string':
@@ -53,13 +49,3 @@ const InputField: React.FC<InputFieldProps> = ({
   }
 };
 export default InputField;
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function numberFormatter(event) {
-  const input = event.target;
-  if (input.value !== '') {
-    if (!isNaN(parseFloat(input.value))) {
-      input.value = parseFloat(input.value).toFixed(2);
-    }
-  }
-}
