@@ -94,7 +94,7 @@ function StimForm(props: {
   const stimKeys = Reflect.ownKeys(stimulus) // Subclass and superclass props including symbols
     .filter((k) => typeof k !== 'symbol')
     .filter((k) => k.startsWith('_') === false)
-    .filter((k) => !['name', 'meta'].includes(k));
+    .filter((k) => !['name', 'gratingType', 'meta'].includes(k)); // Hide some props
 
   return (
     <div className="flex flex-row gap-4 text-gray-400">

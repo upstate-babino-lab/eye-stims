@@ -1,3 +1,5 @@
+import { assert } from '../../../shared-utils';
+
 export enum StimTypeName {
   Uninitialized = 'Uninitialized',
   Solid = 'Solid',
@@ -14,21 +16,35 @@ export function roundToNearestTwenty(num: number): number {
 
 export abstract class Stimulus {
   name: StimTypeName;
-  durationMs: number = 10_000; // For now must use nearest multiple of 10
+  durationMs: number = 10_000; //  Multiple of 20
   bgColor: string = 'black';
+  // Head, body and tail are optional, but must sum to duration
+  // By default head and tail are 0 and body is full duration
+  headMs?: number; // Duration of black before body
+  bodyMs?: number; // Duration between head and tail
+  tailMs?: number; // Duration of black after body
   meta?: Record<string, unknown> = {};
-  _cachedFilename?: string;
-  _audioCacheFilename?: string;
+  _videoCacheFilename?: string;
+  _silentCacheFilename?: string;
   constructor(
     name: StimTypeName,
     durationMs?: number,
     bgColor?: string,
+    headMs?: number,
+    bodyMs?: number,
+    tailMs?: number,
     meta?: Record<string, unknown>
   ) {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
     this.name = name;
     this.durationMs = roundToNearestTwenty(durationMs ?? this.durationMs);
     this.bgColor = bgColor ?? this.bgColor;
+    [this.headMs, this.bodyMs, this.tailMs] = calculateDurations(
+      this.durationMs,
+      headMs,
+      bodyMs,
+      tailMs
+    );
     this.meta = meta ?? this.meta;
   }
 
@@ -55,5 +71,52 @@ export abstract class Stimulus {
       }
     };
     requestAnimationFrame(animate);
+  }
+}
+
+function calculateDurations(
+  duration: number,
+  head?: number,
+  body?: number,
+  tail?: number
+): [number, number, number] {
+  const defined = (head ? '1' : '0') + (body ? '1' : '0') + (tail ? '1' : '0');
+  switch (defined) {
+    case '000': // All durations are undefined
+      return [0, duration, 0];
+
+    case '001': // Only tail is defined
+      assert(tail! <= duration, 'tail greater than duration');
+      return [0, duration - tail!, tail!];
+
+    case '010': // Only body is defined
+      assert(body! <= duration, 'body greater than duration');
+      return [0, body!, duration - body!];
+
+    case '011': // Body and tail are defined
+      assert(body! + tail! <= duration, 'body+tail greater than duration');
+      return [0, body!, tail!];
+
+    case '100': // Only head is defined
+      assert(head! <= duration, 'head greater than duration');
+      return [head!, duration - head!, 0];
+
+    case '101': // Head and tail are defined
+      assert(head! + tail! <= duration, 'head+tail greater than duration');
+      return [head!, duration - head! - tail!, tail!];
+
+    case '110': // Head and body are defined
+      assert(head! + body! <= duration, 'head+body greater than duration');
+      return [head!, body!, duration - head! - body!];
+
+    case '111': // All durations are defined
+      assert(
+        head! + body! + tail! <= duration,
+        'head+body+tail greater than duration'
+      );
+      return [head!, body!, tail!];
+
+    default:
+      throw new Error('Invalid duration configuration');
   }
 }

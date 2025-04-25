@@ -9,3 +9,9 @@ export function getStartTimes(durationsMs: number[]): number[] {
   }, 0);
   return startTimes;
 }
+
+export function assert(condition: boolean, message: string) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}

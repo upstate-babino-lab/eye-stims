@@ -64,7 +64,7 @@ export default class StimSequence {
         break;
       }
       const stimulus = this.stimuli[iStim];
-      await stimulus.saveToCacheAsync(displayKey);
+      await stimulus.cacheStimVideoAsync(displayKey);
     }
 
     if (cbProgress) {
@@ -77,7 +77,7 @@ export default class StimSequence {
   }
 
   nCachedStims(): number {
-    return this.stimuli.filter((stim) => stim._cachedFilename).length;
+    return this.stimuli.filter((stim) => stim._videoCacheFilename).length;
   }
 
   private async saveFileDialogAsync(suggestedFilename: string): Promise<string> {
@@ -102,15 +102,18 @@ export default class StimSequence {
       this.saveToCacheAsync(displayKey, cbProgress), // Can start while user is choosing filename
     ]);
     if (!outputFilename) {
+      cbProgress && cbProgress('cancelled', 0, 0);
       return 'Canceled';
     }
-    if (cbProgress) {
-      cbProgress('buildFromCache...', 0, this.stimuli.length);
-    }
+    cbProgress &&
+      cbProgress(
+        'buildFromCache...',
+        this.nCachedStims(),
+        this.stimuli.length - this.nCachedStims()
+      );
     const result = await window.electron.buildFromCacheAsync(
       displayKey,
-      this.stimuli.map((stim) => stim._cachedFilename || ''),
-      //this.startTimes,
+      this.stimuli.map((stim) => stim._videoCacheFilename || ''),
       this.stimuli.map((s) => s.durationMs),
       outputFilename
     );

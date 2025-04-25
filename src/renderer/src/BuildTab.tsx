@@ -23,6 +23,7 @@ export function BuildTab() {
               setDisplayKey(newDisplayKey);
             }}
           />
+          {/*}
           <Button
             className=""
             onClick={async () => {
@@ -41,10 +42,12 @@ export function BuildTab() {
           >
             Stream to disk .mp4
           </Button>
-
+          */}
           <Button
             className=""
             onClick={async () => {
+              setProgress(``);
+              setFfmpegOutput('');
               try {
                 await theStimSequence.saveToCacheAsync(
                   displayKey,
@@ -62,6 +65,8 @@ export function BuildTab() {
           <Button
             className=""
             onClick={async () => {
+              setProgress(``);
+              setFfmpegOutput('');
               try {
                 const resultMessage = await theStimSequence.buildFromCacheAsync(
                   displayKey,

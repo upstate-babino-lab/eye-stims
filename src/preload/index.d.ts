@@ -20,7 +20,7 @@ export interface ElectronAPI {
     buffer: ArrayBuffer,
     filename: string
   ) => Promise<string>;
-  ensureAudioCacheAsync: (durationMs: number) => Promise<string>;
+  ensureSilentCacheAsync: (durationMs: number) => Promise<string>;
   readFromCache: (filename: string) => Promise<ArrayBuffer>;
   isCachedAsync: (unhashedFilename: string) => Promise<string>;
 }

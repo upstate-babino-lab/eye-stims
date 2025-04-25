@@ -110,7 +110,7 @@ export function setupIpcHandlers() {
     }
   );
 
-  ipcMain.handle('ensureAudioCache', async (_event, durationMs: number) => {
+  ipcMain.handle('ensureSilentCache', async (_event, durationMs: number) => {
     return await ensureSilentFileAsync(durationMs);
   });
 
