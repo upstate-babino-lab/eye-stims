@@ -102,15 +102,18 @@ export default class StimSequence {
       this.saveToCacheAsync(displayKey, cbProgress), // Can start while user is choosing filename
     ]);
     if (!outputFilename) {
-      cbProgress && cbProgress('cancelled', 0, 0);
+      if (cbProgress) {
+        cbProgress('cancelled', 0, 0);
+      }
       return 'Canceled';
     }
-    cbProgress &&
+    if (cbProgress) {
       cbProgress(
         'buildFromCache...',
         this.nCachedStims(),
         this.stimuli.length - this.nCachedStims()
       );
+    }
     const result = await window.electron.buildFromCacheAsync(
       displayKey,
       this.stimuli.map((stim) => stim._videoCacheFilename || ''),
