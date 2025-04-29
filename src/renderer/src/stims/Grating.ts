@@ -22,7 +22,7 @@ export class Grating extends Stimulus {
     this.gratingType = props.gratingType ?? this.gratingType;
     this.fgColor = props.fgColor ?? this.fgColor;
     this.speed = props.speed ?? this.speed;
-    this.width = props.width ?? this.width;
+    this.width = Math.abs(props.width ?? this.width);
     this.angle = props.angle ?? this.angle;
   }
   renderFrame(
@@ -40,8 +40,8 @@ export class Grating extends Stimulus {
     const draw = (pxOffset: number): void => {
       const patternCanvas =
         this.gratingType === GratingType.Sin
-          ? this.sinPatternCanvas(barWidthPx, vmax2, pxOffset % barWidthPx)
-          : this.barPatternCanvas(barWidthPx, vmax2, pxOffset % barWidthPx);
+          ? this.sinPatternCanvas(barWidthPx * 2, vmax2, pxOffset)
+          : this.barPatternCanvas(barWidthPx * 2, vmax2, pxOffset);
       ctx.save();
       const pattern = ctx.createPattern(patternCanvas, 'repeat');
       if (!pattern) {
@@ -58,29 +58,39 @@ export class Grating extends Stimulus {
   }
 
   barPatternCanvas(
-    width: number,
+    width: number, // fgColor is half the width
     height: number,
     offset: number
   ): OffscreenCanvas {
+    offset = offset % width;
     const patternCanvas = new OffscreenCanvas(width, height);
     const ctx = patternCanvas.getContext('2d');
     if (!ctx) throw new Error('Could not get 2D context');
-
     const fgWidth = Math.floor(width / 2); // Sightly favor bgColor
+
     ctx.fillStyle = this.bgColor;
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, width + fgWidth, height);
 
     ctx.fillStyle = this.fgColor;
-    ctx.fillRect(offset, 0, fgWidth, height); // May overflow off the right edge
-    ctx.fillRect(offset - width, 0, fgWidth, height); // May start before the left edge
+    if (offset >= 0) {
+      ctx.fillRect(offset, 0, fgWidth, height);
+    } else {
+      ctx.fillRect(0, 0, fgWidth + offset, height);
+      ctx.fillRect(offset + width, 0, fgWidth, height);
+    }
+    if (offset > fgWidth) {
+      ctx.fillRect(0, 0, offset - fgWidth, height);
+    }
+
     return patternCanvas;
   }
 
   sinPatternCanvas(
-    width: number,
+    width: number, // Entire sine wave (over 360 degrees)
     height: number,
     offset: number
   ): OffscreenCanvas {
+    offset = offset % width;
     const patternCanvas = new OffscreenCanvas(width, height);
     const ctx = patternCanvas.getContext('2d');
     if (!ctx) throw new Error('Could not get 2D context');

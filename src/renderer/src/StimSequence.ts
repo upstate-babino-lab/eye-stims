@@ -4,7 +4,7 @@ import { Encoder } from './Encoder';
 import { DisplayKey } from '../../displays';
 import { getStartTimes } from '../../shared-utils';
 
-type ProgressCallback = (label: string, nDone: number, nTotal: number) => void;
+type ProgressCallback = (label: string, nDone?: number, nTotal?: number) => void;
 export default class StimSequence {
   fileBasename: string = '';
   name: string = 'Uninitialized StimSequence';
@@ -108,11 +108,7 @@ export default class StimSequence {
       return 'Canceled';
     }
     if (cbProgress) {
-      cbProgress(
-        'buildFromCache...',
-        this.nCachedStims(),
-        this.stimuli.length - this.nCachedStims()
-      );
+      cbProgress('buildFromCache...');
     }
     const result = await window.electron.buildFromCacheAsync(
       displayKey,
@@ -121,11 +117,7 @@ export default class StimSequence {
       outputFilename
     );
     if (cbProgress) {
-      cbProgress(
-        `Build saved to ${outputFilename}`,
-        this.stimuli.length,
-        this.stimuli.length
-      );
+      cbProgress(`Build saved to ${outputFilename}`);
     }
     return result;
   }

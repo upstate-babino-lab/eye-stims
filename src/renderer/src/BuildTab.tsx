@@ -70,8 +70,13 @@ export function BuildTab() {
               try {
                 const resultMessage = await theStimSequence.buildFromCacheAsync(
                   displayKey,
-                  (label, nDone, nTotal) =>
-                    setProgress(`${label} ${nDone} / ${nTotal}`)
+                  (message, nDone?, nTotal?) => {
+                    if (nDone || nTotal) {
+                      setProgress(`${message} ${nDone} / ${nTotal}`);
+                    } else {
+                      setProgress(message);
+                    }
+                  }
                 );
                 setFfmpegOutput(resultMessage);
               } catch (err) {

@@ -41,6 +41,14 @@ export default function App(): JSX.Element {
           >
             Load
           </Button>
+          <a
+            target="_blank"
+            className="underline text-blue-700"
+            href="https://github.com/upstate-babino-lab/eye-stims/issues/"
+            rel="noreferrer"
+          >
+            GitHub issues
+          </a>
         </div>
       </div>
 
