@@ -19,12 +19,15 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  hardenedRuntime: true
+  gatekeeperAssess: false # Set to false during notarization
   identity: 'AIRCODA LLC (33ZA33Y2Z5)'
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
-  notarize: false
+afterSign: electron-builder-notarize
+  
 dmg:
   artifactName: ${name}-${version}.${ext}
 linux:

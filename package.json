@@ -1,6 +1,6 @@
 {
   "name": "eye-stims",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Electron application to stimulate retinas",
   "main": "./out/main/index.js",
   "author": "Pierre Wellner, SUNY Upstate Medical University Center for Vision Research - Babino Lab",
@@ -42,6 +42,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "electron": "^35.0.1",
     "electron-builder": "^25.1.8",
+    "electron-builder-notarize": "^1.5.2",
     "electron-vite": "^3.0.0",
     "eslint": "^9.22.0",
     "eslint-plugin-react": "^7.37.4",
