@@ -18,6 +18,7 @@
     "bitstream",
     "centisecond",
     "copyts",
+    "eyestims",
     "lavfi",
     "libmp",
     "libopus",
