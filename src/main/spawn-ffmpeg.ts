@@ -121,14 +121,13 @@ async function assembleAudioFile(
   await ensureSilentFileAsync(silentDurations[0]); // In case it was not created
 
   // All audio files must use same encoding
-  const fileList: string =
-    silentDurations
-      .map(
-        (dMs, index) =>
-          `file '${silentBasename(dMs) + audioProps.fileExtension}'\n` +
-          `file '${toneBasename((index + 1) % 10) + audioProps.fileExtension}'`
-      )
-      .join('\n') + '\n';
+  const fileList: string = silentDurations
+    .map(
+      (dMs, index) =>
+        `file '${silentBasename(dMs) + audioProps.fileExtension}'\n` +
+        `file '${toneBasename((index + 1) % 10) + audioProps.fileExtension}'`
+    )
+    .join('\n');
 
   await writeFileAsync(
     path.join(stimsCacheDir, inputListFilename),
@@ -155,6 +154,7 @@ async function assembleAudioFile(
 }
 
 // SLOW way to generate audio file from scratch
+// @ts-ignore: TS6133
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function generateAudioFile(
   durationsMs: number[],

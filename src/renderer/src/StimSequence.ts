@@ -13,6 +13,7 @@ export default class StimSequence {
   startTimes: number[] = []; // Milliseconds into sequence
   private cachedDuration: number = -1; // Sum of all stimuli durations
   private cancelSaving: boolean = false; // Set to true to cancel saving
+  // @ts-ignore: TS6133
   private isEncoding: boolean = false;
 
   constructor(

@@ -3,3 +3,4 @@ semi: true
 printWidth: 83
 trailingComma: es5
 jsxBracketSameLine: false
+endOfLine: lf
