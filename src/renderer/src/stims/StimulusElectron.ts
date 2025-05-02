@@ -23,8 +23,24 @@ declare module './Stimulus' {
 Stimulus.prototype.encode = function (encoder: Encoder): void {
   const nFrames = Math.round((this.durationMs / 1000) * encoder.displayProps.fps);
   for (let iFrame = 0; iFrame < nFrames; iFrame++) {
-    const age = iFrame && iFrame / encoder.displayProps.fps;
-    this.renderFrame(encoder.ctx, encoder.displayProps.pxPerDegree, age);
+    const ageMs = iFrame && (iFrame / encoder.displayProps.fps) * 1000;
+    if (ageMs < 0 || ageMs > this.durationMs) {
+      // Nothing to do
+      continue;
+    }
+    if (
+      (this.headMs && ageMs < this.headMs) ||
+      (this.tailMs && ageMs >= this.durationMs - this.tailMs)
+    ) {
+      encoder.encodeOneFrame(true); // Solid black
+      continue;
+    }
+    // Body frame
+    this.renderFrame(
+      encoder.ctx,
+      encoder.displayProps.pxPerDegree,
+      (ageMs - (this.headMs || 0)) / 1000 //  Always start at age 0
+    );
     encoder.encodeOneFrame();
   }
 };

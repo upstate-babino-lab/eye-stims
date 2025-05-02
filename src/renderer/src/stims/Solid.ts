@@ -14,13 +14,7 @@ export class Solid extends Stimulus {
     if (ageMs < 0 || ageMs > this.durationMs) {
       return;
     }
-    if (ageMs < this.headMs!) {
-      ctx.fillStyle = 'black';
-    } else if (ageMs < this.headMs! + this.bodyMs!) {
-      ctx.fillStyle = this.bgColor;
-    } else {
-      ctx.fillStyle = 'black';
-    }
+    ctx.fillStyle = this.bgColor;
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   }
 }

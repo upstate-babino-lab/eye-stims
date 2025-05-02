@@ -21,6 +21,7 @@ export class Encoder {
   >;
   readonly videoEncoder: VideoEncoder;
   private fileStream?: FileSystemWritableFileStream;
+  private solidBlackCanvas: OffscreenCanvas;
   lastFrame: number = 0; // Frames rendered so far
 
   constructor(displayKey: DisplayKey, fileStream?: FileSystemWritableFileStream) {
@@ -68,14 +69,30 @@ export class Encoder {
       //bitrate: 500_000,
       latencyMode: 'realtime', // Prioritize low latency encoding over compression quality
     });
+
+    this.solidBlackCanvas = new OffscreenCanvas(
+      this.displayProps.width,
+      this.displayProps.height
+    );
+    const blackCtx = this.solidBlackCanvas.getContext('2d', {
+      willReadFrequently: true,
+    });
+    if (!blackCtx) {
+      throw new Error('Error calling getContext() for blackCtx');
+    }
+    blackCtx.fillStyle = 'black';
+    blackCtx.fillRect(0, 0, blackCtx.canvas.width, blackCtx.canvas.height);
   }
 
   // Encode current state of the canvas as one additional frame
-  encodeOneFrame(): void {
-    const frame = new VideoFrame(this.canvas, {
-      timestamp: Math.round((this.lastFrame * 1e6) / this.displayProps.fps), // Microseconds
-      //transfer: true, // Avoids unnecessary data copying
-    });
+  encodeOneFrame(isSolidBlack: boolean = false): void {
+    const frame = new VideoFrame(
+      isSolidBlack ? this.solidBlackCanvas : this.canvas,
+      {
+        timestamp: Math.round((this.lastFrame * 1e6) / this.displayProps.fps), // Microseconds
+        //transfer: true, // Avoids unnecessary data copying
+      }
+    );
     this.videoEncoder.encode(frame);
     frame.close();
     this.lastFrame++;
