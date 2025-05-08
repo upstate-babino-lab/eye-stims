@@ -148,9 +148,9 @@ export async function generateToneFilesAsync(
       console.log(`>>>>> Created ${wavFilename}. Now encoding to ${audioKey}...`);
       /* prettier-ignore */
       const args = [
-      '-i', wavFilename, // Mono input
-      '-af', 'pan=stereo|c0=1*FC|c1=0*FC', // Full to left channel
-      '-ar', audioProps.sampleRate.toString(),
+        '-i', wavFilename, // Mono input
+        '-af', 'pan=stereo|c0=1*FC|c1=0*FC', // Full to left channel
+        '-ar', audioProps.sampleRate.toString(),
       ].concat(audioProps.ffEncode);
       args.push(filenameWithoutExtension + audioProps.fileExtension);
 
@@ -159,9 +159,12 @@ export async function generateToneFilesAsync(
   }
 }
 
-// Only when running this script as a standalone
+/* Only for running this script as a standalone
 if (require.main === module) {
-  generateToneFilesAsync(__dirname, process.argv[3] as AudioKey).catch(
-    console.error
-  );
+  generateToneFilesAsync(__dirname, (process.argv[3] as AudioKey) || 'PCM')
+    .catch(console.error)
+    .finally(() => {
+      console.log('>>>>> Done generating tones');
+    });
 }
+*/

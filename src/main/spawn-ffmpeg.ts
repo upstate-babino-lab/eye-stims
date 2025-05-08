@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import ffmpegPath from 'ffmpeg-static';
+import ffmpegPathStatic from 'ffmpeg-static';
 import {
   stimsCacheDir,
   ensureCacheDirAsync,
@@ -17,6 +17,15 @@ import {
   CHOSEN_AUDIO_KEY,
 } from '../constants';
 import { getStartTimes } from '../shared-utils';
+import { app } from 'electron';
+
+if (!ffmpegPathStatic) {
+  throw new Error('FFmpeg path is not defined');
+}
+const ffmpegPath = app.isPackaged
+  ? ffmpegPathStatic.replace('app.asar', 'app.asar.unpacked')
+  : ffmpegPathStatic;
+console.log('>>>>> FFmpeg executable path:', ffmpegPath);
 
 export async function spawnFfmpegAsync(args: string[]): Promise<string> {
   const startTime = new Date().getTime();
@@ -53,8 +62,8 @@ export async function spawnFfmpegAsync(args: string[]): Promise<string> {
       const elapsedTime = new Date().getTime() - startTime;
       console.error(
         `>>>>> ffmpeg exited after ${(elapsedTime / 1000).toFixed(2)} seconds =` +
-          `${(elapsedTime / 60000).toFixed(2)} minutes ` +
-          `with code=${code} stdOutput=${stdOutput} stdOutput.length=${stdOutput.length}`
+        `${(elapsedTime / 60000).toFixed(2)} minutes ` +
+        `with code=${code} stdOutput=${stdOutput} stdOutput.length=${stdOutput.length}`
       );
 
       if (code === 0) {
@@ -138,10 +147,10 @@ async function assembleAudioFile(
   const AUDIO_FILENAME = 'audio' + audioProps.fileExtension; // Should be uuid??
   /* prettier-ignore */
   const args = [
-      '-f', 'concat',
-      '-safe', '0', // Allows relative or absolute paths in the input list
-      '-i', inputListFilename,
-    ].concat(audioProps.ffEncode);
+    '-f', 'concat',
+    '-safe', '0', // Allows relative or absolute paths in the input list
+    '-i', inputListFilename,
+  ].concat(audioProps.ffEncode);
   if (!reEncodeAudio) {
     args.push('-c');
     args.push('copy'); // copy the streams directly without re-encoding
@@ -194,13 +203,13 @@ async function generateAudioFile(
   const AUDIO_FILENAME = `audio.${audioProps.fileExtension}`; // Should be uuid??
   /* prettier-ignore */
   const args = [
-      '-i', 'dtmf-0.wav',
-      '-filter_complex_script', filterComplexFilename,
-      '-map', FILTER_OUTPUT,
-      '-c:a', 'aac', // 'libmp3lame', // 'libopus',
-      '-y', 
-      AUDIO_FILENAME,
-    ];
+    '-i', 'dtmf-0.wav',
+    '-filter_complex_script', filterComplexFilename,
+    '-map', FILTER_OUTPUT,
+    '-c:a', 'aac', // 'libmp3lame', // 'libopus',
+    '-y',
+    AUDIO_FILENAME,
+  ];
   await spawnFfmpegAsync(args);
   return AUDIO_FILENAME;
 }
