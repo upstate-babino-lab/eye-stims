@@ -22,12 +22,12 @@ export default function App(): JSX.Element {
                 {theStimSequence.name}
               </div>
               <div className="bg-gray-950 rounded-md p-2">
-                <div>{theStimSequence.description}&nbsp;</div>
                 <div className="text-gray-500">
                   {theStimSequence.fileBasename + ' | '}
                   Count: {theStimSequence.stimuli.length + ' | '}
                   Duration: {formatSeconds(theStimSequence.duration() / 1000)}
                 </div>
+                <div>{theStimSequence.description}&nbsp;</div>
               </div>
             </>
           )}

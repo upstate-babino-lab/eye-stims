@@ -62,8 +62,8 @@ export async function spawnFfmpegAsync(args: string[]): Promise<string> {
       const elapsedTime = new Date().getTime() - startTime;
       console.error(
         `>>>>> ffmpeg exited after ${(elapsedTime / 1000).toFixed(2)} seconds =` +
-        `${(elapsedTime / 60000).toFixed(2)} minutes ` +
-        `with code=${code} stdOutput=${stdOutput} stdOutput.length=${stdOutput.length}`
+          `${(elapsedTime / 60000).toFixed(2)} minutes ` +
+          `with code=${code} stdOutput=${stdOutput} stdOutput.length=${stdOutput.length}`
       );
 
       if (code === 0) {
