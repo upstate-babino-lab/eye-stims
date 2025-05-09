@@ -1,4 +1,4 @@
-import { ipcMain, app, dialog } from 'electron';
+import { ipcMain, app, dialog, BrowserWindow } from 'electron';
 import { loadFileDialogAsync } from './menu';
 import { mkdir, writeFile, readFile, access, rm } from 'fs/promises'; // TODO: import as mkdirAsync, etc.
 import * as crypto from 'crypto';
@@ -40,6 +40,11 @@ export async function ensureCacheDirAsync() {
 export async function clearStimCacheAsync() {
   console.log('>>>>> Removing cacheDir ' + stimsCacheDir);
   await rm(stimsCacheDir, { recursive: true, force: true });
+  // Same as Electron Force Reload
+  const win = BrowserWindow.getFocusedWindow();
+  if (win) {
+    win.webContents.reloadIgnoringCache();
+  }
 }
 
 export function setupIpcHandlers() {

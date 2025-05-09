@@ -4,7 +4,11 @@ import { Encoder } from './Encoder';
 import { DisplayKey } from '../../displays';
 import { getStartTimes } from '../../shared-utils';
 
-type ProgressCallback = (label: string, nDone?: number, nTotal?: number) => void;
+export type ProgressCallback = (
+  label: string,
+  nDone?: number,
+  nTotal?: number
+) => void;
 export default class StimSequence {
   fileBasename: string = '';
   name: string = 'Uninitialized StimSequence';
@@ -46,10 +50,10 @@ export default class StimSequence {
     this.cancelSaving = false;
     let intervalId: NodeJS.Timeout | null = null;
     if (cbProgress) {
-      cbProgress('saveToCache', 0, this.stimuli.length);
+      cbProgress('saveToCache...', 0, this.stimuli.length);
       intervalId = setInterval(() => {
         cbProgress('saveToCache', this.nCachedStims(), this.stimuli.length);
-      }, 300);
+      }, 1000);
     }
 
     // TODO: Use limited parallelism -- ideally based on number of CPUs
@@ -118,7 +122,11 @@ export default class StimSequence {
       outputFilename
     );
     if (cbProgress) {
-      cbProgress(`Build saved to ${outputFilename}`);
+      cbProgress(
+        `Build saved to ${outputFilename}`,
+        this.stimuli.length,
+        this.stimuli.length
+      );
     }
     return result;
   }

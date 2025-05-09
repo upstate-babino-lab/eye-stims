@@ -1,6 +1,6 @@
 {
   "[typescript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
@@ -9,7 +9,11 @@
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "files.eol": "\n",
-  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
   "cSpell.words": [
     "acodec",
     "adelay",
@@ -37,5 +41,6 @@
     "vmin",
     "vmins",
     "vsync"
-  ]
+  ],
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

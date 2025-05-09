@@ -2,6 +2,8 @@ import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
 import { DisplayKey, displays } from '../../displays';
 import { useState } from 'react';
+import ProgressBar from './components/ProgressBar';
+import { ProgressCallback } from './StimSequence';
 
 export function BuildTab() {
   const { theStimSequence } = useTheStimSequence();
@@ -9,14 +11,29 @@ export function BuildTab() {
     DisplayKey[Object.keys(displays)[0]]
   );
 
-  const [progress, setProgress] = useState<string>('');
+  const [progressText, setProgressText] = useState<string>('');
+  const [progressPercent, setProgressPercent] = useState(-1);
   const [ffmpegOutput, setFfmpegOutput] = useState<string>('');
+
+  const handleProgress: ProgressCallback = (
+    label: string,
+    nDone: number = 0,
+    nTotal: number = 0
+  ) => {
+    if (nTotal) {
+      setProgressText(`${label} ${nDone} / ${nTotal}`);
+      setProgressPercent(Math.round((100 * nDone) / nTotal));
+    } else {
+      setProgressText(label);
+      setProgressPercent(0);
+    }
+  };
 
   return (
     <div>
       {' '}
       {theStimSequence && (
-        <div className="flex pt-4 pb-0 flex-col gap-2 w-fit">
+        <div className="flex pt-4 pb-0 flex-col gap-2">
           <DisplaysDropdown
             initialValue={displayKey}
             onChange={(newDisplayKey) => {
@@ -42,18 +59,13 @@ export function BuildTab() {
           >
             Stream to disk .mp4
           </Button>
-          */}
           <Button
             className=""
             onClick={async () => {
-              setProgress(``);
+              setProgressText(``);
               setFfmpegOutput('');
               try {
-                await theStimSequence.saveToCacheAsync(
-                  displayKey,
-                  (label, nDone, nTotal) =>
-                    setProgress(`${label} ${nDone} / ${nTotal}`)
-                );
+                await theStimSequence.saveToCacheAsync(displayKey, handleProgress);
               } catch (err) {
                 setFfmpegOutput('saveToCacheAsync() err=' + err);
               }
@@ -61,22 +73,17 @@ export function BuildTab() {
           >
             Save to cache
           </Button>
+          */}
 
           <Button
             className=""
             onClick={async () => {
-              setProgress(``);
+              setProgressText(``);
               setFfmpegOutput('');
               try {
                 const resultMessage = await theStimSequence.buildFromCacheAsync(
                   displayKey,
-                  (message, nDone?, nTotal?) => {
-                    if (nDone || nTotal) {
-                      setProgress(`${message} ${nDone} / ${nTotal}`);
-                    } else {
-                      setProgress(message);
-                    }
-                  }
+                  handleProgress
                 );
                 setFfmpegOutput(resultMessage);
               } catch (err) {
@@ -86,7 +93,19 @@ export function BuildTab() {
           >
             Build
           </Button>
-          <div>{progress}</div>
+          <div className="flex flex-row items-center w-full gap-4">
+            <div className="whitespace-nowrap">{progressText}</div>
+            {progressPercent > 0 && (
+              <div className="flex-1">
+                <ProgressBar
+                  progress={progressPercent}
+                  height="h-2"
+                  color="bg-green-600"
+                  backgroundColor="bg-gray-400"
+                />
+              </div>
+            )}
+          </div>
           <div>ffmpeg output: {ffmpegOutput}</div>
         </div>
       )}
@@ -107,16 +126,18 @@ function DisplaysDropdown(props: {
   };
 
   return (
-    <select
-      value={selectedValue}
-      onChange={handleChange}
-      className="px-2 text-black rounded-sm bg-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-    >
-      {Object.entries(displays).map(([key, displayProps]) => (
-        <option key={key} value={key}>
-          {key}: {displayProps.width}x{displayProps.height} {displayProps.fps}fps
-        </option>
-      ))}
-    </select>
+    <div className="inline-flex">
+      <select
+        value={selectedValue}
+        onChange={handleChange}
+        className="w-auto px-2 text-black rounded-sm bg-gray-400 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        {Object.entries(displays).map(([key, displayProps]) => (
+          <option key={key} value={key}>
+            {key}: {displayProps.width}x{displayProps.height} {displayProps.fps}fps
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
