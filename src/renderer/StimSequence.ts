@@ -2,7 +2,7 @@ import { Stimulus } from './stims/Stimulus';
 import './stims/StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
-import { getStartTimes } from '../shared-utils';
+import { getBasename, getStartTimes } from '../shared-utils';
 
 export type ProgressCallback = (
   label: string,
@@ -10,7 +10,7 @@ export type ProgressCallback = (
   nTotal?: number
 ) => void;
 export default class StimSequence {
-  fileBasename: string = '';
+  readonly loadedPath: string = '';
   name: string = 'Uninitialized StimSequence';
   readonly description: string = '';
   readonly stimuli: Stimulus[] = [];
@@ -21,12 +21,12 @@ export default class StimSequence {
   private isEncoding: boolean = false;
 
   constructor(
-    fileBasename?: string,
+    loadedPath: string,
     name?: string,
     description?: string,
     stimuli?: Stimulus[]
   ) {
-    this.fileBasename = fileBasename ?? this.fileBasename;
+    this.loadedPath = loadedPath;
     this.name = name ?? this.name;
     this.description = description ?? this.description;
     const stims = stimuli ?? this.stimuli;
@@ -103,7 +103,7 @@ export default class StimSequence {
     cbProgress?: ProgressCallback
   ) {
     const [outputFilename] = await Promise.all([
-      this.saveFileDialogAsync(this.fileBasename + '.mp4'),
+      this.saveFileDialogAsync(getBasename(this.loadedPath, true) + '.mp4'),
       this.saveToCacheAsync(displayKey, cbProgress), // Can start while user is choosing filename
     ]);
     if (!outputFilename) {

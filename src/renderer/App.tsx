@@ -5,6 +5,7 @@ import SequencePreviewTab from './SequencePreviewTab';
 import { formatSeconds } from './render-utils';
 import RunTab from './RunTab';
 import { BuildTab } from './BuildTab';
+import { getBasename } from '../shared-utils';
 
 const tabLabels = ['Preview', 'Build', 'Run'];
 
@@ -23,11 +24,16 @@ export default function App(): JSX.Element {
               </div>
               <div className="bg-gray-950 rounded-md p-2">
                 <div className="text-gray-500">
-                  {theStimSequence.fileBasename + ' | '}
+                  <span className="text-gray-300">
+                    {getBasename(theStimSequence.loadedPath)}
+                  </span>{' '}
+                  {' | '}
                   Count: {theStimSequence.stimuli.length + ' | '}
                   Duration: {formatSeconds(theStimSequence.duration() / 1000)}
                 </div>
-                <div>{theStimSequence.description}&nbsp;</div>
+                <div className="text-gray-400">
+                  {theStimSequence.description}&nbsp;
+                </div>
               </div>
             </>
           )}

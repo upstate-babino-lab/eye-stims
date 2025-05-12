@@ -4,6 +4,7 @@ import { StateContext } from './StateContext';
 import StimSequence from './StimSequence';
 import { newStimulus } from './stims/stimConstructors';
 import { capitalize } from './render-utils';
+import { Stimulus } from './stims';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(
@@ -22,10 +23,10 @@ export function StateProvider({ children }: { children: ReactNode }) {
       const description = (parsedContents && parsedContents['description']) ?? '';
       setTheStimSequence(
         new StimSequence(
-          getBasenameFromString(filePath),
+          filePath,
           name,
           description,
-          stimulusList.map((s) => newStimulus(s))
+          stimulusList.map((s: Stimulus) => newStimulus(s))
         )
       );
     };
@@ -81,9 +82,4 @@ function oldStimList2New(old) {
     };
     return newStim;
   });
-}
-
-function getBasenameFromString(filePath: string): string {
-  const baseNameIncludingExtension = filePath.split(/[/\\]/).pop() || '';
-  return baseNameIncludingExtension.replace(/\.[^/.]+$/, '');
 }
