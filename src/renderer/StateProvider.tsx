@@ -5,6 +5,7 @@ import StimSequence from './StimSequence';
 import { newStimulus } from './stims/stimConstructors';
 import { capitalize } from './render-utils';
 import { Stimulus } from './stims';
+import { generateStimuliFromSpec, StimsSpec } from './stims/StimsSpec';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(
@@ -14,10 +15,22 @@ export function StateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const handleFileLoaded = (filePath: string, parsedContents: unknown): void => {
       console.log(`>>>>> renderer StateProvider got 'file-loaded' from main`);
-      const stimulusList =
-        oldStimList2New(parsedContents) ??
-        (parsedContents && parsedContents['stimuli']);
       const fileNameWithExtension = filePath.split('/').pop() || '';
+      let stimulusList: Stimulus[] = [];
+      let spec: StimsSpec | null = null;
+
+      if (!parsedContents) {
+        throw new Error('No parsed contents from ' + filePath);
+      }
+      if (filePath.endsWith('.spec.json')) {
+        stimulusList = generateStimuliFromSpec(parsedContents as StimsSpec);
+        spec = parsedContents as StimsSpec;
+      } else {
+        stimulusList =
+          oldStimList2New(parsedContents) ??
+          (parsedContents && parsedContents['stimuli']);
+      }
+
       const name =
         (parsedContents && parsedContents['name']) || fileNameWithExtension;
       const description = (parsedContents && parsedContents['description']) ?? '';
@@ -26,6 +39,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
           filePath,
           name,
           description,
+          spec,
           stimulusList.map((s: Stimulus) => newStimulus(s))
         )
       );

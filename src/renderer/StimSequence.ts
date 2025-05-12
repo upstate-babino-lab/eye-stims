@@ -3,6 +3,7 @@ import './stims/StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
 import { getBasename, getStartTimes } from '../shared-utils';
+import { StimsSpec } from './stims/StimsSpec';
 
 export type ProgressCallback = (
   label: string,
@@ -13,6 +14,7 @@ export default class StimSequence {
   readonly loadedPath: string = '';
   name: string = 'Uninitialized StimSequence';
   readonly description: string = '';
+  readonly spec: StimsSpec | null = null;
   readonly stimuli: Stimulus[] = [];
   startTimes: number[] = []; // Milliseconds into sequence
   private cachedDuration: number = -1; // Sum of all stimuli durations
@@ -24,11 +26,13 @@ export default class StimSequence {
     loadedPath: string,
     name?: string,
     description?: string,
+    spec: StimsSpec | null = null,
     stimuli?: Stimulus[]
   ) {
     this.loadedPath = loadedPath;
     this.name = name ?? this.name;
     this.description = description ?? this.description;
+    this.spec = spec ?? this.spec;
     const stims = stimuli ?? this.stimuli;
     this.stimuli = stims; // deepDeduplicate(stims);
   }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
 import SpecTab from './tabs/SpecTab';
@@ -8,11 +8,27 @@ import SequencePreviewTab from './tabs/SequencePreviewTab';
 import { formatSeconds } from './render-utils';
 import { getBasename } from '../shared-utils';
 
-const tabLabels = ['Spec', 'Preview', 'Build', 'Run'];
+const tabLabels = ['Preview', 'Build', 'Run'];
 
 export default function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState(tabLabels[0]);
   const { theStimSequence } = useTheStimSequence();
+
+  useEffect(() => {
+    if (theStimSequence && theStimSequence.loadedPath.endsWith('.spec.json')) {
+      // First tab should be 'Spec'
+      if (tabLabels[0] !== 'Spec') {
+        tabLabels.unshift('Spec');
+      }
+    } else {
+      // Remove 'Spec' tab if it exists
+      const specIndex = tabLabels.indexOf('Spec');
+      if (specIndex !== -1) {
+        tabLabels.splice(specIndex, 1);
+      }
+    }
+    setActiveTab(tabLabels[0]); // Reset to the first tab
+  }, [theStimSequence]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-gray-400 text-sm p-4">

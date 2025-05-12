@@ -24,10 +24,12 @@ contextBridge.exposeInMainWorld('electron', {
   runFfmpegAsync: (args: string[]) => {
     return ipcRenderer.invoke('runFfmpeg', args);
   },
+
   showSaveDialogAsync: (
     options: Electron.SaveDialogOptions
   ): Promise<Electron.SaveDialogReturnValue> =>
     ipcRenderer.invoke('showSaveDialog', options),
+
   buildFromCacheAsync: (
     displayKey: DisplayKey,
     stimFilenames: string[],
@@ -42,16 +44,20 @@ contextBridge.exposeInMainWorld('electron', {
       outputFullPathname
     );
   },
+
   ensureSilentCacheAsync: (durationMs: number): Promise<string> => {
     // Returns full path of silence file
     return ipcRenderer.invoke('ensureSilentCache', durationMs);
   },
+
   saveBufferToCacheAsync: (buffer: ArrayBuffer, unhashedFilename: string) => {
     return ipcRenderer.invoke('saveBufferToCache', buffer, unhashedFilename);
   },
+
   readFromCacheAsync: (filename: string) => {
     return ipcRenderer.invoke('readFromCache', filename);
   },
+
   isCachedAsync: (unhashedFilename: string) => {
     // Returns filename (without full path)
     return ipcRenderer.invoke('isCached', unhashedFilename);
