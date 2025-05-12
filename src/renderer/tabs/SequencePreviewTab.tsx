@@ -1,7 +1,7 @@
-import StimulusPreview from './StimulusPreview';
-import { useTheStimSequence } from './StateContext';
+import StimulusPreview from '../StimulusPreview';
+import { useTheStimSequence } from '../StateContext';
 import { useState } from 'react';
-import StimList from './StimList';
+import StimList from '../StimList';
 
 export default function SequencePreviewTab() {
   const { theStimSequence } = useTheStimSequence();

@@ -47,6 +47,6 @@ export default function RunTab() {
         inputClassName=" border border-gray-500 rounded-md px-2 py-1"
       />
       */}
-    </div >
+    </div>
   );
 }
