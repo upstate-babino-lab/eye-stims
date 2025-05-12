@@ -1,8 +1,8 @@
 import { Stimulus } from './stims/Stimulus';
 import './stims/StimulusElectron';
 import { Encoder } from './Encoder';
-import { DisplayKey } from '../../displays';
-import { getStartTimes } from '../../shared-utils';
+import { DisplayKey } from '../displays';
+import { getStartTimes } from '../shared-utils';
 
 export type ProgressCallback = (
   label: string,

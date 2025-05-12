@@ -8,8 +8,8 @@
 */
 import { Stimulus } from './Stimulus';
 import { Encoder } from '../Encoder';
-import { DisplayKey, displays } from '../../../displays';
-import { TONE_DURATION_MS } from '../../../constants';
+import { DisplayKey, displays } from '../../displays';
+import { TONE_DURATION_MS } from '../../constants';
 import { stableStringify } from '../render-utils';
 
 // Extend the interface

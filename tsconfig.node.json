@@ -4,13 +4,13 @@
     "electron.vite.config.*",
     "src/main/**/*",
     "src/preload/**/*",
-    "src/renderer/src/stims/*.ts",
+    "src/renderer/stims/*.ts",
     "tools/*",
     "eye-candy-program-ports/*",
     "src/*.ts"
   ],
   "exclude": [
-    "src/renderer/src/stims/StimulusElectron.ts",
+    "src/renderer/stims/StimulusElectron.ts",
   ],
   "compilerOptions": {
     "target": "es2015",

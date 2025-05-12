@@ -1,5 +1,5 @@
 import * as Mp4Muxer from 'mp4-muxer';
-import { DisplayKey, DisplayProps, displays } from '../../displays';
+import { DisplayKey, DisplayProps, displays } from '../displays';
 
 // See https://dmnsgn.github.io/media-codecs for list of codecs that browser supports
 // TODO: Try vp8 because it's supposed to be faster

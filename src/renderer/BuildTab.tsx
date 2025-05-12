@@ -1,6 +1,6 @@
 import Button from './components/Button';
 import { useTheStimSequence } from './StateContext';
-import { DisplayKey, displays } from '../../displays';
+import { DisplayKey, displays } from '../displays';
 import { useState } from 'react';
 import ProgressBar from './components/ProgressBar';
 import { ProgressCallback } from './StimSequence';
