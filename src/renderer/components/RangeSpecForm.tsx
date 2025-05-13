@@ -99,9 +99,9 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-gray-800 text-gray-400 text-sm font-bold shadow-md rounded-xl px-8 py-2 mb-4"
+      className="bg-gray-800 text-gray-400 text-xs font-bold shadow-md rounded-xl px-8 py-2 mb-4"
     >
-      <div className="text-gray-100 text-base -ml-5">{title}</div>
+      <div className="text-gray-100 text-sm -ml-5">{title}</div>
       {renderInputField('start', 'Start', start, setStart, 'Optional')}
       {renderInputField('step', 'Step', step, setStep, 'Optional')}
       {renderInputField('end', 'End', end, setEnd, 'Optional')}

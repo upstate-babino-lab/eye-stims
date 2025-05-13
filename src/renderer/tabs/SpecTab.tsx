@@ -7,7 +7,7 @@ export default function SpecTab() {
 
   const theStimSpec = theStimSequence?.spec;
   return (
-    <div className="flex flex-col items-start p-3">
+    <div className="flex flex-col items-start p-4 bg-gray-900 -mx-4">
       <RangeSpecForm
         title="Cycles per degree"
         onSubmit={(rangeSpec: RangeSpec) => {
