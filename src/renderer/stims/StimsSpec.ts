@@ -15,7 +15,8 @@ export class StimsSpec {
   cpd?: RangeSpec;
   contrast?: RangeSpec;
   speed?: RangeSpec;
-  integrityFlashMins: number = 0;
+  integrityFlashIntervalMins: number = 0;
+  repetitions: number = 1;
 
   constructor(props: Partial<StimsSpec> = {}) {
     this.name = props.name ?? this.name;
@@ -24,7 +25,9 @@ export class StimsSpec {
     this.cpd = props.cpd ?? this.cpd;
     this.contrast = props.contrast ?? this.contrast;
     this.speed = props.speed ?? this.speed;
-    this.integrityFlashMins = props.integrityFlashMins ?? this.integrityFlashMins;
+    this.integrityFlashIntervalMins =
+      props.integrityFlashIntervalMins ?? this.integrityFlashIntervalMins;
+    this.repetitions = props.repetitions ?? this.repetitions;
   }
 
   // Generate list if necessary
