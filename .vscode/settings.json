@@ -25,6 +25,7 @@
     "bitstream",
     "centisecond",
     "copyts",
+    "cpds",
     "DTMF",
     "eyestims",
     "lavfi",

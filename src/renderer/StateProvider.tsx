@@ -5,7 +5,7 @@ import StimSequence from './StimSequence';
 import { newStimulus } from './stims/stimConstructors';
 import { capitalize } from './render-utils';
 import { Stimulus } from './stims';
-import { generateStimuliFromSpec, StimsSpec } from './stims/StimsSpec';
+import { StimsSpec } from './stims/StimsSpec';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(
@@ -17,14 +17,14 @@ export function StateProvider({ children }: { children: ReactNode }) {
       console.log(`>>>>> renderer StateProvider got 'file-loaded' from main`);
       const fileNameWithExtension = filePath.split('/').pop() || '';
       let stimulusList: Stimulus[] = [];
-      let spec: StimsSpec | null = null;
+      let stimsSpec: StimsSpec | null = null;
 
       if (!parsedContents) {
         throw new Error('No parsed contents from ' + filePath);
       }
       if (filePath.endsWith('.spec.json')) {
-        stimulusList = generateStimuliFromSpec(parsedContents as StimsSpec);
-        spec = parsedContents as StimsSpec;
+        stimsSpec = new StimsSpec(parsedContents as Partial<StimsSpec>);
+        stimulusList = stimsSpec.stimuli();
       } else {
         stimulusList =
           oldStimList2New(parsedContents) ??
@@ -39,7 +39,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
           filePath,
           name,
           description,
-          spec,
+          stimsSpec,
           stimulusList.map((s: Stimulus) => newStimulus(s))
         )
       );

@@ -9,7 +9,7 @@ export class Grating extends Stimulus {
   gratingType: GratingType = GratingType.Sin;
   fgColor = 'white';
   speed: number = 10; // degrees per second
-  width: number = 10; // degrees
+  cpd: number = 10;
   angle = 45; // degrees
   constructor(props: Partial<Grating> = {}) {
     super({
@@ -22,7 +22,7 @@ export class Grating extends Stimulus {
     this.gratingType = props.gratingType ?? this.gratingType;
     this.fgColor = props.fgColor ?? this.fgColor;
     this.speed = props.speed ?? this.speed;
-    this.width = Math.abs(props.width ?? this.width);
+    this.cpd = Math.abs(props.cpd ?? this.cpd);
     this.angle = props.angle ?? this.angle;
   }
   renderFrame(
@@ -33,7 +33,7 @@ export class Grating extends Stimulus {
     if (ageSeconds < 0 || ageSeconds > this.durationMs / 1000) {
       return;
     }
-    const barWidthPx = this.width * pxPerDegree;
+    const barWidthPx = this.cpd * pxPerDegree;
     const angleRadians = degreesToRadians(this.angle);
     const vmax2 = 2 * vmax(ctx);
 

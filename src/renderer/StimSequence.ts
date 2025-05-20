@@ -14,7 +14,7 @@ export default class StimSequence {
   readonly loadedPath: string = '';
   name: string = 'Uninitialized StimSequence';
   readonly description: string = '';
-  readonly spec: StimsSpec | null = null;
+  readonly stimsSpec: StimsSpec | null = null;
   readonly stimuli: Stimulus[] = [];
   startTimes: number[] = []; // Milliseconds into sequence
   private cachedDuration: number = -1; // Sum of all stimuli durations
@@ -26,13 +26,13 @@ export default class StimSequence {
     loadedPath: string,
     name?: string,
     description?: string,
-    spec: StimsSpec | null = null,
+    stimsSpec: StimsSpec | null = null,
     stimuli?: Stimulus[]
   ) {
     this.loadedPath = loadedPath;
     this.name = name ?? this.name;
     this.description = description ?? this.description;
-    this.spec = spec ?? this.spec;
+    this.stimsSpec = stimsSpec ?? this.stimsSpec;
     const stims = stimuli ?? this.stimuli;
     this.stimuli = stims; // deepDeduplicate(stims);
   }
@@ -40,6 +40,9 @@ export default class StimSequence {
   // Calculate total duration and populate startTimes array
   // Returns total milliseconds
   duration(): number {
+    if (this.stimuli.length === 0) {
+      return 0;
+    }
     if (this.cachedDuration >= 0) {
       return this.cachedDuration;
     }
