@@ -64,21 +64,6 @@ export default function SpecTab() {
           placeholder={'4'}
         />
       </div>
-      <div className="mb-1 flex items-center">
-        <label className="text-sm font-bold text-gray-100 px-4">
-          Repetitions:
-        </label>
-        <input
-          type="number"
-          className={INPUT_STYLES}
-          value={
-            theStimsSpec?.integrityFlashIntervalMins
-              ? theStimsSpec?.integrityFlashIntervalMins
-              : ''
-          }
-          placeholder={'1'}
-        />
-      </div>
     </div>
   );
 }

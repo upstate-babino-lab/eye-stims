@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import RangeSpec from '../stims/RangeSpec';
 
 export const INPUT_STYLES =
-  'shadow appearance-none border border-gray-500 rounded w-27 ' +
+  'shadow appearance-none border border-gray-500 rounded w-18 ' +
   'py-1 px-3 text-gray-300 placeholder-gray-700 leading-tight ' +
   'focus:outline-none focus:shadow-outline';
 
@@ -20,19 +20,16 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
   const [start, setStart] = useState<number | undefined>(initialValues?.start);
   const [step, setStep] = useState<number | undefined>(initialValues?.step);
   const [nSteps, setNSteps] = useState<number | undefined>(initialValues?.nSteps);
-  const [listString, setListString] = useState<string>(
-    initialValues?.list?.join(',') || ''
-  );
+  const [list, setList] = useState<number[]>(new RangeSpec(initialValues).list);
 
   // Reusable input field component
   const renderInputField = (
     id: string,
     label: string,
     value: number | undefined,
-    setValue: React.Dispatch<React.SetStateAction<number | undefined>>,
-    placeholder: string
+    setValue: React.Dispatch<React.SetStateAction<number | undefined>>
   ) => (
-    <div className="mb-3 flex items-center space-x-3">
+    <div className="mb-1 flex items-center space-x-3">
       <label htmlFor={id} className="w-20 text-right">
         {label}:
       </label>
@@ -46,35 +43,40 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
             e.target.value === '' ? undefined : parseInt(e.target.value, 10);
           setValue(newValue);
 
-          setListString(
+          setList(
             new RangeSpec({
               start: id === 'start' ? newValue : start,
               step: id === 'step' ? newValue : step,
               nSteps: id === 'nSteps' ? newValue : nSteps,
-            }).list.join(', ')
+            }).list
           );
         }}
-        placeholder={placeholder}
       />
     </div>
   );
 
   return (
     <form
-      className="bg-gray-800 text-gray-400 text-xs font-bold shadow-md rounded-xl px-8 py-2 mb-4"
+      className="bg-gray-800 text-gray-400 text-xs font-bold shadow-md rounded-xl px-2 py-1 mb-4"
       onChange={() => {
         onUpdate(new RangeSpec({ start, step, nSteps }));
       }}
     >
-      <div className="text-gray-100 text-sm -ml-5 mb-3">{title}</div>
+      <div className="text-gray-100 text-sm ml-2 mb-2">{title}</div>
       <div className="flex flex-row">
-        {renderInputField('start', 'Start', start, setStart, 'Optional')}
-        {renderInputField('step', 'Step', step, setStep, 'Optional')}
-        {renderInputField('nSteps', 'nSteps', nSteps, setNSteps, 'Optional')}
+        {renderInputField('start', 'Start', start, setStart)}
+        {renderInputField('step', 'Step', step, setStep)}
+        {renderInputField('nSteps', 'nSteps', nSteps, setNSteps)}
       </div>
-      <div className="mb-4 flex items-center text-base space-x-2">
+      <div className="mb-2 flex items-center space-x-2">
         <label className="w-20 text-right">List:</label>
-        <span className="text-gray-200">{listString}</span>
+        <span className="text-gray-200 font-normal">
+          {JSON.stringify(
+            list.map((e) => Math.round(e * 1000) / 1000), // For more compact formatting
+            null,
+            1
+          )}
+        </span>
       </div>
     </form>
   );

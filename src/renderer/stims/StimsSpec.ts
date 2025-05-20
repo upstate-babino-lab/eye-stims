@@ -1,6 +1,6 @@
-import { Solid } from './Solid';
 import { Stimulus } from './Stimulus';
 import RangeSpec from './RangeSpec';
+import { SqrGrating } from './SqrGrating';
 
 enum StimSpecType {
   SinGratings = 'Sinusoidal Gratings',
@@ -9,11 +9,10 @@ enum StimSpecType {
 export class StimsSpec {
   stimSpecType: StimSpecType = StimSpecType.SqrGratings;
   specType: string = '';
-  cpds: RangeSpec = new RangeSpec({ start: 0.1, step: 0.1, nSteps: 1 });
+  cpds: RangeSpec = new RangeSpec({ start: 0.01, step: 0.02, nSteps: 1 });
   contrasts: RangeSpec = new RangeSpec({ start: 0, step: 1, nSteps: 1 });
   speeds: RangeSpec = new RangeSpec({ start: 10, step: 1, nSteps: 1 });
   integrityFlashIntervalMins: number = 0;
-  repetitions: number = 1;
 
   constructor(props: Partial<StimsSpec> = {}) {
     this.stimSpecType = props.stimSpecType ?? this.stimSpecType;
@@ -23,7 +22,6 @@ export class StimsSpec {
     this.speeds = props.speeds ?? this.speeds;
     this.integrityFlashIntervalMins =
       props.integrityFlashIntervalMins ?? this.integrityFlashIntervalMins;
-    this.repetitions = props.repetitions ?? this.repetitions;
   }
 
   stimuli(): Stimulus[] {
@@ -31,13 +29,14 @@ export class StimsSpec {
     const cpds = this.cpds?.list;
     const contrasts = this.contrasts?.list;
     const speeds = this.speeds?.list;
-    for (const num1 of cpds) {
-      for (const num2 of contrasts) {
-        for (const num3 of speeds) {
-          const stim = new Solid({
+    for (const cpd of cpds) {
+      for (const speed of speeds) {
+        for (const contrast of contrasts) {
+          const stim = new SqrGrating({
+            cpd: cpd,
             durationMs: 1000,
             bgColor: 'green',
-            meta: { num1: num1, num2: num2, num3: num3 },
+            meta: { num1: cpd, num2: contrast, num3: speed },
           });
           stimuli.push(stim);
         }

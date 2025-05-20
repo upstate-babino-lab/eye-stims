@@ -3,7 +3,6 @@ import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './StimSequence';
 import { newStimulus } from './stims/stimConstructors';
-import { capitalize } from './render-utils';
 import { Stimulus } from './stims';
 import { StimsSpec } from './stims/StimsSpec';
 
@@ -26,22 +25,15 @@ export function StateProvider({ children }: { children: ReactNode }) {
         stimsSpec = new StimsSpec(parsedContents as Partial<StimsSpec>);
         stimulusList = stimsSpec.stimuli();
       } else {
-        stimulusList =
-          oldStimList2New(parsedContents) ??
-          (parsedContents && parsedContents['stimuli']);
+        stimulusList = parsedContents['stimuli'].map((s: Stimulus) =>
+          newStimulus(s)
+        );
       }
-
       const name =
         (parsedContents && parsedContents['name']) || fileNameWithExtension;
       const description = (parsedContents && parsedContents['description']) ?? '';
       setTheStimSequence(
-        new StimSequence(
-          filePath,
-          name,
-          description,
-          stimsSpec,
-          stimulusList.map((s: Stimulus) => newStimulus(s))
-        )
+        new StimSequence(filePath, name, description, stimsSpec, stimulusList)
       );
     };
 
@@ -78,6 +70,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/*
 function oldStimList2New(old) {
   if (!old || !old.stimulus_list) {
     return null;
@@ -97,3 +90,4 @@ function oldStimList2New(old) {
     return newStim;
   });
 }
+*/
