@@ -7,7 +7,8 @@
     "src/stims/*.ts",
     "tools/*",
     "eye-candy-program-ports/*",
-    "src/*.ts"
+    "src/*.ts",
+    "src/specs/*.ts",
   ],
   "compilerOptions": {
     "target": "es2015",
@@ -19,6 +20,9 @@
     "paths": {
       "@stims/*": [
         "src/stims/*"
+      ],
+      "@specs/*": [
+        "src/specs/*"
       ]
     }
   }

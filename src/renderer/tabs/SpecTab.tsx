@@ -1,7 +1,6 @@
 import RangeSpecForm, { INPUT_STYLES } from '@renderer/components/RangeSpecForm';
 import { useTheStimSequence } from '@renderer/StateContext';
-import RangeSpec from '@stims/RangeSpec';
-import { StimsSpec } from '@stims/StimsSpec';
+import { StimsSpec, RangeSpec } from '@specs/index';
 import StimSequence from '@renderer/StimSequence';
 
 export default function SpecTab() {

@@ -3,6 +3,15 @@
     "target": "es2015",
     "downlevelIteration": true,
     "module": "commonjs",
-    "strict": true
+    "strict": true,
+    "baseUrl": "../",
+    "paths": {
+      "@stims/*": [
+        "src/stims/*"
+      ],
+      "@specs/*": [
+        "src/specs/*"
+      ]
+    }
   }
 }

@@ -1,4 +1,4 @@
-export default class RangeSpec {
+export class RangeSpec {
   start: number;
   step: number;
   nSteps: number;

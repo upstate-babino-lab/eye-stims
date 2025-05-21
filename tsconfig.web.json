@@ -6,7 +6,8 @@
     "src/renderer/**/*.tsx",
     "src/preload/*.d.ts",
     "src/*.ts",
-    "src/stims"
+    "src/stims",
+    "src/specs/*.ts",
   ],
   "compilerOptions": {
     "composite": true,
@@ -18,6 +19,9 @@
       ],
       "@stims/*": [
         "src/stims/*"
+      ],
+      "@specs/*": [
+        "src/specs/*"
       ]
     }
   }

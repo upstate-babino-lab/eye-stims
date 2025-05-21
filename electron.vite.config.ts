@@ -14,6 +14,7 @@ export default defineConfig({
       alias: {
         '@renderer': resolve('src/renderer'),
         '@stims': resolve('src/stims'),
+        '@specs': resolve('src/specs'),
       },
     },
     plugins: [react()],
