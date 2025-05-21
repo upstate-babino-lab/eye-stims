@@ -6,7 +6,7 @@ import StimSequence from '@renderer/StimSequence';
 
 export default function SpecTab() {
   const { theStimSequence, setTheStimSequence } = useTheStimSequence();
-  const theStimsSpec = theStimSequence?.stimsSpec || new StimsSpec();
+  const theStimsSpec = new StimsSpec();
 
   function updateFromNewStimsSpec(newStimsSpec: StimsSpec) {
     setTheStimSequence(
@@ -14,7 +14,6 @@ export default function SpecTab() {
         theStimSequence?.loadedPath || '',
         theStimSequence?.name,
         newStimsSpec.specType + ' Spec',
-        newStimsSpec,
         newStimsSpec.stimuli()
       )
     );

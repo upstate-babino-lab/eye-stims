@@ -42,6 +42,7 @@ export const stimConstructors: StimConstructors = {
   SqrGrating: SqrGrating,
 };
 
+// Create a new Stimulus class instance from POJO or parsed JSON object.
 export function newStimulus(stim: Stimulus) {
   const isValidStimType = stim && Object.values(StimTypeName).includes(stim.name);
   let constructor = stimConstructors['Uninitialized'];

@@ -2,7 +2,6 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './StimSequence';
-import { newStimulus } from './stims/stimConstructors';
 import { Stimulus } from './stims';
 import { StimsSpec } from './stims/StimsSpec';
 
@@ -15,7 +14,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
     const handleFileLoaded = (filePath: string, parsedContents: unknown): void => {
       console.log(`>>>>> renderer StateProvider got 'file-loaded' from main`);
       const fileNameWithExtension = filePath.split('/').pop() || '';
-      let stimulusList: Stimulus[] = [];
+      let stimPojos: Stimulus[] = [];
       let stimsSpec: StimsSpec | null = null;
 
       if (!parsedContents) {
@@ -23,18 +22,14 @@ export function StateProvider({ children }: { children: ReactNode }) {
       }
       if (filePath.endsWith('.spec.json')) {
         stimsSpec = new StimsSpec(parsedContents as Partial<StimsSpec>);
-        stimulusList = stimsSpec.stimuli();
+        stimPojos = stimsSpec.stimuli();
       } else {
-        stimulusList = parsedContents['stimuli'].map((s: Stimulus) =>
-          newStimulus(s)
-        );
+        stimPojos = parsedContents['stimuli'] as Stimulus[];
       }
       const name =
         (parsedContents && parsedContents['name']) || fileNameWithExtension;
       const description = (parsedContents && parsedContents['description']) ?? '';
-      setTheStimSequence(
-        new StimSequence(filePath, name, description, stimsSpec, stimulusList)
-      );
+      setTheStimSequence(new StimSequence(filePath, name, description, stimPojos));
     };
 
     const handleSaveRequest = (filePath: string): void => {
