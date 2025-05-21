@@ -1,2 +1,2 @@
-export { StimsSpec } from './StimsSpec';
+export { StimsSpec, StimSpecType } from './StimsSpec';
 export { RangeSpec } from './RangeSpec';

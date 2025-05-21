@@ -26,9 +26,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
       } else {
         stimPojos = parsedContents['stimuli'] as Stimulus[];
       }
-      const name =
-        (parsedContents && parsedContents['name']) || fileNameWithExtension;
-      const description = (parsedContents && parsedContents['description']) ?? '';
+      const name = parsedContents['name'] || fileNameWithExtension;
+      const description = parsedContents['description'] ?? '';
       setTheStimSequence(new StimSequence(filePath, name, description, stimPojos));
     };
 

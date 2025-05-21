@@ -1,11 +1,19 @@
+/*
+  A StimsSpec is used to create a list of POJO stimuli
+  that can be saved to a .stims.json file or to create a StimSequence
+*/
 import { Stimulus, SqrGrating } from '@stims/index';
 import { RangeSpec } from './RangeSpec';
 
-enum StimSpecType {
+// TODO: Create StimSpec subclasses for each type of StimSpec
+
+export enum StimSpecType {
   SinGratings = 'Sinusoidal Gratings',
   SqrGratings = 'Square Gratings',
 }
 export class StimsSpec {
+  name: string = 'Uninitialized StimsSpec';
+  description: string = '';
   stimSpecType: StimSpecType = StimSpecType.SqrGratings;
   specType: string = '';
   cpds: RangeSpec = new RangeSpec({ start: 0.01, step: 0.02, nSteps: 1 });
@@ -14,6 +22,8 @@ export class StimsSpec {
   integrityFlashIntervalMins: number = 0;
 
   constructor(props: Partial<StimsSpec> = {}) {
+    this.name = props.name ?? this.name;
+    this.description = props.description ?? this.description;
     this.stimSpecType = props.stimSpecType ?? this.stimSpecType;
     this.specType = props.specType ?? this.specType;
     this.cpds = props.cpds ?? this.cpds;
