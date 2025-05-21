@@ -27,7 +27,8 @@
     "ffmpeg-static": "^5.2.0",
     "mp4-muxer": "^5.2.1",
     "react-virtualized-auto-sizer": "^1.0.26",
-    "react-window": "^1.8.11"
+    "react-window": "^1.8.11",
+    "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",

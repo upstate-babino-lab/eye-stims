@@ -1,11 +1,11 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env -S ts-node -r tsconfig-paths/register
 
 // Make sure ts-node is installed
 // $ npm install -g ts-node
 // Then as follows:
 // npx ts-node black-white-sequence.ts foo 50000 > stim-50000.jsonl
 
-import { Solid } from '../src/stims/index';
+import { Solid } from '@stims/index';
 
 //console.error(JSON.stringify(process.argv));
 if (process.argv.length < 3) {
