@@ -1,6 +1,6 @@
-// For compatibility with eye-candy programming language (EPL) code
+// Import for compatibility with eye-candy programming language (EPL) code
 
-import * as stims from '../src/stims';
+import * as stims from '../src/stims/index';
 export { stims };
 export type NestedStimuli = (stims.Stimulus | NestedStimuli)[];
 

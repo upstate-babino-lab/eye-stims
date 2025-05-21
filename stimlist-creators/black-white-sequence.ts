@@ -5,7 +5,7 @@
 // Then as follows:
 // npx ts-node black-white-sequence.ts foo 50000 > stim-50000.jsonl
 
-import { Solid } from '@stims/Solid';
+import { Solid } from '../src/stims/index';
 
 //console.error(JSON.stringify(process.argv));
 if (process.argv.length < 3) {

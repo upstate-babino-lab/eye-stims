@@ -14,7 +14,7 @@ export default class StimSequence {
   readonly loadedPath: string = '';
   name: string = 'Uninitialized StimSequence';
   readonly description: string = '';
-  readonly stimuli: Stimulus[] = []; // Rich class instances, not just POJOs
+  readonly stimuli: Stimulus[] = []; // Rich class instances (not POJOs)
   startTimes: number[] = []; // Milliseconds into sequence
   private cachedDuration: number = -1; // Sum of all stimuli durations
   private cancelSaving: boolean = false; // Set to true to cancel saving
