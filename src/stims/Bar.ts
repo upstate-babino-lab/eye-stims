@@ -1,4 +1,4 @@
-import { StimTypeName, Stimulus } from './Stimulus';
+import { StimType, Stimulus } from './Stimulus';
 import { degreesToRadians, diagonalLength } from './stim-utils';
 
 export class Bar extends Stimulus {
@@ -10,7 +10,7 @@ export class Bar extends Stimulus {
 
   constructor(props: Partial<Bar> = {}) {
     // console.log(`>>>>> constructor Bar(duration=${duration}, bgColor=${bgColor}, ...)`);
-    super({ ...props, name: StimTypeName.Bar });
+    super({ ...props, stimType: StimType.Bar });
     this.fgColor = props.fgColor ?? this.fgColor;
     this.speed = props.speed ?? this.speed;
     this.width = props.width ?? this.width;

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { StimTypeName, Stimulus } from '@stims/Stimulus';
+import { StimType, Stimulus } from '@stims/Stimulus';
 import { stimConstructors } from '@stims/stimConstructors';
 import Button from './components/Button';
 import InputField from './components/InputField';
@@ -16,13 +16,13 @@ export default function StimulusPreview(props: {
   const indexedStim = theStimSequence?.stimuli[props.stimIndex];
   // TODO: simplify below by using imported newStimulus()
   const isValidStimType =
-    indexedStim && Object.values(StimTypeName).includes(indexedStim.name);
+    indexedStim && Object.values(StimType).includes(indexedStim.stimType);
   let constructor = stimConstructors['Solid'];
   if (isValidStimType) {
-    constructor = stimConstructors[indexedStim.name];
+    constructor = stimConstructors[indexedStim.stimType];
   } else {
     console.log(
-      `ERROR from StimulusPreview: '${indexedStim?.name}' invalid StimTypeName`
+      `ERROR from StimulusPreview: '${indexedStim?.stimType}' invalid StimTypeName`
     );
   }
   const [stimulus, setStimulus] = useState<Stimulus | undefined>(
@@ -48,7 +48,7 @@ export default function StimulusPreview(props: {
       </div>
     </div>
   ) : (
-    <div className="text-blue-500">{`Unimplemented stimulus with StimType '${indexedStim?.name}'`}</div>
+    <div className="text-blue-500">{`Unimplemented stimulus with StimType '${indexedStim?.stimType}'`}</div>
   );
 }
 
@@ -63,9 +63,9 @@ function StimForm(props: {
   }, [props.initialStim]);
 
   // Dropdown options
-  const stimTypeNames = Object.keys(StimTypeName); //.filter((key) => isNaN(Number(key)));
+  const stimTypeNames = Object.keys(StimType); //.filter((key) => isNaN(Number(key)));
 
-  function setNewStimulus(stimTypeName: StimTypeName, overrides?: object) {
+  function setNewStimulus(stimTypeName: StimType, overrides?: object) {
     const oldStimulus = stimulus;
     // Remove for interactive preview
     delete oldStimulus.headMs;
@@ -83,13 +83,13 @@ function StimForm(props: {
 
   function handleStimNameChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value;
-    setNewStimulus(value as StimTypeName);
+    setNewStimulus(value as StimType);
   }
 
   function handleStimPropChange(propName, newValue) {
     const overrides = {};
     overrides[propName] = newValue;
-    setNewStimulus(stimulus.name, overrides);
+    setNewStimulus(stimulus.stimType, overrides);
   }
 
   const rowStyle = 'p-1 text-left border-b-1 h-7 border-gray-900';
@@ -118,7 +118,7 @@ function StimForm(props: {
 
       <div className="flex flex-col gap-0.5">
         <select
-          value={stimulus.name}
+          value={stimulus.stimType}
           onChange={handleStimNameChange}
           className={formStyle}
         >

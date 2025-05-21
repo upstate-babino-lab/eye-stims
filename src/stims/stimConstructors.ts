@@ -4,7 +4,7 @@ import { StimTypeName, Stimulus, Solid, Bar, SinGrating } from './index';
 // Should never actually be used.
 class Uninitialized extends Stimulus {
   constructor(props: Partial<Uninitialized> = {}) {
-    super({ ...props, name: StimTypeName.Uninitialized });
+    super({ ...props, stimType: StimTypeName.Uninitialized });
   }
   renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
@@ -44,19 +44,22 @@ export const stimConstructors: StimConstructors = {
 
 // Create a new Stimulus class instance from POJO or parsed JSON object.
 export function newStimulus(stim: Stimulus) {
-  const isValidStimType = stim && Object.values(StimTypeName).includes(stim.name);
+  const isValidStimType =
+    stim && Object.values(StimTypeName).includes(stim.stimType);
   let constructor = stimConstructors['Uninitialized'];
   if (isValidStimType) {
-    constructor = stimConstructors[stim.name];
+    constructor = stimConstructors[stim.stimType];
     if (!constructor) {
       console.log(
-        `ERROR from newStimulus(): '${stim?.name}' not found in stimConstructors.`
+        `ERROR from newStimulus(): '${stim?.stimType}' not found in stimConstructors.`
       );
-      console.log(`"import ${stim.name}" is missing`);
-      throw new Error(`Stimulus '${stim.name}' not found`);
+      console.log(`"import ${stim.stimType}" is missing`);
+      throw new Error(`newStimulus(): Stimulus '${stim.stimType}' not found`);
     }
   } else {
-    console.log(`ERROR from newStimulus(): '${stim?.name}' invalid StimTypeName`);
+    console.log(
+      `ERROR from newStimulus(): '${stim?.stimType}' invalid StimTypeName`
+    );
   }
   return new constructor(stim);
 }

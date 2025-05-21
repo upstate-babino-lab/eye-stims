@@ -58,7 +58,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   const { theStimSequence } = useTheStimSequence();
   const row = data.data[index];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { name, durationMs, bgColor, meta, ...partial } = row;
+  const { stimType: name, durationMs, bgColor, meta, ...partial } = row;
   const partialJson = stableStringify(partial); // Excludes private props
 
   return (
@@ -73,7 +73,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
           theStimSequence ? theStimSequence.startTimes[index] / 1000 : 0
         )}
       </div>
-      <div className={TYPE_FORMAT}>{row.name}</div>
+      <div className={TYPE_FORMAT}>{row.stimType}</div>
       <div className={DURATION_FORMAT}>{(row.durationMs / 1000).toFixed(2)}</div>
       <div className={CELL_FORMAT}>{row.bgColor}</div>
       {partialJson !== '{}' && (

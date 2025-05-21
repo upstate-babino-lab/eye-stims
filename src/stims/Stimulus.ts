@@ -1,6 +1,6 @@
 import { assert } from '../shared-utils';
 
-export enum StimTypeName {
+export enum StimType {
   Uninitialized = 'Uninitialized',
   Solid = 'Solid',
   Bar = 'Bar',
@@ -15,7 +15,7 @@ export function roundToNearestTwenty(num: number): number {
 }
 
 type StimProps = {
-  name: StimTypeName;
+  stimType: StimType;
   durationMs?: number;
   bgColor?: string;
   headMs?: number;
@@ -24,7 +24,7 @@ type StimProps = {
   meta?: Record<string, unknown>;
 };
 export abstract class Stimulus {
-  name: StimTypeName;
+  stimType: StimType;
   durationMs: number = 10_000; //  Multiple of 20
   bgColor: string = 'black';
   // Head, body and tail are optional, but must sum to duration
@@ -37,7 +37,7 @@ export abstract class Stimulus {
   _silentCacheFilename?: string;
   constructor(props: StimProps) {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
-    this.name = props.name;
+    this.stimType = props.stimType;
     this.durationMs = roundToNearestTwenty(props.durationMs ?? this.durationMs);
     this.bgColor = props.bgColor ?? this.bgColor;
     [this.headMs, this.bodyMs, this.tailMs] = calculateDurations(

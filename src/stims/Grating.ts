@@ -1,4 +1,4 @@
-import { StimTypeName, Stimulus } from './Stimulus';
+import { StimType, Stimulus } from './Stimulus';
 import { colorToRGB, degreesToRadians, rgbToHex, vmax } from './stim-utils';
 
 export enum GratingType {
@@ -14,10 +14,10 @@ export class Grating extends Stimulus {
   constructor(props: Partial<Grating> = {}) {
     super({
       ...props,
-      name:
+      stimType:
         props.gratingType === GratingType.Sin
-          ? StimTypeName.SinGrating
-          : StimTypeName.SqrGrating,
+          ? StimType.SinGrating
+          : StimType.SqrGrating,
     });
     this.gratingType = props.gratingType ?? this.gratingType;
     this.fgColor = props.fgColor ?? this.fgColor;

@@ -2,17 +2,18 @@ import RangeSpecForm, { INPUT_STYLES } from '@renderer/components/RangeSpecForm'
 import { useTheStimSequence } from '@renderer/StateContext';
 import { StimsSpec, RangeSpec } from '@specs/index';
 import StimSequence from '@renderer/StimSequence';
+import { SqrGratingStimsSpec } from '@specs/StimsSpec';
 
 export default function SpecTab() {
   const { theStimSequence, setTheStimSequence } = useTheStimSequence();
-  const theStimsSpec = new StimsSpec();
+  const theStimsSpec = new SqrGratingStimsSpec();
 
   function updateFromNewStimsSpec(newStimsSpec: StimsSpec) {
     setTheStimSequence(
       new StimSequence(
         theStimSequence?.loadedPath || '',
         theStimSequence?.name,
-        newStimsSpec.specType + ' Spec',
+        newStimsSpec.stimSpecType + ' Spec',
         newStimsSpec.stimuli()
       )
     );

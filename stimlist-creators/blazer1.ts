@@ -4,12 +4,11 @@
   complete processing from stimulation to data collection to analysis of
   retinal acuity, using all our new systems and code.
 */
-import { StimsSpec, StimSpecType, RangeSpec } from '@specs/index';
+import { SqrGratingStimsSpec, RangeSpec } from '@specs/index';
 
-const stimsSpec = new StimsSpec({
-  specType: StimSpecType.SqrGratings,
+const stimsSpec = new SqrGratingStimsSpec({
   name: 'Blazer',
-  description: 'Trailblazer for first video and stims.json',
+  description: 'Trailblazer stims.json for first video',
   cpds: new RangeSpec({
     start: 0.5,
     step: 0.5,
@@ -28,13 +27,15 @@ const stimsSpec = new StimsSpec({
   integrityFlashIntervalMins: 5,
 });
 
+const stimuli = stimsSpec.stimuli();
+
 // Print output to stdout to save as .stims.json file
 console.log(
   JSON.stringify(
     {
       name: stimsSpec.name,
       description: stimsSpec.description,
-      stimuli: stimsSpec.stimuli(),
+      stimuli: stimuli,
     },
     null,
     4

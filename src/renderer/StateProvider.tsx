@@ -3,7 +3,7 @@ import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './StimSequence';
 import { Stimulus } from '@stims/index';
-import { StimsSpec } from '@specs/StimsSpec';
+import { newStimSpec, StimsSpec } from '@specs/StimsSpec';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(
@@ -21,8 +21,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
         throw new Error('No parsed contents from ' + filePath);
       }
       if (filePath.endsWith('.spec.json')) {
-        stimsSpec = new StimsSpec(parsedContents as Partial<StimsSpec>);
-        stimPojos = stimsSpec.stimuli();
+        stimsSpec = newStimSpec(parsedContents as StimsSpec);
+        stimPojos = stimsSpec.orderedStimuli();
       } else {
         stimPojos = parsedContents['stimuli'] as Stimulus[];
       }

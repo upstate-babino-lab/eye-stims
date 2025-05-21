@@ -1,9 +1,9 @@
-import { StimTypeName, Stimulus } from './Stimulus';
+import { StimType, Stimulus } from './Stimulus';
 
 export class Solid extends Stimulus {
   constructor(props: Partial<Solid> = {}) {
     // console.log(`>>>>> constructor Solid(duration=${duration}, bgColor=${bgColor})`);
-    super({ ...props, name: StimTypeName.Solid });
+    super({ ...props, stimType: StimType.Solid });
   }
   renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
