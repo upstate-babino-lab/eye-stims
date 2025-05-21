@@ -13,6 +13,7 @@ export default defineConfig({
     resolve: {
       alias: {
         '@renderer': resolve('src/renderer'),
+        '@stims': resolve('src/stims'),
       },
     },
     plugins: [react()],

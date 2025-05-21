@@ -1,9 +1,9 @@
-import { Stimulus } from './stims/Stimulus';
-import './stims/StimulusElectron';
+import { Stimulus } from '@stims/index';
+import './StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
 import { getBasename, getStartTimes } from '../shared-utils';
-import { newStimulus } from './stims/stimConstructors';
+import { newStimulus } from '@stims/stimConstructors';
 
 export type ProgressCallback = (
   label: string,
@@ -14,7 +14,7 @@ export default class StimSequence {
   readonly loadedPath: string = '';
   name: string = 'Uninitialized StimSequence';
   readonly description: string = '';
-  readonly stimuli: Stimulus[] = []; // Class instances, not just POJOs
+  readonly stimuli: Stimulus[] = []; // Rich class instances, not just POJOs
   startTimes: number[] = []; // Milliseconds into sequence
   private cachedDuration: number = -1; // Sum of all stimuli durations
   private cancelSaving: boolean = false; // Set to true to cancel saving

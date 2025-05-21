@@ -2,8 +2,8 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { StateContext } from './StateContext';
 import StimSequence from './StimSequence';
-import { Stimulus } from './stims';
-import { StimsSpec } from './stims/StimsSpec';
+import { Stimulus } from '@stims/index';
+import { StimsSpec } from '@stims/StimsSpec';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(

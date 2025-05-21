@@ -1,4 +1,4 @@
-import { assert } from '../../shared-utils';
+import { assert } from '../shared-utils';
 
 export enum StimTypeName {
   Uninitialized = 'Uninitialized',

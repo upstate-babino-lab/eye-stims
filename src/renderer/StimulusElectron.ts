@@ -1,19 +1,19 @@
 /*
-  Extend Stimulus class with Electron-specific methods.
+  Extend Stimulus class with Chromium and Electron-specific methods.
   We do this in separate file so a simple ts-node
   program can import Stimulus without including these methods.
 
   This file must be imported in addition to Stimulus.ts only when
   any of these additional methods are used.
 */
-import { Stimulus } from './Stimulus';
-import { Encoder } from '../Encoder';
-import { DisplayKey, displays } from '../../displays';
-import { TONE_DURATION_MS } from '../../constants';
-import { stableStringify } from '../render-utils';
+import { Stimulus } from '@stims/index';
+import { Encoder } from '@renderer/Encoder';
+import { DisplayKey, displays } from '../displays';
+import { TONE_DURATION_MS } from '../constants';
+import { stableStringify } from '@renderer/render-utils';
 
 // Extend the interface
-declare module './Stimulus' {
+declare module '@stims/Stimulus' {
   interface Stimulus {
     encode(encoder: Encoder): void;
     cacheStimVideoAsync(displayKey: DisplayKey): Promise<void>;

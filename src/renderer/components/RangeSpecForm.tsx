@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import RangeSpec from '../stims/RangeSpec';
+import RangeSpec from '@stims/RangeSpec';
 
 export const INPUT_STYLES =
   'shadow appearance-none border border-gray-500 rounded w-18 ' +

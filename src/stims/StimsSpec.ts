@@ -1,6 +1,5 @@
-import { Stimulus } from './Stimulus';
+import { Stimulus, SqrGrating } from '@stims/index';
 import RangeSpec from './RangeSpec';
-import { SqrGrating } from './SqrGrating';
 
 enum StimSpecType {
   SinGratings = 'Sinusoidal Gratings',
