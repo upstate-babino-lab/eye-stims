@@ -2,7 +2,7 @@
   A StimsSpec is used to create a list of POJO stimuli
   that can be saved to a .stims.json file or to create a StimSequence
 */
-import { Stimulus, SqrGrating } from '@stims/index';
+import { Stimulus, SqrGrating, Solid } from '@stims/index';
 import { RangeSpec } from './RangeSpec';
 import { contrastPair } from '@stims/stim-utils';
 
@@ -23,6 +23,7 @@ type StimsSpecProps = {
   bodyMs?: number; // Multiple of 20
   nRepetitions?: number; // Number of repetitions of the whole sequence
   integrityFlashIntervalMins?: number;
+  restMinutesAfterIntegrityFlash?: number;
 };
 export abstract class StimsSpec {
   stimSpecType: StimSpecType = Object.values(StimSpecType)[0];
@@ -31,6 +32,7 @@ export abstract class StimsSpec {
   bodyMs: number = 260;
   nRepetitions: number = 1;
   integrityFlashIntervalMins: number = 0;
+  restMinutesAfterIntegrityFlash: number = 1;
 
   constructor(props: StimsSpecProps) {
     this.stimSpecType = props.stimSpecType ?? this.stimSpecType;
@@ -40,6 +42,8 @@ export abstract class StimsSpec {
     this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
     this.integrityFlashIntervalMins =
       props.integrityFlashIntervalMins ?? this.integrityFlashIntervalMins;
+    this.restMinutesAfterIntegrityFlash =
+      props.restMinutesAfterIntegrityFlash ?? this.restMinutesAfterIntegrityFlash;
   }
 
   abstract orderedStimuli(): Stimulus[];
@@ -47,7 +51,30 @@ export abstract class StimsSpec {
   stimuli(): Stimulus[] {
     const shuffledStims = this.orderedStimuli().sort(() => Math.random() - 0.5); // in-place shuffle
     if (this.integrityFlashIntervalMins && this.integrityFlashIntervalMins > 0) {
-      // TODO: Insert integrity flashes at intervals of this.integrityFlashIntervalMins
+      // Insert integrity flashes at regular intervals
+      const integrityFlashes = [
+        new Solid({ bgColor: 'white', durationMs: 1260, bodyMs: 260 }),
+        new Solid({ bgColor: 'red', durationMs: 1260, bodyMs: 260 }),
+        new Solid({ bgColor: 'green', durationMs: 1260, bodyMs: 260 }),
+        new Solid({ bgColor: 'blue', durationMs: 1260, bodyMs: 260 }),
+      ];
+
+      const nStimsIntegrityInterval = Math.round(
+        (this.integrityFlashIntervalMins * 60 * 1000) / (this.bodyMs * 2)
+      );
+      const augmentedStims = shuffledStims.reduce((acc, stim, i) => {
+        if (i % nStimsIntegrityInterval === 0) {
+          acc.push(...integrityFlashes);
+          if (i > 0) {
+            // Add a rest period after the integrity flash
+            const restDuration = this.restMinutesAfterIntegrityFlash * 60 * 1000;
+            acc.push(new Solid({ bgColor: 'black', durationMs: restDuration }));
+          }
+        }
+        acc.push(stim); // Push the current stimulus
+        return acc;
+      }, [] as Stimulus[]); // Start with empty accumulator
+      return augmentedStims;
     }
     return shuffledStims;
   }

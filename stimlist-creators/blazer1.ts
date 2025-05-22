@@ -1,7 +1,7 @@
 #!/usr/bin/env -S ts-node -r tsconfig-paths/register
 /*
-  "Trailblazer" to create our first useful video and .stims.json for
-  complete processing from stimulation to data collection to analysis of
+  "Trailblazer" spec to create our first useful video and .stims.json for
+  complete processing of stimulations to data collection to analysis of
   retinal acuity, using all our new systems and code.
 */
 import { SqrGratingStimsSpec, RangeSpec } from '@specs/index';
@@ -26,13 +26,14 @@ const stimsSpec = new SqrGratingStimsSpec({
     nSteps: 1, // Only one speed for now
   }),
   nRepetitions: 40,
-  integrityFlashIntervalMins: 5,
+  integrityFlashIntervalMins: 10,
+  restMinutesAfterIntegrityFlash: 4,
 });
 
 const stimuli = stimsSpec.stimuli();
 console.error(
   `Created ${stimuli.length} stimuli ` +
-    `with total duration ${(stimsSpec.bodyMs * stimuli.length * 2) / (1000 * 60)} minutes`
+    `with stims total duration >${(stimsSpec.bodyMs * stimuli.length * 2) / (1000 * 60)} minutes`
 );
 
 // Print to stdout to save as .stims.json file
