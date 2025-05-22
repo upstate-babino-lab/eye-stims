@@ -13,7 +13,7 @@ import {
 } from './generate-tones';
 import { DisplayKey } from '../displays';
 import { AudioKey, CHOSEN_AUDIO_KEY } from '../constants';
-import { assert } from 'src/shared-utils';
+import { assert } from '../shared-utils';
 
 export const stimsCacheDir = path.join(app.getPath('userData'), 'stims-cache');
 
