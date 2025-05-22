@@ -8,7 +8,7 @@ export enum GratingType {
 export class Grating extends Stimulus {
   gratingType: GratingType = GratingType.Sin;
   fgColor = 'white';
-  speed: number = 10; // degrees per second
+  speed: number = 10; // degrees per second TODO?: change to temporal frequency (Hz)?
   cpd: number = 10;
   angle = 45; // degrees
   constructor(props: Partial<Grating> = {}) {
@@ -25,6 +25,7 @@ export class Grating extends Stimulus {
     this.cpd = Math.abs(props.cpd ?? this.cpd);
     this.angle = props.angle ?? this.angle;
   }
+
   renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     pxPerDegree: number,
@@ -34,6 +35,12 @@ export class Grating extends Stimulus {
       return;
     }
     const barWidthPx = this.cpd * pxPerDegree;
+    if (barWidthPx < 0.5) {
+      throw new Error(
+        'cpd * pxPerDegree must be at least 0.5 to have at least one pixel' +
+          ` cpd=${this.cpd} pxPerDegree=${pxPerDegree}`
+      );
+    }
     const angleRadians = degreesToRadians(this.angle);
     const vmax2 = 2 * vmax(ctx);
 

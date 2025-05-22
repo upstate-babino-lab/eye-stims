@@ -4,6 +4,7 @@
 */
 import { Stimulus, SqrGrating } from '@stims/index';
 import { RangeSpec } from './RangeSpec';
+import { contrastPair } from '@stims/stim-utils';
 
 // TODO: Create StimSpec subclasses for each type of StimSpec
 
@@ -16,18 +17,27 @@ type StimsSpecProps = {
   stimSpecType: StimSpecType;
   name?: string;
   description?: string;
+  // Duration of body and tail in milliseconds
+  // Total duration of each Stimulus will be
+  // head(0) + body + tail = (2 * bodyMs)
+  bodyMs?: number; // Multiple of 20
+  nRepetitions?: number; // Number of repetitions of the whole sequence
   integrityFlashIntervalMins?: number;
 };
 export abstract class StimsSpec {
   stimSpecType: StimSpecType = Object.values(StimSpecType)[0];
   name: string = '';
   description: string = '';
-  integrityFlashIntervalMins?: number = 0;
+  bodyMs: number = 260;
+  nRepetitions: number = 1;
+  integrityFlashIntervalMins: number = 0;
 
   constructor(props: StimsSpecProps) {
     this.stimSpecType = props.stimSpecType ?? this.stimSpecType;
     this.name = props.name ?? this.name;
     this.description = props.description ?? this.description;
+    this.bodyMs = props.bodyMs ?? this.bodyMs;
+    this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
     this.integrityFlashIntervalMins =
       props.integrityFlashIntervalMins ?? this.integrityFlashIntervalMins;
   }
@@ -44,15 +54,17 @@ export abstract class StimsSpec {
 }
 
 export class SqrGratingStimsSpec extends StimsSpec {
-  cpds: RangeSpec = new RangeSpec({ start: 0.01, step: 0.02, nSteps: 1 });
-  contrasts: RangeSpec = new RangeSpec({ start: 0, step: 1, nSteps: 1 });
+  cpds: RangeSpec = new RangeSpec({ start: 0.1, step: 0.2, nSteps: 1 });
+  contrasts: RangeSpec = new RangeSpec({ start: 0, step: -0.1, nSteps: 1 });
   speeds: RangeSpec = new RangeSpec({ start: 10, step: 1, nSteps: 1 });
 
   constructor(props: Partial<SqrGratingStimsSpec> = {}) {
+    // TODO: Check that cpds, contrasts, and speeds are all in valid ranges
     super({ ...props, stimSpecType: StimSpecType.SqrGratings });
-    this.cpds = props.cpds ?? this.cpds;
-    this.contrasts = props.contrasts ?? this.contrasts;
-    this.speeds = props.speeds ?? this.speeds;
+    this.cpds = (props.cpds && new RangeSpec(props.cpds)) ?? this.cpds;
+    this.contrasts =
+      (props.contrasts && new RangeSpec(props.contrasts)) ?? this.contrasts;
+    this.speeds = (props.speeds && new RangeSpec(props.speeds)) ?? this.speeds;
   }
 
   orderedStimuli(): Stimulus[] {
@@ -60,16 +72,36 @@ export class SqrGratingStimsSpec extends StimsSpec {
     const cpds = this.cpds?.list;
     const contrasts = this.contrasts?.list;
     const speeds = this.speeds?.list;
-    for (const cpd of cpds) {
-      for (const speed of speeds) {
-        for (const contrast of contrasts) {
-          const stim = new SqrGrating({
-            cpd: cpd,
-            durationMs: 1000,
-            bgColor: 'green',
-            meta: { num1: cpd, num2: contrast, num3: speed },
-          });
-          stimuli.push(stim);
+    for (let rep = 0; rep < this.nRepetitions; rep++) {
+      for (const cpd of cpds) {
+        for (const speed of speeds) {
+          for (const contrast of contrasts) {
+            // Push pair of matching stimuli with opposite speeds
+            const [fgColor, bgColor] = contrastPair(contrast);
+            const stim1 = new SqrGrating({
+              cpd: cpd,
+              durationMs: this.bodyMs * 2,
+              bodyMs: this.bodyMs,
+              tailMs: this.bodyMs,
+              bgColor: bgColor,
+              fgColor: fgColor,
+              speed: speed,
+              meta: { contrast: contrast },
+            });
+            stimuli.push(stim1);
+
+            const stim2 = new SqrGrating({
+              cpd: cpd,
+              durationMs: this.bodyMs * 2,
+              bodyMs: this.bodyMs,
+              tailMs: this.bodyMs,
+              bgColor: bgColor,
+              fgColor: fgColor,
+              speed: -speed,
+              meta: { contrast: contrast },
+            });
+            stimuli.push(stim2);
+          }
         }
       }
     }

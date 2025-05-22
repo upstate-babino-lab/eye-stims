@@ -23,14 +23,16 @@ type StimProps = {
   tailMs?: number;
   meta?: Record<string, unknown>;
 };
+
+// TODO?: Change durations to number of frames, to avoid forcing to multiples of 20ms
 export abstract class Stimulus {
   stimType: StimType;
-  durationMs: number = 10_000; //  Multiple of 20
+  durationMs: number = 10_000; // Required, multiple of 20
   bgColor: string = 'black';
   // Head, body and tail are optional, but must sum to duration
   // By default head and tail are 0 and body is full duration
   headMs?: number; // Duration of black before body
-  bodyMs?: number; // Duration between head and tail
+  bodyMs?: number; // Duration between head and tail, multiple of 20
   tailMs?: number; // Duration of black after body
   meta?: Record<string, unknown> = {};
   _videoCacheFilename?: string;

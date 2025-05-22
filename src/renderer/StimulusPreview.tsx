@@ -207,6 +207,11 @@ function PreviewStim(stimulus: Stimulus) {
   }
   canvas.width = canvasContainer.offsetWidth - 2;
   canvas.height = canvasContainer.offsetHeight;
+  if (canvas.width <= 0 || canvas.height <= 0) {
+    throw new Error(
+      `Invalid canvas size: ${canvas.width}x${canvas.height} (container: ${canvasContainer.offsetWidth}x${canvasContainer.offsetHeight})`
+    );
+  }
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     throw new Error('Invalid context from canvas');
