@@ -13,7 +13,7 @@ const stimsSpec = new SqrGratingStimsSpec({
   cpds: new RangeSpec({
     start: 0.5,
     step: 0.5,
-    nSteps: 5,
+    nSteps: 6,
   }),
   contrasts: new RangeSpec({
     start: 0,

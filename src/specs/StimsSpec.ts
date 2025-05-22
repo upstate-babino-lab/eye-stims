@@ -65,10 +65,17 @@ export abstract class StimsSpec {
       const augmentedStims = shuffledStims.reduce((acc, stim, i) => {
         if (i % nStimsIntegrityInterval === 0) {
           acc.push(...integrityFlashes);
-          if (i > 0) {
+          if (i > 0 && this.restMinutesAfterIntegrityFlash > 0) {
             // Add a rest period after the integrity flash
-            const restDuration = this.restMinutesAfterIntegrityFlash * 60 * 1000;
-            acc.push(new Solid({ bgColor: 'black', durationMs: restDuration }));
+
+            // BUG! BUG! single long Solid duration crashes the program
+            // Perhaps because the audio is to long?
+            for (let min = 0; min < this.restMinutesAfterIntegrityFlash; min++) {
+              const restDurationMs = min * 1000;
+              acc.push(
+                new Solid({ bgColor: 'black', durationMs: restDurationMs })
+              );
+            }
           }
         }
         acc.push(stim); // Push the current stimulus
