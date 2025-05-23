@@ -76,7 +76,6 @@ Stimulus.prototype.cacheStimVideoAsync = async function (displayKey: DisplayKey)
       videoBuffer,
       unhashedFilename
     );
-    console.log('>>>>> Stim cached at:', path);
     this._videoCacheFilename = path;
   } catch (error) {
     throw new Error('Caching stim failed: ' + error);

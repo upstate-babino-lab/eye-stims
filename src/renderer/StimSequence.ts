@@ -74,6 +74,7 @@ export default class StimSequence {
       }
       const stimulus = this.stimuli[iStim];
       await stimulus.cacheStimVideoAsync(displayKey);
+      console.log(`>>>>> Stim ${iStim} cached at:`, stimulus._videoCacheFilename);
     }
 
     if (cbProgress) {

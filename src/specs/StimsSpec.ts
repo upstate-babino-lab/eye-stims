@@ -71,10 +71,8 @@ export abstract class StimsSpec {
             // BUG! BUG! single long Solid duration crashes the program
             // Perhaps because the audio is to long?
             for (let min = 0; min < this.restMinutesAfterIntegrityFlash; min++) {
-              const restDurationMs = min * 1000;
-              acc.push(
-                new Solid({ bgColor: 'black', durationMs: restDurationMs })
-              );
+              // Add one minute of rest
+              acc.push(new Solid({ bgColor: 'black', durationMs: 60 * 1000 }));
             }
           }
         }
