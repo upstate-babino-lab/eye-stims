@@ -106,7 +106,7 @@ export default function BuildTab() {
               </div>
             )}
           </div>
-          <div>ffmpeg output: {ffmpegOutput}</div>
+          {ffmpegOutput && <div>ffmpeg output: {ffmpegOutput}</div>}
         </div>
       )}
     </div>

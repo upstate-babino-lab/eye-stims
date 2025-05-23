@@ -9,7 +9,8 @@ import { SqrGratingStimsSpec, RangeSpec } from '@specs/index';
 const stimsSpec = new SqrGratingStimsSpec({
   name: 'Blazer',
   description: 'Trailblazer stims.json for first video',
-  bodyMs: 260, // Total duration of each stimulus will be 2 * bodyMs
+  bodyMs: 260,
+  tailMs: 520,
   cpds: new RangeSpec({
     start: 0.5,
     step: 0.5,

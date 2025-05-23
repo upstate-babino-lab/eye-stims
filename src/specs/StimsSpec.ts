@@ -21,6 +21,7 @@ type StimsSpecProps = {
   // Total duration of each Stimulus will be
   // head(0) + body + tail = (2 * bodyMs)
   bodyMs?: number; // Multiple of 20
+  tailMs?: number; // Multiple of 20
   nRepetitions?: number; // Number of repetitions of the whole sequence
   integrityFlashIntervalMins?: number;
   restMinutesAfterIntegrityFlash?: number;
@@ -30,6 +31,7 @@ export abstract class StimsSpec {
   name: string = '';
   description: string = '';
   bodyMs: number = 260;
+  tailMs: number = 520;
   nRepetitions: number = 1;
   integrityFlashIntervalMins: number = 0;
   restMinutesAfterIntegrityFlash: number = 1;
@@ -39,6 +41,7 @@ export abstract class StimsSpec {
     this.name = props.name ?? this.name;
     this.description = props.description ?? this.description;
     this.bodyMs = props.bodyMs ?? this.bodyMs;
+    this.tailMs = props.tailMs ?? this.tailMs;
     this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
     this.integrityFlashIntervalMins =
       props.integrityFlashIntervalMins ?? this.integrityFlashIntervalMins;
@@ -110,29 +113,24 @@ export class SqrGratingStimsSpec extends StimsSpec {
           for (const contrast of contrasts) {
             // Push pair of matching stimuli with opposite speeds
             const [fgColor, bgColor] = contrastPair(contrast);
-            const stim1 = new SqrGrating({
+            const gratingPojo = {
               cpd: cpd,
-              durationMs: this.bodyMs * 2,
+              durationMs: this.bodyMs + this.tailMs,
               bodyMs: this.bodyMs,
-              tailMs: this.bodyMs,
+              tailMs: this.tailMs,
               bgColor: bgColor,
               fgColor: fgColor,
               speed: speed,
               meta: { contrast: contrast },
-            });
-            stimuli.push(stim1);
-
-            const stim2 = new SqrGrating({
-              cpd: cpd,
-              durationMs: this.bodyMs * 2,
-              bodyMs: this.bodyMs,
-              tailMs: this.bodyMs,
-              bgColor: bgColor,
-              fgColor: fgColor,
-              speed: -speed,
-              meta: { contrast: contrast },
-            });
-            stimuli.push(stim2);
+            };
+            stimuli.push(new SqrGrating(gratingPojo));
+            // Second stimulus identical but with opposite speed
+            stimuli.push(
+              new SqrGrating({
+                ...gratingPojo,
+                speed: -speed,
+              })
+            );
           }
         }
       }
