@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Button from './components/Button';
-import { useTheStimSequence } from './StateContext';
+import { useAppState } from './StateContext';
 import SpecTab from './tabs/SpecTab';
 import BuildTab from './tabs/BuildTab';
 import RunTab from './tabs/RunTab';
@@ -12,7 +12,7 @@ const tabLabels = ['Preview', 'Build', 'Run'];
 
 export default function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState(tabLabels[0]);
-  const { theStimSequence } = useTheStimSequence();
+  const { theStimSequence } = useAppState();
 
   useEffect(() => {
     if (theStimSequence && theStimSequence.loadedPath.endsWith('.spec.json')) {

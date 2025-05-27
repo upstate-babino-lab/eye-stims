@@ -4,7 +4,7 @@ import { stimConstructors } from '@stims/stimConstructors';
 import Button from './components/Button';
 import InputField from './components/InputField';
 import CloseButton from './components/CloseButton';
-import { useTheStimSequence } from './StateContext';
+import { useAppState } from './StateContext';
 
 // Pane to preview one single Stimulus
 export default function StimulusPreview(props: {
@@ -12,7 +12,7 @@ export default function StimulusPreview(props: {
   stimIndex: number;
   onClose?: () => void;
 }) {
-  const { theStimSequence } = useTheStimSequence();
+  const { theStimSequence } = useAppState();
   const indexedStim = theStimSequence?.stimuli[props.stimIndex];
   // TODO: simplify below by using imported newStimulus()
   const isValidStimType =

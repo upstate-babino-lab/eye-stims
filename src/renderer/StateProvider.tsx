@@ -9,6 +9,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(
     null
   );
+  const [theStimsSpec, setTheStimsSpec] = useState<StimsSpec | null>(null);
 
   useEffect(() => {
     const handleFileLoaded = (filePath: string, parsedContents: unknown): void => {
@@ -22,6 +23,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
       }
       if (filePath.endsWith('.spec.json')) {
         stimsSpec = newStimSpec(parsedContents as StimsSpec);
+        setTheStimsSpec(stimsSpec);
         stimPojos = stimsSpec.orderedStimuli();
       } else {
         stimPojos = parsedContents['stimuli'] as Stimulus[];
@@ -31,6 +33,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
       setTheStimSequence(new StimSequence(filePath, name, description, stimPojos));
     };
 
+    // TODO: remove because not used?
     const handleSaveRequest = (filePath: string): void => {
       console.log(
         `>>>>> renderer StateProvider got 'request-file-to-save' from main. Will save HTML 'file-content'`
@@ -43,7 +46,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
 
     // Listen for messages from main process
     window.electron.on('file-loaded', handleFileLoaded);
-    window.electron.on('request-file-to-save', handleSaveRequest);
+    window.electron.on('request-file-to-save', handleSaveRequest); // TODO: remove because not used?
 
     // Clean up listeners when component unmounts
     return () => {
@@ -57,6 +60,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
       value={{
         theStimSequence: theStimSequence,
         setTheStimSequence: setTheStimSequence,
+        theStimsSpec: theStimsSpec,
+        setTheStimsSpec: setTheStimsSpec,
       }}
     >
       {children}

@@ -1,16 +1,15 @@
 /*
   A StimsSpec is used to create a list of POJO stimuli
-  that can be saved to a .stims.json file or to create a StimSequence
+  that can be saved to a .stims.json file or used to create a StimSequence
 */
 import { Stimulus, SqrGrating, Solid } from '@stims/index';
 import { RangeSpec } from './RangeSpec';
 import { contrastPair } from '@stims/stim-utils';
 
 // TODO: Create StimSpec subclasses for each type of StimSpec
-
 export enum StimSpecType {
   SqrGratings = 'SqrGratings',
-  // SinGratings = 'SinGratings',
+  TBD = 'TBD',
 }
 
 type StimsSpecProps = {
@@ -35,6 +34,8 @@ export abstract class StimsSpec {
   nRepetitions: number = 1;
   integrityFlashIntervalMins: number = 0;
   restMinutesAfterIntegrityFlash: number = 1;
+  private _stimsCache: Stimulus[] = [];
+  private _jsonCache: string = '';
 
   constructor(props: StimsSpecProps) {
     this.stimSpecType = props.stimSpecType ?? this.stimSpecType;
@@ -51,6 +52,16 @@ export abstract class StimsSpec {
 
   abstract orderedStimuli(): Stimulus[];
 
+  // Would be more efficient to calculate instead of regenerate stimuli every time
+  count(): number {
+    return this.stimuli().length;
+  }
+  // Would be more efficient to calculate instead of regenerate stimuli every time
+  duration(): number {
+    return this.stimuli().reduce((acc, stim) => acc + stim.durationMs, 0);
+  }
+
+  // TODO: return from private cache if JSON has not changed
   stimuli(): Stimulus[] {
     const shuffledStims = this.orderedStimuli().sort(() => Math.random() - 0.5); // in-place shuffle
     if (this.integrityFlashIntervalMins && this.integrityFlashIntervalMins > 0) {
@@ -147,7 +158,7 @@ type StimsSpecConstructors = {
 };
 export const stimsSpecConstructors: StimsSpecConstructors = {
   SqrGratings: SqrGratingStimsSpec,
-  // SinGratings: SinGratingStimsSpec,
+  TBD: SqrGratingStimsSpec, // Placeholder just for now
 };
 
 // Create a new StimsSpec class instance from POJO or parsed JSON object.

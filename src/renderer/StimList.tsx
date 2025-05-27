@@ -1,7 +1,7 @@
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window'; // Only render visible items in list
 import AutoSizer from 'react-virtualized-auto-sizer'; // Resizes list when container size changes
 import { Stimulus } from '@stims/index';
-import { useTheStimSequence } from './StateContext';
+import { useAppState } from './StateContext';
 import { formatSeconds, stableStringify } from './render-utils';
 
 const ROW_HEIGHT = 30;
@@ -55,7 +55,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   data: Stimulus[];
   onRowClick: (id: number) => void;
 }>) {
-  const { theStimSequence } = useTheStimSequence();
+  const { theStimSequence } = useAppState();
   const row = data.data[index];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { stimType: name, durationMs, bgColor, meta, ...partial } = row;

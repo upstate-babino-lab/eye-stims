@@ -1,12 +1,12 @@
 import Button from '../components/Button';
-import { useTheStimSequence } from '../StateContext';
+import { useAppState } from '../StateContext';
 import { DisplayKey, displays } from '../../displays';
 import { useState } from 'react';
 import ProgressBar from '../components/ProgressBar';
 import { ProgressCallback } from '../StimSequence';
 
 export default function BuildTab() {
-  const { theStimSequence } = useTheStimSequence();
+  const { theStimSequence } = useAppState();
   const [displayKey, setDisplayKey] = useState<DisplayKey>(
     DisplayKey[Object.keys(displays)[0]]
   );

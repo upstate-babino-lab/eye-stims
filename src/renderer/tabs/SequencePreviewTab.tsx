@@ -1,10 +1,10 @@
 import StimulusPreview from '../StimulusPreview';
-import { useTheStimSequence } from '../StateContext';
+import { useAppState } from '../StateContext';
 import { useState } from 'react';
 import StimList from '../StimList';
 
 export default function SequencePreviewTab() {
-  const { theStimSequence } = useTheStimSequence();
+  const { theStimSequence } = useAppState();
   const [selectedStimIndex, setSelectedStimIndex] = useState(-1);
   return (
     <div className="grow flex flex-col p-2 gap-2">
