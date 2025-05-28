@@ -50,7 +50,8 @@ export abstract class StimsSpec {
       props.restMinutesAfterIntegrityFlash ?? this.restMinutesAfterIntegrityFlash;
   }
 
-  abstract orderedStimuli(): Stimulus[];
+  // Returns POJOs not randomized, without integrity flashes or rest periods
+  abstract baseStimuli(): Stimulus[];
 
   // Would be more efficient to calculate instead of regenerate stimuli every time
   count(): number {
@@ -63,22 +64,22 @@ export abstract class StimsSpec {
 
   // TODO: return from private cache if JSON has not changed
   stimuli(): Stimulus[] {
-    const shuffledStims = this.orderedStimuli().sort(() => Math.random() - 0.5); // in-place shuffle
+    // Shuffle before inserting integrity flashes at regular intervals
+    const shuffledStims = this.baseStimuli().sort(() => Math.random() - 0.5); // in-place shuffle
+
     if (this.integrityFlashIntervalMins && this.integrityFlashIntervalMins > 0) {
-      // Insert integrity flashes at regular intervals
-      const integrityFlashes = [
+      const integrityFlashGroup = [
         new Solid({ bgColor: 'white', durationMs: 1260, bodyMs: 260 }),
         new Solid({ bgColor: 'red', durationMs: 1260, bodyMs: 260 }),
         new Solid({ bgColor: 'green', durationMs: 1260, bodyMs: 260 }),
         new Solid({ bgColor: 'blue', durationMs: 1260, bodyMs: 260 }),
       ];
-
       const nStimsIntegrityInterval = Math.round(
         (this.integrityFlashIntervalMins * 60 * 1000) / (this.bodyMs * 2)
       );
       const augmentedStims = shuffledStims.reduce((acc, stim, i) => {
         if (i % nStimsIntegrityInterval === 0) {
-          acc.push(...integrityFlashes);
+          acc.push(...integrityFlashGroup);
           if (i > 0 && this.restMinutesAfterIntegrityFlash > 0) {
             // Add a rest period after the integrity flash
 
@@ -95,7 +96,7 @@ export abstract class StimsSpec {
       }, [] as Stimulus[]); // Start with empty accumulator
       return augmentedStims;
     }
-    return shuffledStims;
+    return shuffledStims; // Without integrity flashes
   }
 }
 
@@ -106,14 +107,17 @@ export class SqrGratingStimsSpec extends StimsSpec {
 
   constructor(props: Partial<SqrGratingStimsSpec> = {}) {
     // TODO: Check that cpds, contrasts, and speeds are all in valid ranges
-    super({ ...props, stimSpecType: StimSpecType.SqrGratings });
+    super({
+      ...props,
+      stimSpecType: StimSpecType.SqrGratings,
+    });
     this.cpds = (props.cpds && new RangeSpec(props.cpds)) ?? this.cpds;
     this.contrasts =
       (props.contrasts && new RangeSpec(props.contrasts)) ?? this.contrasts;
     this.speeds = (props.speeds && new RangeSpec(props.speeds)) ?? this.speeds;
   }
 
-  orderedStimuli(): Stimulus[] {
+  baseStimuli(): Stimulus[] {
     const stimuli: Stimulus[] = [];
     const cpds = this.cpds?.list;
     const contrasts = this.contrasts?.list;
@@ -162,7 +166,7 @@ export const stimsSpecConstructors: StimsSpecConstructors = {
 };
 
 // Create a new StimsSpec class instance from POJO or parsed JSON object.
-export function newStimSpec(stimSpec: Partial<StimsSpec>) {
+export function newStimSpec(stimSpec: Partial<StimsSpec>): StimsSpec {
   if (!stimSpec.stimSpecType) {
     throw new Error(`newStimSpec(): Missing stimSpecType`);
   }

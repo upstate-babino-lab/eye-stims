@@ -4,9 +4,10 @@ import { DisplayKey, displays } from '../../displays';
 import { useState } from 'react';
 import ProgressBar from '../components/ProgressBar';
 import { ProgressCallback } from '../StimSequence';
+import { getBasename } from '../../shared-utils';
 
 export default function BuildTab() {
-  const { theStimSequence } = useAppState();
+  const { theStimsMeta, theStimSequence } = useAppState();
   const [displayKey, setDisplayKey] = useState<DisplayKey>(
     DisplayKey[Object.keys(displays)[0]]
   );
@@ -82,6 +83,7 @@ export default function BuildTab() {
               setFfmpegOutput('');
               try {
                 const resultMessage = await theStimSequence.buildFromCacheAsync(
+                  getBasename(theStimsMeta?.loadedPath || 'mystims', true),
                   displayKey,
                   handleProgress
                 );

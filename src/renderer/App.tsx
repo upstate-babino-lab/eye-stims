@@ -12,10 +12,14 @@ const tabLabels = ['Preview', 'Build', 'Run'];
 
 export default function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState(tabLabels[0]);
-  const { theStimSequence } = useAppState();
+  const { theStimsMeta, theStimSequence } = useAppState();
 
   useEffect(() => {
-    if (theStimSequence && theStimSequence.loadedPath.endsWith('.spec.json')) {
+    if (
+      theStimsMeta &&
+      theStimsMeta.loadedPath &&
+      theStimsMeta.loadedPath.endsWith('.spec.json')
+    ) {
       // First tab should be 'Spec'
       if (tabLabels[0] !== 'Spec') {
         tabLabels.unshift('Spec');
@@ -28,28 +32,32 @@ export default function App(): JSX.Element {
       }
     }
     setActiveTab(tabLabels[0]); // Reset to the first tab
-  }, [theStimSequence]);
+  }, [theStimsMeta]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-gray-400 text-sm p-4">
       <div className="flex flex-row gap-1.5">
         <div className="flex flex-col">
-          {theStimSequence && (
+          {theStimsMeta && (
             <>
               <div className="font-bold text-xl text-white">
-                {theStimSequence.name}
+                {theStimsMeta.name}
               </div>
               <div className="bg-gray-950 rounded-md p-2">
                 <div className="text-gray-500">
                   <span className="text-gray-300">
-                    {getBasename(theStimSequence.loadedPath)}
+                    {theStimsMeta.loadedPath &&
+                      getBasename(theStimsMeta.loadedPath)}
                   </span>{' '}
                   {' | '}
-                  Count: {theStimSequence.stimuli.length + ' | '}
-                  Duration: {formatSeconds(theStimSequence.duration() / 1000)}
+                  Count: {(theStimsMeta.count || '?') + ' | '}
+                  Duration:{' '}
+                  {theStimsMeta.totalDurationMS
+                    ? formatSeconds(theStimsMeta.totalDurationMS / 1000)
+                    : '?'}
                 </div>
                 <div className="text-gray-400">
-                  {theStimSequence.description}&nbsp;
+                  {theStimsMeta.description}&nbsp;
                 </div>
               </div>
             </>

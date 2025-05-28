@@ -1,21 +1,22 @@
 // Provides state accessible to all components in the App
 import { useEffect, useState, ReactNode } from 'react';
-import { StateContext } from './StateContext';
+import { StateContext, StimsMeta } from './StateContext';
 import StimSequence from './StimSequence';
 import { Stimulus } from '@stims/index';
 import { newStimSpec, StimsSpec } from '@specs/StimsSpec';
 
 export function StateProvider({ children }: { children: ReactNode }) {
+  const [theStimsMeta, setTheStimsMeta] = useState<StimsMeta | null>(null);
+  const [theStimsSpec, setTheStimsSpec] = useState<StimsSpec | null>(null);
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(
     null
   );
-  const [theStimsSpec, setTheStimsSpec] = useState<StimsSpec | null>(null);
 
   useEffect(() => {
     const handleFileLoaded = (filePath: string, parsedContents: unknown): void => {
       console.log(`>>>>> renderer StateProvider got 'file-loaded' from main`);
       const fileNameWithExtension = filePath.split('/').pop() || '';
-      let stimPojos: Stimulus[] = [];
+      let stims: Stimulus[] = [];
       let stimsSpec: StimsSpec | null = null;
 
       if (!parsedContents) {
@@ -24,13 +25,20 @@ export function StateProvider({ children }: { children: ReactNode }) {
       if (filePath.endsWith('.spec.json')) {
         stimsSpec = newStimSpec(parsedContents as StimsSpec);
         setTheStimsSpec(stimsSpec);
-        stimPojos = stimsSpec.orderedStimuli();
+        stims = stimsSpec.stimuli(); // Not POJOs
       } else {
-        stimPojos = parsedContents['stimuli'] as Stimulus[];
+        stims = parsedContents['stimuli'] as Stimulus[]; // POJOs
       }
-      const name = parsedContents['name'] || fileNameWithExtension;
-      const description = parsedContents['description'] ?? '';
-      setTheStimSequence(new StimSequence(filePath, name, description, stimPojos));
+      const stimSequence = new StimSequence(stims);
+      setTheStimSequence(stimSequence);
+
+      setTheStimsMeta({
+        loadedPath: filePath,
+        name: parsedContents['name'] || fileNameWithExtension,
+        description: parsedContents['description'] ?? '',
+        count: stimSequence?.stimuli.length,
+        totalDurationMS: stimSequence?.duration(),
+      });
     };
 
     // TODO: remove because not used?
@@ -58,6 +66,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
   return (
     <StateContext.Provider
       value={{
+        theStimsMeta: theStimsMeta,
+        setTheStimsMeta: setTheStimsMeta,
         theStimSequence: theStimSequence,
         setTheStimSequence: setTheStimSequence,
         theStimsSpec: theStimsSpec,

@@ -2,7 +2,17 @@ import { createContext, useContext } from 'react';
 import StimSequence from './StimSequence';
 import { StimsSpec } from '@specs/StimsSpec';
 
+export type StimsMeta = {
+  loadedPath?: string;
+  name?: string;
+  description?: string;
+  count?: number;
+  totalDurationMS?: number;
+};
+
 type StateContextType = {
+  theStimsMeta: StimsMeta | null;
+  setTheStimsMeta: (value: StimsMeta) => void;
   theStimSequence: StimSequence | null;
   setTheStimSequence: (value: StimSequence) => void;
   theStimsSpec: StimsSpec | null;

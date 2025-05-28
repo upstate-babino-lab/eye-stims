@@ -2,7 +2,7 @@ import { Stimulus } from '@stims/index';
 import './StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
-import { getBasename, getStartTimes } from '../shared-utils';
+import { getStartTimes } from '../shared-utils';
 import { newStimulus } from '@stims/stimConstructors';
 
 export type ProgressCallback = (
@@ -11,27 +11,23 @@ export type ProgressCallback = (
   nTotal?: number
 ) => void;
 export default class StimSequence {
-  readonly loadedPath: string = '';
-  name: string = 'Uninitialized StimSequence';
-  readonly description: string = '';
   readonly stimuli: Stimulus[] = []; // Rich class instances (not POJOs)
-  startTimes: number[] = []; // Milliseconds into sequence
-  private cachedDuration: number = -1; // Sum of all stimuli durations
-  private cancelSaving: boolean = false; // Set to true to cancel saving
+  private _cachedDuration: number = -1; // Sum of all stimuli durations
+  private _cancelSaving: boolean = false; // Set to true to cancel saving
   // @ts-ignore: TS6133
   private isEncoding: boolean = false;
 
   constructor(
-    loadedPath: string,
-    name?: string,
-    description?: string,
     stimPojos?: Stimulus[] // Can be POJOs or Stimulus class instances
   ) {
-    this.loadedPath = loadedPath;
-    this.name = name ?? this.name;
-    this.description = description ?? this.description;
     const stims = stimPojos?.map((s) => newStimulus(s)) ?? this.stimuli;
     this.stimuli = stims; // deepDeduplicate(stims);
+  }
+
+  // Milliseconds into sequence
+  // TODO: cache result and return defensive copy
+  get startTimes(): number[] {
+    return getStartTimes(this.stimuli.map((s) => s.durationMs));
   }
 
   // Calculate total duration and populate startTimes array
@@ -40,18 +36,17 @@ export default class StimSequence {
     if (this.stimuli.length === 0) {
       return 0;
     }
-    if (this.cachedDuration >= 0) {
-      return this.cachedDuration;
+    if (this._cachedDuration >= 0) {
+      return this._cachedDuration;
     }
-    this.startTimes = getStartTimes(this.stimuli.map((s) => s.durationMs));
     const iLastStim = this.stimuli.length - 1;
-    this.cachedDuration =
+    this._cachedDuration =
       this.startTimes[iLastStim] + this.stimuli[iLastStim].durationMs;
-    return this.cachedDuration;
+    return this._cachedDuration;
   }
 
   async saveToCacheAsync(displayKey: DisplayKey, cbProgress?: ProgressCallback) {
-    this.cancelSaving = false;
+    this._cancelSaving = false;
     let intervalId: NodeJS.Timeout | null = null;
     if (cbProgress) {
       cbProgress('saveToCache...', 0, this.stimuli.length);
@@ -68,7 +63,7 @@ export default class StimSequence {
     );
     */
     for (let iStim = 0; iStim < this.stimuli.length; iStim++) {
-      if (this.cancelSaving) {
+      if (this._cancelSaving) {
         console.log('>>>>> saveToCacheAsync() cancelled');
         break;
       }
@@ -97,18 +92,19 @@ export default class StimSequence {
       filters: [{ name: 'Stim videos', extensions: ['mp4'] }],
     });
     if (result.canceled || !result.filePath) {
-      this.cancelSaving = true;
+      this._cancelSaving = true;
       return '';
     }
     return result.filePath;
   }
 
   async buildFromCacheAsync(
+    basename: string,
     displayKey: DisplayKey,
     cbProgress?: ProgressCallback
   ) {
     const [outputFilename] = await Promise.all([
-      this.saveFileDialogAsync(getBasename(this.loadedPath, true) + '.mp4'),
+      this.saveFileDialogAsync(basename + '.mp4'),
       this.saveToCacheAsync(displayKey, cbProgress), // Can start while user is choosing filename
     ]);
     if (!outputFilename) {
