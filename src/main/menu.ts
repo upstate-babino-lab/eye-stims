@@ -32,6 +32,7 @@ export function modifyDefaultMenu(mainWindow: BrowserWindow) {
                   });
                 },
               },
+              /*
               {
                 label: 'Save File',
                 click: async () => {
@@ -42,6 +43,7 @@ export function modifyDefaultMenu(mainWindow: BrowserWindow) {
                   }
                 },
               },
+              */
               {
                 label: 'Clear Stim Cache',
                 click: clearStimCacheAsync,

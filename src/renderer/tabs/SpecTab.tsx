@@ -2,13 +2,22 @@ import RangeSpecForm, { INPUT_STYLES } from '@renderer/components/RangeSpecForm'
 import { useAppState } from '@renderer/StateContext';
 import { RangeSpec } from '@specs/index';
 import { newStimSpec, SqrGratingStimsSpec, StimSpecType } from '@specs/StimsSpec';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // import StimSequence from '@renderer/StimSequence';
 //import { SqrGratingStimsSpec } from '@specs/StimsSpec';
 
 export default function SpecTab() {
   //const { theStimSequence, setTheStimSequence } = useTheStimSequence();
   const { theStimsSpec, setTheStimsSpec } = useAppState();
+  const { theStimsMeta, setTheStimsMeta } = useAppState();
+
+  useEffect(() => {
+    setTheStimsMeta({
+      ...theStimsMeta,
+      count: theStimsSpec?.count(),
+      totalDurationMS: theStimsSpec?.duration(),
+    });
+  }, [theStimsSpec, setTheStimsMeta]);
 
   return (
     <div className="flex flex-col items-start p-4 bg-gray-900 -mx-4">
@@ -61,6 +70,30 @@ export default function SpecTab() {
       />
       <div className="mb-1 flex items-center">
         <label className="text-sm font-bold text-gray-100 px-4">
+          Repetitions:
+        </label>
+        <input
+          type="number"
+          className={INPUT_STYLES}
+          value={theStimsSpec?.nRepetitions ? theStimsSpec?.nRepetitions : 0}
+          onChange={(e) => {
+            const newValue =
+              e.target.value === '' ? undefined : parseFloat(e.target.value);
+            setTheStimsSpec(
+              newStimSpec({
+                ...theStimsSpec,
+                nRepetitions: newValue,
+              } as SqrGratingStimsSpec)
+            );
+          }}
+          min={1}
+          max={100}
+          step={1}
+        />
+      </div>
+
+      <div className="mb-1 flex items-center">
+        <label className="text-sm font-bold text-gray-100 px-4">
           IntegrityFlashInterval (minutes):
         </label>
         <input
@@ -69,7 +102,7 @@ export default function SpecTab() {
           value={
             theStimsSpec?.integrityFlashIntervalMins
               ? theStimsSpec?.integrityFlashIntervalMins
-              : ''
+              : 0
           }
           onChange={(e) => {
             const newValue =
@@ -81,6 +114,9 @@ export default function SpecTab() {
               } as SqrGratingStimsSpec)
             );
           }}
+          min={0}
+          max={100}
+          step={1}
           placeholder={'4'}
         />
       </div>

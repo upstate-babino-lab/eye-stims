@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RangeSpec } from '@specs/index';
 
 export const INPUT_STYLES =
@@ -24,30 +24,30 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
 
   // Reusable input field component
   const renderInputField = (
-    id: string,
     label: string,
     value: number | undefined,
     setValue: React.Dispatch<React.SetStateAction<number | undefined>>
   ) => (
     <div className="mb-1 flex items-center space-x-3">
-      <label htmlFor={id} className="w-20 text-right">
+      <label htmlFor={label} className="w-20 text-right">
         {label}:
       </label>
       <input
         type="number"
-        id={id}
+        id={label}
         className={INPUT_STYLES + ' w-16'}
         value={value === undefined ? '' : value}
+        min={label === 'nSteps' ? 1 : undefined}
         onChange={(e) => {
           const newValue =
             e.target.value === '' ? undefined : parseInt(e.target.value, 10);
           setValue(newValue);
-
+          const lcLabel = label.toLowerCase();
           setList(
             new RangeSpec({
-              start: id === 'start' ? newValue : start,
-              step: id === 'step' ? newValue : step,
-              nSteps: id === 'nSteps' ? newValue : nSteps,
+              start: lcLabel === 'start' ? newValue : start,
+              step: lcLabel === 'step' ? newValue : step,
+              nSteps: lcLabel === 'nSteps' ? newValue : nSteps,
             }).list
           );
         }}
@@ -55,18 +55,18 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
     </div>
   );
 
+  useEffect(() => {
+    console.log(`>>>>> useEffect() start=${start} step=${step} nSteps=${nSteps}`);
+    onUpdate(new RangeSpec({ start, step, nSteps }));
+  }, [start, step, nSteps]);
+
   return (
-    <form
-      className="bg-gray-800 text-gray-400 text-xs font-bold shadow-md rounded-xl px-2 py-1 mb-4"
-      onChange={() => {
-        onUpdate(new RangeSpec({ start, step, nSteps }));
-      }}
-    >
+    <form className="bg-gray-800 text-gray-400 text-xs font-bold shadow-md rounded-xl px-2 py-1 mb-4">
       <div className="text-gray-100 text-sm ml-2 mb-2">{title}</div>
       <div className="flex flex-row">
-        {renderInputField('start', 'Start', start, setStart)}
-        {renderInputField('step', 'Step', step, setStep)}
-        {renderInputField('nSteps', 'nSteps', nSteps, setNSteps)}
+        {renderInputField('Start', start, setStart)}
+        {renderInputField('Step', step, setStep)}
+        {renderInputField('nSteps', nSteps, setNSteps)}
       </div>
       <div className="mb-2 flex items-center space-x-2">
         <label className="w-20 text-right">List:</label>
