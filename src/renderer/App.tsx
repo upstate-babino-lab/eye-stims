@@ -7,19 +7,22 @@ import RunTab from './tabs/RunTab';
 import SequencePreviewTab from './tabs/SequencePreviewTab';
 import { formatSeconds } from './render-utils';
 import { getBasename } from '../shared-utils';
+import { newStimSpec, StimSpecType } from '@specs/StimsSpec';
 
 const tabLabels = ['Preview', 'Build', 'Run'];
 
 export default function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState(tabLabels[0]);
-  const { theStimsMeta, theStimSequence } = useAppState();
+  const {
+    theStimsMeta,
+    setTheStimsMeta,
+    theStimsSpec,
+    setTheStimsSpec,
+    theStimSequence,
+  } = useAppState();
 
   useEffect(() => {
-    if (
-      theStimsMeta &&
-      theStimsMeta.loadedPath &&
-      theStimsMeta.loadedPath.endsWith('.spec.json')
-    ) {
+    if (theStimsSpec) {
       // First tab should be 'Spec'
       if (tabLabels[0] !== 'Spec') {
         tabLabels.unshift('Spec');
@@ -32,7 +35,7 @@ export default function App(): JSX.Element {
       }
     }
     setActiveTab(tabLabels[0]); // Reset to the first tab
-  }, [theStimsMeta]);
+  }, [theStimsSpec]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-gray-400 text-sm p-4">
@@ -46,8 +49,9 @@ export default function App(): JSX.Element {
               <div className="bg-gray-950 rounded-md p-2">
                 <div className="text-gray-500">
                   <span className="text-gray-300">
-                    {theStimsMeta.loadedPath &&
-                      getBasename(theStimsMeta.loadedPath)}
+                    {theStimsMeta.loadedPath
+                      ? getBasename(theStimsMeta.loadedPath)
+                      : '?' + (theStimsSpec ? '.spec' : '') + '.json'}
                   </span>{' '}
                   {' | '}
                   Count: {(theStimsMeta.count || '?') + ' | '}
@@ -72,6 +76,19 @@ export default function App(): JSX.Element {
           >
             Load
           </Button>
+          <Button
+            className="ml-auto"
+            onClick={() => {
+              const stimSpec = newStimSpec({
+                stimSpecType: StimSpecType.SqrGratings,
+              });
+              setTheStimsSpec(stimSpec);
+              setTheStimsMeta({});
+            }}
+          >
+            New Spec
+          </Button>{' '}
+          {/*}
           <a
             target="_blank"
             className="underline text-blue-700"
@@ -80,10 +97,11 @@ export default function App(): JSX.Element {
           >
             GitHub issues
           </a>
+          */}
         </div>
       </div>
 
-      {theStimSequence && (
+      {(theStimsSpec || theStimSequence) && (
         <>
           <div className="shrink-0 border-b border-gray-700">
             {tabLabels.map((tabLabel) => (

@@ -101,9 +101,9 @@ export abstract class StimsSpec {
 }
 
 export class SqrGratingStimsSpec extends StimsSpec {
-  cpds: RangeSpec = new RangeSpec({ start: 0.1, step: 0.2, nSteps: 1 });
+  cpds: RangeSpec = new RangeSpec({ start: 0.2, step: 0.2, nSteps: 1 });
   contrasts: RangeSpec = new RangeSpec({ start: 0, step: -0.1, nSteps: 1 });
-  speeds: RangeSpec = new RangeSpec({ start: 10, step: 1, nSteps: 1 });
+  speeds: RangeSpec = new RangeSpec({ start: 3, step: 1, nSteps: 1 });
 
   constructor(props: Partial<SqrGratingStimsSpec> = {}) {
     // TODO: Check that cpds, contrasts, and speeds are all in valid ranges

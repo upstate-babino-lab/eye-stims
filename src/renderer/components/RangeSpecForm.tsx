@@ -38,9 +38,9 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
         className={INPUT_STYLES + ' w-16'}
         value={value === undefined ? '' : value}
         min={label === 'nSteps' ? 1 : undefined}
+        step="any"
         onChange={(e) => {
-          const newValue =
-            e.target.value === '' ? undefined : parseInt(e.target.value, 10);
+          const newValue = +e.target.value;
           setValue(newValue);
           const lcLabel = label.toLowerCase();
           setList(

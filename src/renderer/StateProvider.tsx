@@ -27,6 +27,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
         setTheStimsSpec(stimsSpec);
         stims = stimsSpec.stimuli(); // Not POJOs
       } else {
+        setTheStimsSpec(null);
         stims = parsedContents['stimuli'] as Stimulus[]; // POJOs
       }
       const stimSequence = new StimSequence(stims);
