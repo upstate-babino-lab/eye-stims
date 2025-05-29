@@ -2,7 +2,7 @@ import { FixedSizeList as List, ListChildComponentProps } from 'react-window'; /
 import AutoSizer from 'react-virtualized-auto-sizer'; // Resizes list when container size changes
 import { Stimulus } from '@stims/index';
 import { useAppState } from './StateContext';
-import { formatSeconds, stableStringify } from './render-utils';
+import { formatSeconds, roundNumericalProperties, stableStringify } from './render-utils';
 
 const ROW_HEIGHT = 30;
 const CELL_FORMAT = 'min-w-19 p-0.5 text-left';
@@ -68,8 +68,8 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   if (!partial.headMs && !partial.tailMs) {
     delete partial.bodyMs;
   }
-
-  const partialJson = stableStringify(partial); // Excludes private props
+  // Excludes private props and ensure more compact number formatting
+  const partialJson = stableStringify(roundNumericalProperties(partial));
 
   return (
     <div

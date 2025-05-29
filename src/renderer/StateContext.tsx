@@ -16,7 +16,7 @@ type StateContextType = {
   theStimSequence: StimSequence | null;
   setTheStimSequence: (value: StimSequence) => void;
   theStimsSpec: StimsSpec | null;
-  setTheStimsSpec: (value: StimsSpec) => void;
+  setTheStimsSpec: (value: StimsSpec | null) => void;
 };
 
 // Create Context with default value

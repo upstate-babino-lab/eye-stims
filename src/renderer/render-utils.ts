@@ -78,8 +78,20 @@ export async function saveFileDialogAsync(
   }
   return result.filePath;
 }
-/*
 
+export function roundNumericalProperties(obj) {
+  const newObj = { ...obj }; // Create a shallow copy to avoid mutating the original object
+
+  Object.keys(newObj).forEach((key) => {
+    // Check if the value is a number
+    if (typeof newObj[key] === 'number') {
+      newObj[key] = Math.round(newObj[key] * 10000) / 10000; // For more compact formatting
+    }
+  });
+  return newObj;
+}
+
+/*
 // Compare elements JSON stableStringify (not counting _private properties)
 // and ensure duplicates point to the same object
 export function deepDeduplicate<T>(arr: T[]): T[] {

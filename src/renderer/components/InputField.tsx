@@ -31,7 +31,7 @@ const InputField: React.FC<InputFieldProps> = ({
           {...otherProps} // Including key, className, etc.
           type="number"
           step={step}
-          value={value as number}
+          value={Math.round((value as number) * 10000) / 10000} // More compact formatting
           onChange={handleNumber}
         />
       );

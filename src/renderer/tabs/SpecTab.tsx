@@ -38,7 +38,7 @@ export default function SpecTab() {
                 newStimSpec({
                   ...theStimsSpec,
                   name: e.target.value,
-                } as SqrGratingStimsSpec)
+                })
               );
             }}
           />
@@ -56,7 +56,7 @@ export default function SpecTab() {
                 newStimSpec({
                   ...theStimsSpec,
                   description: e.target.value,
-                } as SqrGratingStimsSpec)
+                })
               );
             }}
           />
@@ -69,45 +69,8 @@ export default function SpecTab() {
           />
         </div>
 
-        <RangeSpecForm
-          title="Cycles per degree"
-          onUpdate={(cpds: RangeSpec) => {
-            console.log('>>>>> cpds=' + JSON.stringify(cpds));
-            setTheStimsSpec(
-              newStimSpec({
-                ...theStimsSpec,
-                cpds: cpds,
-              } as SqrGratingStimsSpec)
-            );
-          }}
-          initialValues={(theStimsSpec as SqrGratingStimsSpec)?.cpds}
-        />
-        <RangeSpecForm
-          title="Contrasts"
-          onUpdate={(contrasts: RangeSpec) => {
-            console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
-            setTheStimsSpec(
-              newStimSpec({
-                ...theStimsSpec,
-                contrasts: contrasts,
-              } as SqrGratingStimsSpec)
-            );
-          }}
-          initialValues={(theStimsSpec as SqrGratingStimsSpec)?.contrasts}
-        />
-        <RangeSpecForm
-          title="Speeds"
-          onUpdate={(speeds: RangeSpec) => {
-            console.log('>>>>> speeds=' + JSON.stringify(speeds));
-            setTheStimsSpec(
-              newStimSpec({
-                ...theStimsSpec,
-                speeds: speeds,
-              } as SqrGratingStimsSpec)
-            );
-          }}
-          initialValues={(theStimsSpec as SqrGratingStimsSpec)?.speeds}
-        />
+        <GratingRanges />
+
         <div className="mb-1 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
             Repetitions:
@@ -123,7 +86,7 @@ export default function SpecTab() {
                 newStimSpec({
                   ...theStimsSpec,
                   nRepetitions: newValue,
-                } as SqrGratingStimsSpec)
+                })
               );
             }}
             min={1}
@@ -151,13 +114,12 @@ export default function SpecTab() {
                 newStimSpec({
                   ...theStimsSpec,
                   integrityFlashIntervalMins: newValue,
-                } as SqrGratingStimsSpec)
+                })
               );
             }}
             min={0}
             max={100}
             step={1}
-            placeholder={'4'}
           />
         </div>
       </div>
@@ -202,6 +164,55 @@ function SpecTypeDropdown(props: {
           </option>
         ))}
       </select>
+    </div>
+  );
+}
+
+function GratingRanges() {
+  const { theStimsSpec, setTheStimsSpec } = useAppState();
+  const { cpds, contrasts, speeds } = theStimsSpec as SqrGratingStimsSpec;
+
+  return (
+    <div>
+      <RangeSpecForm
+        title="Cycles per degree"
+        onUpdate={(cpds: RangeSpec) => {
+          console.log('>>>>> cpds=' + JSON.stringify(cpds));
+          setTheStimsSpec(
+            new SqrGratingStimsSpec({
+              ...theStimsSpec,
+              cpds: cpds,
+            })
+          );
+        }}
+        initialRange={cpds}
+      />
+      <RangeSpecForm
+        title="Contrasts"
+        onUpdate={(contrasts: RangeSpec) => {
+          console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
+          setTheStimsSpec(
+            new SqrGratingStimsSpec({
+              ...theStimsSpec,
+              contrasts: contrasts,
+            })
+          );
+        }}
+        initialRange={contrasts}
+      />
+      <RangeSpecForm
+        title="Speeds"
+        onUpdate={(speeds: RangeSpec) => {
+          console.log('>>>>> speeds=' + JSON.stringify(speeds));
+          setTheStimsSpec(
+            new SqrGratingStimsSpec({
+              ...theStimsSpec,
+              speeds: speeds,
+            })
+          );
+        }}
+        initialRange={speeds}
+      />
     </div>
   );
 }
