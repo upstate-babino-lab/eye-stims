@@ -19,7 +19,7 @@ const StimList = ({
   return (
     <>
       <div
-        className={`sticky top-0 z-10 flex flex-row bg-gray-700 rounded-t `}
+        className={`sticky top-0 z-10 flex flex-row bg-gray-700 rounded-t`}
         style={{ height: ROW_HEIGHT }}
       >
         <div className={CELL_FORMAT}>Index</div>
@@ -59,6 +59,16 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   const row = data.data[index];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { stimType: name, durationMs, bgColor, meta, ...partial } = row;
+  if (partial.headMs == 0) {
+    delete partial.headMs;
+  }
+  if (partial.tailMs == 0) {
+    delete partial.tailMs;
+  }
+  if (!partial.headMs && !partial.tailMs) {
+    delete partial.bodyMs;
+  }
+
   const partialJson = stableStringify(partial); // Excludes private props
 
   return (
