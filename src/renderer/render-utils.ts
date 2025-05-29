@@ -51,6 +51,33 @@ export function stableStringify(obj: unknown, skipPrivate = true): string {
   }
 }
 
+export async function saveFileDialogAsync(
+  suggestedFilename: string
+): Promise<string> {
+  let extension = '';
+  let name = '';
+  if (suggestedFilename.endsWith('.mp4')) {
+    name = 'Stim videos';
+    extension = 'mp4';
+  }
+  if (suggestedFilename.endsWith('.stims.json')) {
+    name = 'Stim sequences';
+    extension = '.stims.json';
+  }
+  if (suggestedFilename.endsWith('.spec.json')) {
+    name = 'Stim specs';
+    extension = '.specs.json';
+  }
+  const result = await window.electron.showSaveDialogAsync({
+    title: 'Save File',
+    defaultPath: suggestedFilename,
+    filters: [{ name: name, extensions: [extension] }],
+  });
+  if (result.canceled || !result.filePath) {
+    return '';
+  }
+  return result.filePath;
+}
 /*
 
 // Compare elements JSON stableStringify (not counting _private properties)

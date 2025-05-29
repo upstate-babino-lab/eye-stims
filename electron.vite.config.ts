@@ -12,6 +12,7 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
+        '@src': resolve('src'),
         '@renderer': resolve('src/renderer'),
         '@stims': resolve('src/stims'),
         '@specs': resolve('src/specs'),

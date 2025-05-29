@@ -1,8 +1,11 @@
+import Button from '@renderer/components/Button';
 import RangeSpecForm, { INPUT_STYLES } from '@renderer/components/RangeSpecForm';
+import { saveFileDialogAsync } from '@renderer/render-utils';
 import { useAppState } from '@renderer/StateContext';
 import { RangeSpec } from '@specs/index';
 import { newStimSpec, SqrGratingStimsSpec, StimSpecType } from '@specs/StimsSpec';
 import { useEffect, useState } from 'react';
+import { filterPrivateProperties } from '@src/shared-utils';
 // import StimSequence from '@renderer/StimSequence';
 //import { SqrGratingStimsSpec } from '@specs/StimsSpec';
 
@@ -22,7 +25,7 @@ export default function SpecTab() {
   }, [theStimsSpec, setTheStimsMeta]);
 
   return (
-    <div className="flex flex-col items-start p-4 bg-gray-900 -mx-4">
+    <div className="flex flex-row items-start p-4 bg-gray-900 -mx-4">
       <div className="flex flex-col w-130">
         <div className="mb-3 flex items-center w-full">
           <label className="text-sm font-bold text-gray-100 px-4">Name:</label>
@@ -41,7 +44,9 @@ export default function SpecTab() {
           />
         </div>
         <div className="mb-3 flex items-center">
-          <label className="text-sm font-bold text-gray-100 px-4">Description:</label>
+          <label className="text-sm font-bold text-gray-100 px-4">
+            Description:
+          </label>
           <input
             type="text"
             className={INPUT_STYLES + ' w-full'}
@@ -55,7 +60,6 @@ export default function SpecTab() {
               );
             }}
           />
-
         </div>
         <div className="mb-3 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">SpecType:</label>
@@ -157,6 +161,22 @@ export default function SpecTab() {
           />
         </div>
       </div>
+      <Button
+        className="ml-auto"
+        onClick={async () => {
+          const filePath = await saveFileDialogAsync(
+            (theStimsSpec?.name.toLowerCase() || 'stims') + '.spec.json'
+          );
+          setTheStimsMeta({ ...theStimsMeta, loadedPath: filePath });
+          const content = JSON.stringify(theStimsSpec, filterPrivateProperties, 4);
+          window.electron.send('saveFile', {
+            filePath: filePath,
+            content: content,
+          });
+        }}
+      >
+        Save Spec
+      </Button>
     </div>
   );
 }

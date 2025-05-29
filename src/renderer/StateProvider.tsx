@@ -47,9 +47,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
       console.log(
         `>>>>> renderer StateProvider got 'request-file-to-save' from main. Will save HTML 'file-content'`
       );
-      const content = (
-        document.getElementById('file-content') as HTMLTextAreaElement
-      ).value;
+      const content = JSON.stringify(theStimsSpec);
       window.electron.send('saveFile', { filePath: filePath, content: content });
     };
 

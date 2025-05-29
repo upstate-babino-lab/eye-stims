@@ -4,6 +4,7 @@ import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
 import { getStartTimes } from '../shared-utils';
 import { newStimulus } from '@stims/stimConstructors';
+import { saveFileDialogAsync } from './render-utils';
 
 export type ProgressCallback = (
   label: string,
@@ -85,29 +86,17 @@ export default class StimSequence {
     return this.stimuli.filter((stim) => stim._videoCacheFilename).length;
   }
 
-  private async saveFileDialogAsync(suggestedFilename: string): Promise<string> {
-    const result = await window.electron.showSaveDialogAsync({
-      title: 'Save File',
-      defaultPath: suggestedFilename,
-      filters: [{ name: 'Stim videos', extensions: ['mp4'] }],
-    });
-    if (result.canceled || !result.filePath) {
-      this._cancelSaving = true;
-      return '';
-    }
-    return result.filePath;
-  }
-
   async buildFromCacheAsync(
     basename: string,
     displayKey: DisplayKey,
     cbProgress?: ProgressCallback
   ) {
     const [outputFilename] = await Promise.all([
-      this.saveFileDialogAsync(basename + '.mp4'),
+      saveFileDialogAsync(basename + '.mp4'),
       this.saveToCacheAsync(displayKey, cbProgress), // Can start while user is choosing filename
     ]);
     if (!outputFilename) {
+      this._cancelSaving = true;
       if (cbProgress) {
         cbProgress('cancelled', 0, 0);
       }
