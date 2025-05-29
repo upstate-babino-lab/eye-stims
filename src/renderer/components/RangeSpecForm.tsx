@@ -37,7 +37,7 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
         id={label}
         className={INPUT_STYLES + ' w-16'}
         value={value === undefined ? '' : value}
-        min={label === 'nSteps' ? 1 : undefined}
+        min={label === 'nSteps' ? 1 : label === 'Start' ? 0 : undefined}
         step="any"
         onChange={(e) => {
           const newValue = +e.target.value;
@@ -47,7 +47,7 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
             new RangeSpec({
               start: lcLabel === 'start' ? newValue : start,
               step: lcLabel === 'step' ? newValue : step,
-              nSteps: lcLabel === 'nSteps' ? newValue : nSteps,
+              nSteps: lcLabel === 'nsteps' ? newValue : nSteps,
             }).list
           );
         }}
