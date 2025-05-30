@@ -4,9 +4,9 @@ export class RangeSpec {
   nSteps: number;
 
   constructor(props: Partial<RangeSpec> = {}) {
-    this.start = props.start || 0;
-    this.step = props.step || 1;
-    this.nSteps = props.nSteps || 1;
+    this.start = props.start ?? 0;
+    this.step = props.step ?? 1;
+    this.nSteps = props.nSteps ?? 1;
   }
 
   get list(): number[] {
