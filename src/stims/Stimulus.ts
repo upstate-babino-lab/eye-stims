@@ -98,7 +98,10 @@ function calculateDurations(
       return [0, body!, duration - body!];
 
     case '011': // Body and tail are defined
-      assert(body! + tail! <= duration, 'body+tail greater than duration');
+      assert(
+        body! + tail! <= duration,
+        `body+tail greater than duration body=${body} tail=${tail} duration=${duration}`
+      );
       return [0, body!, tail!];
 
     case '100': // Only head is defined

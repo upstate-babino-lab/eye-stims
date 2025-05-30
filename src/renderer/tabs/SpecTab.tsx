@@ -68,6 +68,47 @@ export default function SpecTab() {
             onChange={(newType) => newType}
           />
         </div>
+        <div className="flex items-center bg-gray-800 rounded-xl px-2 py-1 mb-4">
+          <label className="text-sm font-bold text-gray-100 px-4">bodyMs:</label>
+          <input
+            type="number"
+            className={INPUT_STYLES}
+            value={theStimsSpec?.bodyMs ? theStimsSpec?.bodyMs : 260}
+            onChange={(e) => {
+              const newValue =
+                e.target.value === '' ? undefined : parseFloat(e.target.value);
+              setTheStimsSpec(
+                newStimSpec({
+                  ...theStimsSpec,
+                  bodyMs: newValue,
+                })
+              );
+            }}
+            min={20}
+            step={20}
+          />
+          <label className="text-sm font-bold text-gray-100 px-4">tailMs:</label>
+          <input
+            type="number"
+            className={INPUT_STYLES}
+            value={theStimsSpec?.tailMs ? theStimsSpec?.tailMs : 520}
+            onChange={(e) => {
+              const newValue =
+                e.target.value === '' ? undefined : parseFloat(e.target.value);
+              setTheStimsSpec(
+                newStimSpec({
+                  ...theStimsSpec,
+                  tailMs: newValue,
+                })
+              );
+            }}
+            min={0}
+            step={20}
+          />
+          <div className="px-4">
+            Durations = {(theStimsSpec?.bodyMs || 0) + (theStimsSpec?.tailMs || 0)}ms
+          </div>
+        </div>
 
         <GratingRanges />
 

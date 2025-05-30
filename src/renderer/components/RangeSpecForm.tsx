@@ -36,7 +36,7 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
   }, [initialRange]);
 
   return (
-    <form className="bg-gray-800 text-gray-400 text-xs font-bold shadow-md rounded-xl px-2 py-1 mb-4">
+    <form className="text-gray-400 text-xs font-bold shadow-md bg-gray-800 rounded-xl px-2 py-1 mb-4">
       <div className="text-gray-100 text-sm ml-2 mb-2">{title}</div>
       <div className="flex flex-row">
         <NumberInputField
