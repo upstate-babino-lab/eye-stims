@@ -2,7 +2,7 @@ import { Stimulus } from '@stims/index';
 import './StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
-import { getStartTimes } from '../shared-utils';
+import { assert, getStartTimes } from '../shared-utils';
 import { newStimulus } from '@stims/stimConstructors';
 import { saveFileDialogAsync } from './render-utils';
 
@@ -69,6 +69,18 @@ export default class StimSequence {
         break;
       }
       const stimulus = this.stimuli[iStim];
+      if (iStim === 0) {
+        // Ensure first stim starts with a black head frame, so paused video about to play is black
+        if (!stimulus.headMs) {
+          assert(
+            !!stimulus.bodyMs &&
+              stimulus.bodyMs + (stimulus.tailMs || 0) === stimulus.durationMs,
+            `Invalid stimulus durations at position ${iStim}`
+          );
+          stimulus.headMs = 20;
+          stimulus.durationMs = stimulus.durationMs + stimulus.headMs;
+        }
+      }
       await stimulus.cacheStimVideoAsync(displayKey);
       console.log(`>>>>> Stim ${iStim} cached at:`, stimulus._videoCacheFilename);
     }
