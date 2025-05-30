@@ -128,7 +128,7 @@ async function assembleAudioFile(
   const silentDurations = durationsMs.map((dMs) => dMs - TONE_DURATION_MS);
   silentDurations[0] += PEAK_OFFSET_MS; // First stim does not start with tone
   await ensureSilentFileAsync(silentDurations[0]); // In case it was not created
-
+  silentDurations.pop(); // No tone at end of last stim
   // All audio files must use same encoding
   const fileList: string = silentDurations
     .map(

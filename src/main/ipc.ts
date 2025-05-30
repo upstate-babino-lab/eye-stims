@@ -13,6 +13,7 @@ import {
 } from './generate-tones';
 import { DisplayKey } from '../displays';
 import { AudioKey, CHOSEN_AUDIO_KEY } from '../constants';
+import { assert } from '../shared-utils';
 
 export const stimsCacheDir = path.join(app.getPath('userData'), 'stims-cache');
 
@@ -185,6 +186,7 @@ export async function ensureSilentFileAsync(
     return filePath; // Cache already there
   } catch {
     // If file doesn't exist, create it.
+    assert(durationMs / 1000 < 9.22337e18, 'Duration too long');
     /* prettier-ignore */
     const args = [
       '-f', 'lavfi', // Use virtual input device

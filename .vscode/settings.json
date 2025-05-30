@@ -6,7 +6,7 @@
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[json]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "files.eol": "\n",
   "eslint.workingDirectories": [
@@ -25,6 +25,7 @@
     "bitstream",
     "centisecond",
     "copyts",
+    "cpds",
     "DTMF",
     "eyestims",
     "lavfi",
@@ -32,6 +33,8 @@
     "libopus",
     "microelectrode",
     "muxer",
+    "mystims",
+    "nsteps",
     "Stim",
     "stims",
     "toannexb",
