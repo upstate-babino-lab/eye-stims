@@ -26,7 +26,7 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
     console.log(`>>>>> useEffect() start=${start} step=${step} nSteps=${nSteps}`);
     // Provide default values if start, step, nSteps are undefined for RangeSpec constructor
     const newRangeSpec = new RangeSpec({
-      start: start, // Default start to 0 if undefined
+      start: start ?? 0, // Default start to 0 if undefined
       step: step, // ?? 1, // Default step to 1 if undefined (common for steps)
       nSteps: nSteps, // ?? 1, // Default nSteps to 1 if undefined (min is 1 for nSteps input anyway)
     });

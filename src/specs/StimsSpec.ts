@@ -35,6 +35,7 @@ type StimsSpecProps = {
   // head(0) + body + tail = (2 * bodyMs)
   bodyMs?: number; // Multiple of 20
   tailMs?: number; // Multiple of 20
+  includeStaticGratings?: boolean;
   nRepetitions?: number; // Number of repetitions of the whole sequence
   integrityFlashIntervalMins?: number;
   restMinutesAfterIntegrityFlash?: number;
@@ -45,6 +46,7 @@ export abstract class StimsSpec {
   description: string = '';
   bodyMs: number = 260;
   tailMs: number = 520;
+  includeStaticGratings = false;
   nRepetitions: number = 1;
   integrityFlashIntervalMins: number = 0;
   restMinutesAfterIntegrityFlash: number = 1;
@@ -59,6 +61,8 @@ export abstract class StimsSpec {
       (this.description || stimSpecsInfo[this.stimSpecType].description);
     this.bodyMs = props.bodyMs ?? this.bodyMs;
     this.tailMs = props.tailMs ?? this.tailMs;
+    this.includeStaticGratings =
+      props.includeStaticGratings ?? this.includeStaticGratings;
     this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
     this.integrityFlashIntervalMins =
       props.integrityFlashIntervalMins ?? this.integrityFlashIntervalMins;
@@ -163,6 +167,15 @@ export class SqrGratingStimsSpec extends StimsSpec {
                 speed: -speed,
               })
             );
+            if (this.includeStaticGratings) {
+              // Third stimulus identical but not moving
+              stimuli.push(
+                new SqrGrating({
+                  ...gratingPojo,
+                  speed: 0,
+                })
+              );
+            }
           }
         }
       }

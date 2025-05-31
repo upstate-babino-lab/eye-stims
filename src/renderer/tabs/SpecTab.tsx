@@ -116,6 +116,26 @@ export default function SpecTab() {
 
         <div className="mb-1 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
+            Include static gratings that don&apos;t move:
+          </label>
+          <input
+            type="checkbox"
+            // TODO: restyle using Tailwind’s peer utility
+            className="h-4 w-4 border border-gray-500 rounded-xl text-gray-200 bg-transparent checked:bg-current"
+            checked={theStimsSpec?.includeStaticGratings}
+            onChange={(e) => {
+              setTheStimsSpec(
+                newStimSpec({
+                  ...theStimsSpec,
+                  includeStaticGratings: !!e.target.checked,
+                })
+              );
+            }}
+          />
+        </div>
+
+        <div className="mb-1 flex items-center">
+          <label className="text-sm font-bold text-gray-100 px-4">
             Repetitions:
           </label>
           <input
@@ -186,6 +206,7 @@ export default function SpecTab() {
   );
 }
 
+//-----------------------------------------------------------------------------
 function SpecTypeDropdown(props: {
   initialValue: StimSpecType;
   onChange: (value: StimSpecType) => void;
@@ -211,6 +232,7 @@ function SpecTypeDropdown(props: {
   );
 }
 
+//-----------------------------------------------------------------------------
 function GratingRanges() {
   const { theStimsSpec, setTheStimsSpec } = useAppState();
   const { cpds, contrasts, speeds } = theStimsSpec as SqrGratingStimsSpec;
