@@ -1,9 +1,9 @@
 import Button from '../components/Button';
 import { useAppState } from '../StateContext';
 import { DisplayKey, displays } from '../../displays';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProgressBar from '../components/ProgressBar';
-import { ProgressCallback } from '../StimSequence';
+import StimSequence, { ProgressCallback } from '../StimSequence';
 import { getBasename } from '../../shared-utils';
 
 export default function BuildTab() {
@@ -15,6 +15,14 @@ export default function BuildTab() {
   const [progressText, setProgressText] = useState<string>('');
   const [progressPercent, setProgressPercent] = useState(-1);
   const [ffmpegOutput, setFfmpegOutput] = useState<string>('');
+
+  // Update from StimsSpec if we're using one
+  const { theStimsSpec, setTheStimSequence } = useAppState();
+  useEffect(() => {
+    if (theStimsSpec) {
+      setTheStimSequence(new StimSequence(theStimsSpec.stimuli()));
+    }
+  }, [setTheStimSequence, theStimsSpec]);
 
   const handleProgress: ProgressCallback = (
     label: string,

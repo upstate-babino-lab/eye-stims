@@ -62,7 +62,8 @@ export abstract class StimsSpec {
     return this.stimuli().reduce((acc, stim) => acc + stim.durationMs, 0);
   }
 
-  // TODO: return from private cache if JSON has not changed
+  // TODO: return from private cache if JSON has not changed?
+  // If we don't use a cache stims will be reshuffled every time.
   stimuli(): Stimulus[] {
     // Shuffle before inserting integrity flashes at regular intervals
     const shuffledStims = this.baseStimuli().sort(() => Math.random() - 0.5); // in-place shuffle
