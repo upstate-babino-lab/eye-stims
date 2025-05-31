@@ -8,9 +8,23 @@ import { contrastPair } from '@stims/stim-utils';
 
 // TODO: Create StimSpec subclasses for each type of StimSpec
 export enum StimSpecType {
-  SqrGratings = 'SqrGratings',
+  SqrGratingPairs = 'SqrGratingPairs',
   TBD = 'TBD',
 }
+
+type StimSpecInfo = {
+  description: string;
+};
+export const stimSpecsInfo: Record<StimSpecType, StimSpecInfo> = {
+  SqrGratingPairs: {
+    description:
+      'For each cpd, contrast, and speed, one grating moves left ' +
+      'and the other moves right.',
+  },
+  TBD: {
+    description: 'To be determined',
+  },
+};
 
 type StimsSpecProps = {
   stimSpecType: StimSpecType;
@@ -40,7 +54,9 @@ export abstract class StimsSpec {
   constructor(props: StimsSpecProps) {
     this.stimSpecType = props.stimSpecType ?? this.stimSpecType;
     this.name = props.name ?? this.name;
-    this.description = props.description ?? this.description;
+    this.description =
+      props.description ??
+      (this.description || stimSpecsInfo[this.stimSpecType].description);
     this.bodyMs = props.bodyMs ?? this.bodyMs;
     this.tailMs = props.tailMs ?? this.tailMs;
     this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
@@ -110,7 +126,7 @@ export class SqrGratingStimsSpec extends StimsSpec {
     // TODO: Check that cpds, contrasts, and speeds are all in valid ranges
     super({
       ...props,
-      stimSpecType: StimSpecType.SqrGratings,
+      stimSpecType: StimSpecType.SqrGratingPairs,
     });
     this.cpds = (props.cpds && new RangeSpec(props.cpds)) ?? this.cpds;
     this.contrasts =
@@ -162,7 +178,7 @@ type StimsSpecConstructors = {
   [key in StimSpecType]: new (args: Partial<StimsSpec>) => StimsSpec;
 };
 export const stimsSpecConstructors: StimsSpecConstructors = {
-  SqrGratings: SqrGratingStimsSpec,
+  SqrGratingPairs: SqrGratingStimsSpec,
   TBD: SqrGratingStimsSpec, // Placeholder just for now
 };
 

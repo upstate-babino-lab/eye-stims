@@ -80,7 +80,7 @@ export default function App(): JSX.Element {
             className="ml-auto"
             onClick={() => {
               const stimSpec = newStimSpec({
-                stimSpecType: StimSpecType.SqrGratings,
+                stimSpecType: StimSpecType.SqrGratingPairs,
               });
               setTheStimsSpec(stimSpec);
               setTheStimsMeta({});

@@ -64,7 +64,9 @@ export default function SpecTab() {
         <div className="mb-3 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">SpecType:</label>
           <SpecTypeDropdown
-            initialValue={theStimsSpec?.stimSpecType || StimSpecType.SqrGratings}
+            initialValue={
+              theStimsSpec?.stimSpecType || StimSpecType.SqrGratingPairs
+            }
             onChange={(newType) => newType}
           />
         </div>
