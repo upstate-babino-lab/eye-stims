@@ -47,7 +47,7 @@ export default function App(): JSX.Element {
                 {theStimsMeta.name}
               </div>
               <div className="bg-gray-950 rounded-md p-2">
-                <div className="text-gray-500">
+                <div className="text-gray-400">
                   <span className="text-gray-300">
                     {theStimsMeta.loadedPath
                       ? getBasename(theStimsMeta.loadedPath)

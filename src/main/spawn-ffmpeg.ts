@@ -10,12 +10,7 @@ import { writeFile as writeFileAsync } from 'fs/promises';
 import * as path from 'path';
 import { audioChoices, AudioProps, toneBasename } from './generate-tones';
 import { DisplayKey, displays } from '../displays';
-import {
-  PEAK_OFFSET_MS,
-  TONE_DURATION_MS,
-  AudioKey,
-  CHOSEN_AUDIO_KEY,
-} from '../constants';
+import { TONE_DURATION_MS, AudioKey, CHOSEN_AUDIO_KEY } from '../constants';
 import { getStartTimes } from '../shared-utils';
 import { app } from 'electron';
 
@@ -60,14 +55,16 @@ export async function spawnFfmpegAsync(args: string[]): Promise<string> {
     ffmpegProcess.on('close', (code) => {
       // console.error('ffmpeg stderr:', errorOutput);
       const elapsedTime = new Date().getTime() - startTime;
-      console.error(
-        `>>>>> ffmpeg exited after ${(elapsedTime / 1000).toFixed(2)} seconds =` +
-          `${(elapsedTime / 60000).toFixed(2)} minutes ` +
-          `with code=${code} stdOutput=${stdOutput} stdOutput.length=${stdOutput.length}`
-      );
+      const elapsedTimeString =
+        `${(elapsedTime / 1000).toFixed(2)} seconds =` +
+        `${(elapsedTime / 60000).toFixed(2)} minutes`;
+      const resultString =
+        `ffmpeg exited after ${elapsedTimeString} ` +
+        `with code=${code} stdOutput=${stdOutput} stdOutput.length=${stdOutput.length}`;
+      console.log('>>>>> ' + resultString);
 
       if (code === 0) {
-        resolve(stdOutput || 'Success');
+        resolve(stdOutput || `Success with elapsedTime=${elapsedTimeString}`);
       } else {
         reject(`ffmpeg exited with error code ${code}: ${errorOutput}`);
       }
@@ -75,6 +72,7 @@ export async function spawnFfmpegAsync(args: string[]): Promise<string> {
   });
 }
 
+// TODO: Separate out call to assembleAudioFile() so it can be done first and reported to progress bar
 export async function buildFromCacheAsync(
   displayKey: DisplayKey,
   inputFilenames: string[],
@@ -88,9 +86,8 @@ export async function buildFromCacheAsync(
   await ensureCacheDirAsync();
   // TODO: uuid name to allow more than one call to ffmpeg (e.g. for multiple displays)
   const vInputListFilename: string = 'v-input-list.txt';
-  const fileList: string = inputFilenames
-    .map((name) => `file '${name}'`)
-    .join('\n');
+  const fileList: string =
+    inputFilenames.map((name) => `file '${name}'`).join('\n') + '\n';
   await writeFileAsync(
     path.join(stimsCacheDir, vInputListFilename),
     fileList,
@@ -106,12 +103,14 @@ export async function buildFromCacheAsync(
     '-i', audioFilename,
     '-map', '0:v',
     '-map', '1:a',
-    '-c:v', 'copy', // copy directly without re-encoding to go faster
+    '-c:v', 'copy', // copy video directly without re-encoding to go faster
+    //'-c:v', 'libx264', // Re-encode video
     '-copyts',
     '-r', displayProps.fps.toString(), // Video framerate
     //'-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
   ];
+  // args.push('-shortest'); // Removes audio completely when using mp3, or not re-encoding with opus
   args.push(outputPath);
   return await spawnFfmpegAsync(args);
 }
@@ -126,25 +125,33 @@ async function assembleAudioFile(
   const inputListFilename: string = 'a-input-list.txt';
 
   const silentDurations = durationsMs.map((dMs) => dMs - TONE_DURATION_MS);
-  silentDurations[0] += PEAK_OFFSET_MS; // First stim does not start with tone
+  silentDurations[0] += TONE_DURATION_MS / 2; // First stim does not start with tone
   await ensureSilentFileAsync(silentDurations[0]); // In case it was not created
-  silentDurations.pop(); // No tone at end of last stim
-  // All audio files must use same encoding
-  const fileList: string = silentDurations
-    .map(
-      (dMs, index) =>
-        `file '${silentBasename(dMs) + audioProps.fileExtension}'\n` +
-        `file '${toneBasename((index + 1) % 10) + audioProps.fileExtension}'`
-    )
-    .join('\n');
+  if (silentDurations.length > 1) {
+    silentDurations[silentDurations.length - 1] += TONE_DURATION_MS / 2; // Last doesn't end with tone
+    await ensureSilentFileAsync(silentDurations[silentDurations.length - 1]); // In case it was not created
+  }
+  console.log('>>>>> durationsMS=' + JSON.stringify(durationsMs));
+  console.log('>>>>> silentDurations=' + JSON.stringify(silentDurations));
 
+  // All audio files must use same encoding
+  const fileList: string =
+    silentDurations
+      .map(
+        (dMs, index) =>
+          `file '${silentBasename(dMs) + audioProps.fileExtension}'\n` +
+          (index < silentDurations.length - 1
+            ? `file '${toneBasename((index + 1) % 10) + audioProps.fileExtension}'`
+            : '') // No tone after last stim
+      )
+      .join('\n') + '\n';
   await writeFileAsync(
     path.join(stimsCacheDir, inputListFilename),
     fileList,
     'utf-8'
   );
 
-  const AUDIO_FILENAME = 'audio' + audioProps.fileExtension; // Should be uuid??
+  const AUDIO_FILENAME = 'audio' + audioProps.fileExtension; // Should include uuid??
   /* prettier-ignore */
   const args = [
     '-f', 'concat',
@@ -153,7 +160,7 @@ async function assembleAudioFile(
   ].concat(audioProps.ffEncode);
   if (!reEncodeAudio) {
     args.push('-c');
-    args.push('copy'); // copy the streams directly without re-encoding
+    args.push('copy'); // copy the audio streams directly without re-encoding
     args.push('-copyts');
   }
   args.push(AUDIO_FILENAME);
@@ -162,7 +169,7 @@ async function assembleAudioFile(
   return AUDIO_FILENAME;
 }
 
-// SLOW way to generate audio file from scratch
+// SLOW way to generate audio file from scratch (not using)
 // @ts-ignore: TS6133
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function generateAudioFile(
@@ -178,7 +185,7 @@ async function generateAudioFile(
   const filterComplex: string[] = startTimes
     .filter((st) => st >= 0.1)
     .map((st, i) => {
-      const delay = Math.round(st * 1000) - PEAK_OFFSET_MS; // Center/peak of tone offset
+      const delay = Math.round(st * 1000) - TONE_DURATION_MS / 2; // Center/peak of tone offset
       return `[0:a] adelay=${delay}|${delay} [a${i}];`;
     });
 

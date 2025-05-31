@@ -37,6 +37,7 @@ export const audioChoices: Record<AudioKey, AudioProps> = {
     ffEncode: ['-c:a', 'libmp3lame', '-b:a', '320k'],
   },
   OPUS: {
+    // Durations are more precise than MP3
     sampleRate: 48000,
     fileExtension: '.opus',
     // -strict -2 allows experimental codec

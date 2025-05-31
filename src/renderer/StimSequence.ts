@@ -1,10 +1,12 @@
-import { Stimulus } from '@stims/index';
+import { Solid, Stimulus } from '@stims/index';
 import './StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
 import { assert, getStartTimes } from '../shared-utils';
 import { newStimulus } from '@stims/stimConstructors';
 import { saveFileDialogAsync } from './render-utils';
+import { StimType } from '@stims/Stimulus';
+import { TONE_DURATION_MS } from '@src/constants';
 
 export type ProgressCallback = (
   label: string,
@@ -22,6 +24,18 @@ export default class StimSequence {
     stimPojos?: Stimulus[] // Can be POJOs or Stimulus class instances
   ) {
     const stims = stimPojos?.map((s) => newStimulus(s)) ?? this.stimuli;
+    // Add final black if necessary to ensure video ends with a black stim.
+    // This helps remove final encoding glitches with a/v synchronization
+    const lastStim = stims?.at(-1);
+    if (lastStim?.stimType != StimType.Solid || lastStim.bgColor != 'black') {
+      stims?.push(
+        new Solid({
+          durationMs: TONE_DURATION_MS,
+          meta: { comment: 'final black' },
+        })
+      );
+    }
+
     this.stimuli = stims; // deepDeduplicate(stims);
   }
 
@@ -75,7 +89,8 @@ export default class StimSequence {
           assert(
             !!stimulus.bodyMs &&
               stimulus.bodyMs + (stimulus.tailMs || 0) === stimulus.durationMs,
-            `Invalid stimulus durations at position ${iStim}`
+            `Invalid stimulus durations at position ${iStim} ` +
+              `body=${stimulus.bodyMs} tail=${stimulus.tailMs} duration=${stimulus.durationMs}`
           );
           stimulus.headMs = 20;
           stimulus.durationMs = stimulus.durationMs + stimulus.headMs;

@@ -1,3 +1,4 @@
+import { TONE_DURATION_MS } from '../constants';
 import { assert } from '../shared-utils';
 
 export enum StimType {
@@ -27,7 +28,7 @@ type StimProps = {
 // TODO?: Change durations to number of frames, to avoid forcing to multiples of 20ms
 export abstract class Stimulus {
   stimType: StimType;
-  durationMs: number = 10_000; // Required, multiple of 20
+  durationMs: number = 10_000; // Required, multiple of 20, min 200
   bgColor: string = 'black';
   // Head, body and tail are optional, but must sum to duration
   // By default head and tail are 0 and body is full duration
@@ -85,6 +86,7 @@ function calculateDurations(
   tail?: number
 ): [number, number, number] {
   const defined = (head ? '1' : '0') + (body ? '1' : '0') + (tail ? '1' : '0');
+  duration = Math.max(TONE_DURATION_MS, duration); // Leave room for sync tones
   switch (defined) {
     case '000': // All durations are undefined
       return [0, duration, 0];
