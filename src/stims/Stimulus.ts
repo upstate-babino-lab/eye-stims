@@ -11,7 +11,13 @@ export enum StimType {
 
 // Make sure durations align with 50fps frame rate
 // (multiples of 20 milliseconds)
-export function roundToNearestTwenty(num: number): number {
+export function roundToValidDuration(num: number): number {
+  if (num < 0) {
+    return 0;
+  }
+  if (num < 100) {
+    return num;
+  }
   return Math.round(num / 20) * 20;
 }
 
@@ -41,7 +47,7 @@ export abstract class Stimulus {
   constructor(props: StimProps) {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
     this.stimType = props.stimType;
-    this.durationMs = roundToNearestTwenty(props.durationMs ?? this.durationMs);
+    this.durationMs = roundToValidDuration(props.durationMs ?? this.durationMs);
     this.bgColor = props.bgColor ?? this.bgColor;
     [this.headMs, this.bodyMs, this.tailMs] = calculateDurations(
       this.durationMs,

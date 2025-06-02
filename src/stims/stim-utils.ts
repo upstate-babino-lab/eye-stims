@@ -10,6 +10,7 @@ export function vmin(
   return Math.min(width, height);
 }
 
+// Like CSS viewport maximum
 export function vmax(
   ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 ): number {

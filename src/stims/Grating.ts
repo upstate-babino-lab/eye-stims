@@ -22,7 +22,7 @@ export class Grating extends Stimulus {
     this.gratingType = props.gratingType ?? this.gratingType;
     this.fgColor = props.fgColor ?? this.fgColor;
     this.speed = props.speed ?? this.speed;
-    this.cpd = Math.abs(props.cpd ?? this.cpd);
+    this.cpd = (props.cpd && props.cpd > 0 ? props.cpd : 0) ?? this.cpd;
     this.angle = props.angle ?? this.angle;
   }
 
@@ -34,20 +34,22 @@ export class Grating extends Stimulus {
     if (ageSeconds < 0 || ageSeconds > this.durationMs / 1000) {
       return;
     }
-    const barWidthPx = this.cpd * pxPerDegree;
+    const angleRadians = degreesToRadians(this.angle);
+    const vmax1 = vmax(ctx);
+    const vmax2 = vmax1 * 2;
+
+    const barWidthPx = this.cpd > 0 ? pxPerDegree / (this.cpd * 2) : vmax1;
     if (barWidthPx < 0.5) {
       throw new Error(
         'cpd * pxPerDegree must be at least 0.5 to have at least one pixel' +
           ` cpd=${this.cpd} pxPerDegree=${pxPerDegree}`
       );
     }
-    const angleRadians = degreesToRadians(this.angle);
-    const vmax2 = 2 * vmax(ctx);
 
     const draw = (pxOffset: number): void => {
       const patternCanvas =
         this.gratingType === GratingType.Sin
-          ? this.sinPatternCanvas(barWidthPx * 2, vmax2, pxOffset)
+          ? this.sinPatternCanvas(barWidthPx * 2, vmax(ctx) * 2, pxOffset)
           : this.barPatternCanvas(barWidthPx * 2, vmax2, pxOffset);
       ctx.save();
       const pattern = ctx.createPattern(patternCanvas, 'repeat');
@@ -57,7 +59,7 @@ export class Grating extends Stimulus {
       ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2); // Origin to center
       ctx.rotate(angleRadians); // Rotate around origin
       ctx.fillStyle = pattern;
-      ctx.fillRect(-vmax2 / 2, -vmax2 / 2, vmax2, vmax2);
+      ctx.fillRect(-vmax1, -vmax1, vmax2, vmax2);
       ctx.restore();
     };
 
