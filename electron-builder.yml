@@ -11,7 +11,7 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
-  - "**/node_modules/ffmpeg-static/**/*"
+  - '**/node_modules/ffmpeg-static/**/*'
 win:
   executableName: EyeStims
 nsis:
@@ -27,8 +27,8 @@ mac:
   extendInfo:
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
-afterSign: electron-builder-notarize
-  
+  notarize: true
+
 dmg:
   artifactName: ${name}-${version}.${ext}
 linux:
@@ -45,4 +45,3 @@ publish:
   provider: github
   owner: pwellner
   releaseType: draft
-
