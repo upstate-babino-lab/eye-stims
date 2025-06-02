@@ -131,8 +131,8 @@ async function assembleAudioFile(
     silentDurations[silentDurations.length - 1] += TONE_DURATION_MS / 2; // Last doesn't end with tone
     await ensureSilentFileAsync(silentDurations[silentDurations.length - 1]); // In case it was not created
   }
-  console.log('>>>>> durationsMS=' + JSON.stringify(durationsMs));
-  console.log('>>>>> silentDurations=' + JSON.stringify(silentDurations));
+  // console.log('>>>>> durationsMS=' + JSON.stringify(durationsMs));
+  // console.log('>>>>> silentDurations=' + JSON.stringify(silentDurations));
 
   // All audio files must use same encoding
   const fileList: string =

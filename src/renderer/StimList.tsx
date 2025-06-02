@@ -71,6 +71,10 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   if (!partial.headMs && !partial.tailMs) {
     delete partial.bodyMs;
   }
+  // Display comment
+  if (row?.meta?.comment) {
+    partial['meta'] = { comment: row?.meta?.comment };
+  }
   // Excludes private props and ensure more compact number formatting
   const partialJson = stableStringify(roundNumericalProperties(partial));
 

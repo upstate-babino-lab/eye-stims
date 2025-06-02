@@ -2,7 +2,7 @@ import { Solid, Stimulus } from '@stims/index';
 import './StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
-import { assert, getStartTimes } from '../shared-utils';
+import { getStartTimes } from '../shared-utils';
 import { newStimulus } from '@stims/stimConstructors';
 import { saveFileDialogAsync } from './render-utils';
 import { StimType } from '@stims/Stimulus';
@@ -24,6 +24,7 @@ export default class StimSequence {
     stimPojos?: Stimulus[] // Can be POJOs or Stimulus class instances
   ) {
     const stims = stimPojos?.map((s) => newStimulus(s)) ?? this.stimuli;
+
     // Add final black if necessary to ensure video ends with a black stim.
     // This helps remove final encoding glitches with a/v synchronization
     const lastStim = stims?.at(-1);
@@ -32,6 +33,18 @@ export default class StimSequence {
         new Solid({
           durationMs: TONE_DURATION_MS,
           meta: { comment: 'final black' },
+        })
+      );
+    }
+
+    // Add initial black if necessary, so paused video about to play is black,
+    // and sync-tone plays on first visible stim
+    const firstStim = stims[0];
+    if (firstStim?.stimType != StimType.Solid || firstStim.bgColor != 'black') {
+      stims?.unshift(
+        new Solid({
+          durationMs: TONE_DURATION_MS,
+          meta: { comment: 'initial black' },
         })
       );
     }
@@ -83,19 +96,6 @@ export default class StimSequence {
         break;
       }
       const stimulus = this.stimuli[iStim];
-      if (iStim === 0) {
-        // Ensure first stim starts with a black head frame, so paused video about to play is black
-        if (!stimulus.headMs) {
-          assert(
-            !!stimulus.bodyMs &&
-              stimulus.bodyMs + (stimulus.tailMs || 0) === stimulus.durationMs,
-            `Invalid stimulus durations at position ${iStim} ` +
-              `body=${stimulus.bodyMs} tail=${stimulus.tailMs} duration=${stimulus.durationMs}`
-          );
-          stimulus.headMs = 20;
-          stimulus.durationMs = stimulus.durationMs + stimulus.headMs;
-        }
-      }
       await stimulus.cacheStimVideoAsync(displayKey);
       console.log(`>>>>> Stim ${iStim} cached at:`, stimulus._videoCacheFilename);
     }
