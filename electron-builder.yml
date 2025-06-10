@@ -20,6 +20,9 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  target:
+    - target: default
+      arch: arm64
   hardenedRuntime: true
   gatekeeperAssess: false # Set to false during notarization
   identity: 'AIRCODA LLC (33ZA33Y2Z5)'
@@ -28,6 +31,7 @@ mac:
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
   notarize: true
+  compression: maximum
 
 dmg:
   artifactName: ${name}-${version}.${ext}

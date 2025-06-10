@@ -11,20 +11,22 @@ const stimsSpec = new SqrGratingStimsSpec({
   description: 'Trailblazer stims.json for first video',
   bodyMs: 260,
   tailMs: 520,
+  grayMs: 60,
+  grayTailMs: 520,
   cpds: new RangeSpec({
     start: 0.5,
     step: 0.5,
-    nSteps: 6,
+    nSteps: 5,
   }),
   contrasts: new RangeSpec({
     start: 0,
     step: -0.1,
-    nSteps: 6,
+    nSteps: 3,
   }),
   speeds: new RangeSpec({
     start: 10,
     step: 1,
-    nSteps: 1, // Only one speed for now
+    nSteps: 2,
   }),
   nRepetitions: 40,
   integrityFlashIntervalMins: 10,

@@ -3,7 +3,11 @@ import RangeSpecForm, { INPUT_STYLES } from '@renderer/components/RangeSpecForm'
 import { saveFileDialogAsync } from '@renderer/render-utils';
 import { useAppState } from '@renderer/StateContext';
 import { RangeSpec } from '@specs/index';
-import { newStimSpec, SqrGratingStimsSpec, StimSpecType } from '@specs/StimsSpec';
+import {
+  newStimSpec,
+  SqrGratingPairsStimsSpec,
+  StimSpecType,
+} from '@specs/StimsSpec';
 import { useEffect, useState } from 'react';
 import { filterPrivateProperties } from '@src/shared-utils';
 // import StimSequence from '@renderer/StimSequence';
@@ -70,53 +74,13 @@ export default function SpecTab() {
             onChange={(newType) => newType}
           />
         </div>
-        <div className="flex items-center bg-gray-800 rounded-xl px-2 py-1 mb-4">
-          <label className="text-sm font-bold text-gray-100 px-4">bodyMs:</label>
-          <input
-            type="number"
-            className={INPUT_STYLES}
-            value={theStimsSpec?.bodyMs ? theStimsSpec?.bodyMs : 260}
-            onChange={(e) => {
-              const newValue =
-                e.target.value === '' ? undefined : parseFloat(e.target.value);
-              setTheStimsSpec(
-                newStimSpec({
-                  ...theStimsSpec,
-                  bodyMs: newValue,
-                })
-              );
-            }}
-            min={20}
-            step={20}
-          />
-          <label className="text-sm font-bold text-gray-100 px-4">tailMs:</label>
-          <input
-            type="number"
-            className={INPUT_STYLES}
-            value={theStimsSpec?.tailMs ? theStimsSpec?.tailMs : 520}
-            onChange={(e) => {
-              const newValue =
-                e.target.value === '' ? undefined : parseFloat(e.target.value);
-              setTheStimsSpec(
-                newStimSpec({
-                  ...theStimsSpec,
-                  tailMs: newValue,
-                })
-              );
-            }}
-            min={0}
-            step={20}
-          />
-          <div className="px-4">
-            Durations = {(theStimsSpec?.bodyMs || 0) + (theStimsSpec?.tailMs || 0)}ms
-          </div>
-        </div>
-
+        <TwoSpecProps nameA="bodyMs" nameB="tailMs" />
         <GratingRanges />
+        <TwoSpecProps nameA="grayMs" nameB="grayTailMs" />
 
         <div className="mb-1 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
-            Include static gratings that don&apos;t move:
+            Include static gratings:
           </label>
           <input
             type="checkbox"
@@ -235,7 +199,7 @@ function SpecTypeDropdown(props: {
 //-----------------------------------------------------------------------------
 function GratingRanges() {
   const { theStimsSpec, setTheStimsSpec } = useAppState();
-  const { cpds, contrasts, speeds } = theStimsSpec as SqrGratingStimsSpec;
+  const { cpds, contrasts, speeds } = theStimsSpec as SqrGratingPairsStimsSpec;
 
   return (
     <div>
@@ -244,7 +208,7 @@ function GratingRanges() {
         onUpdate={(cpds: RangeSpec) => {
           console.log('>>>>> cpds=' + JSON.stringify(cpds));
           setTheStimsSpec(
-            new SqrGratingStimsSpec({
+            new SqrGratingPairsStimsSpec({
               ...theStimsSpec,
               cpds: cpds,
             })
@@ -257,7 +221,7 @@ function GratingRanges() {
         onUpdate={(contrasts: RangeSpec) => {
           console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
           setTheStimsSpec(
-            new SqrGratingStimsSpec({
+            new SqrGratingPairsStimsSpec({
               ...theStimsSpec,
               contrasts: contrasts,
             })
@@ -270,7 +234,7 @@ function GratingRanges() {
         onUpdate={(speeds: RangeSpec) => {
           console.log('>>>>> speeds=' + JSON.stringify(speeds));
           setTheStimsSpec(
-            new SqrGratingStimsSpec({
+            new SqrGratingPairsStimsSpec({
               ...theStimsSpec,
               speeds: speeds,
             })
@@ -281,3 +245,125 @@ function GratingRanges() {
     </div>
   );
 }
+
+//-----------------------------------------------------------------------------
+function TwoSpecProps(props: { nameA: string; nameB: string }) {
+  const { theStimsSpec, setTheStimsSpec } = useAppState();
+  const defaultStimSpec = newStimSpec({
+    stimSpecType: StimSpecType.SqrGratingPairs,
+  });
+
+  if (!theStimsSpec) {
+    return <div className="text-red-500">No StimsSpec available</div>;
+  }
+
+  // Helper function to handle input changes and update state
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    propName: string
+  ) => {
+    // Keep 'undefined' for empty string to allow clearing the input field
+    // However, if 0 is a valid input, parseFloat will convert '0' to 0
+    const newValue =
+      e.target.value === '' ? undefined : parseFloat(e.target.value);
+
+    const newSpec = newStimSpec({ ...theStimsSpec });
+    newSpec[propName] = newValue;
+    setTheStimsSpec(newSpec);
+  };
+
+  // Helper to safely get the value for display
+  // This function ensures that if a property exists on theStimsSpec (even if 0),
+  // it's used. Only if it's strictly null or undefined will defaultStimSpec be used.
+  const getDisplayValue = (propName: string) => {
+    // Check if the property exists on theStimsSpec and is not null/undefined
+    // Use `??` to allow 0 as a valid value
+    const value = theStimsSpec[propName] ?? defaultStimSpec[propName];
+    // Convert undefined back to empty string for the input field to allow clearing
+    return value === undefined ? '' : String(value);
+  };
+
+  return (
+    <div className="flex items-center bg-gray-800 rounded-xl px-2 py-1 mb-4">
+      <label className="text-sm font-bold text-gray-100 px-4">
+        {props.nameA}:
+      </label>
+      <input
+        type="number"
+        className={INPUT_STYLES}
+        // Use the helper function for display value
+        value={getDisplayValue(props.nameA)}
+        onChange={(e) => handleInputChange(e, props.nameA)}
+        min={0}
+        step={20}
+      />
+      <label className="text-sm font-bold text-gray-100 px-4">
+        {props.nameB}:
+      </label>
+      <input
+        type="number"
+        className={INPUT_STYLES}
+        // Use the helper function for display value
+        value={getDisplayValue(props.nameB)}
+        onChange={(e) => handleInputChange(e, props.nameB)}
+        min={0} // Make sure this is 0 if you want 0 input to be valid
+        step={20}
+      />
+      <div className="px-4">
+        Durations = {(theStimsSpec[props.nameA] ?? 0) + (theStimsSpec[props.nameB] ?? 0)}ms
+      </div>
+    </div>
+  );
+}
+/*
+function TwoSpecProps(props: { nameA: string; nameB: string }) {
+  const { theStimsSpec, setTheStimsSpec } = useAppState();
+  const defaultStimSpec = newStimSpec({
+    stimSpecType: StimSpecType.SqrGratingPairs,
+  });
+  if (!theStimsSpec) {
+    return <div className="text-red-500">No StimsSpec available</div>;
+  }
+  return (
+    <div className="flex items-center bg-gray-800 rounded-xl px-2 py-1 mb-4">
+      <label className="text-sm font-bold text-gray-100 px-4">
+        {props.nameA}:
+      </label>
+      <input
+        type="number"
+        className={INPUT_STYLES}
+        value={theStimsSpec[props.nameA] || defaultStimSpec[props.nameA]}
+        onChange={(e) => {
+          const newValue =
+            e.target.value === '' ? undefined : parseFloat(e.target.value);
+          const newSpec = newStimSpec({ ...theStimsSpec });
+          newSpec[props.nameA] = newValue;
+          setTheStimsSpec(newSpec);
+        }}
+        min={20}
+        step={20}
+      />
+      <label className="text-sm font-bold text-gray-100 px-4">
+        {props.nameB}:
+      </label>
+      <input
+        type="number"
+        className={INPUT_STYLES}
+        value={theStimsSpec[props.nameB] || defaultStimSpec[props.nameB]}
+        onChange={(e) => {
+          const newValue =
+            e.target.value === '' ? undefined : parseFloat(e.target.value);
+          const newSpec = newStimSpec({ ...theStimsSpec });
+          newSpec[props.nameB] = newValue;
+          setTheStimsSpec(newSpec);
+        }}
+        min={0}
+        step={20}
+      />
+      <div className="px-4">
+        Durations = {(theStimsSpec?.bodyMs || 0) + (theStimsSpec?.tailMs || 0)}ms
+      </div>
+    </div>
+  );
+}
+*/

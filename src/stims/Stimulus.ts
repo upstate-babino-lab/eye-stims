@@ -21,6 +21,8 @@ export function roundToValidDuration(num: number): number {
   return Math.round(num / 20) * 20;
 }
 
+export type NestedStimuli = (Stimulus | NestedStimuli)[];
+
 type StimProps = {
   stimType: StimType;
   durationMs?: number;

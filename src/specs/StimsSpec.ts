@@ -4,7 +4,8 @@
 */
 import { Stimulus, SqrGrating, Solid } from '@stims/index';
 import { RangeSpec } from './RangeSpec';
-import { contrastPair } from '@stims/stim-utils';
+import { contrastPair, linearToHex } from '@stims/stim-utils';
+import { NestedStimuli } from '@stims/Stimulus';
 
 // TODO: Create StimSpec subclasses for each type of StimSpec
 export enum StimSpecType {
@@ -18,8 +19,8 @@ type StimSpecInfo = {
 export const stimSpecsInfo: Record<StimSpecType, StimSpecInfo> = {
   SqrGratingPairs: {
     description:
-      'For each cpd, contrast, and speed, one grating moves left ' +
-      'and the other moves right.',
+      'Pairs of gratings moving left and right ' +
+      'for each cpd, contrast, and speed.',
   },
   TBD: {
     description: 'To be determined',
@@ -35,6 +36,8 @@ type StimsSpecProps = {
   // head(0) + body + tail = (2 * bodyMs)
   bodyMs?: number; // Multiple of 20
   tailMs?: number; // Multiple of 20
+  grayMs?: number;
+  grayTailMs?: number;
   includeStaticGratings?: boolean;
   nRepetitions?: number; // Number of repetitions of the whole sequence
   integrityFlashIntervalMins?: number;
@@ -46,6 +49,8 @@ export abstract class StimsSpec {
   description: string = '';
   bodyMs: number = 260;
   tailMs: number = 520;
+  grayMs: number = 60;
+  grayTailMs: number = 520; // only used if grayMs > 0
   includeStaticGratings = false;
   nRepetitions: number = 1;
   integrityFlashIntervalMins: number = 0;
@@ -61,6 +66,8 @@ export abstract class StimsSpec {
       (this.description || stimSpecsInfo[this.stimSpecType].description);
     this.bodyMs = props.bodyMs ?? this.bodyMs;
     this.tailMs = props.tailMs ?? this.tailMs;
+    this.grayMs = props.grayMs ?? this.grayMs;
+    this.grayTailMs = this.grayMs > 0 ? (props.grayTailMs ?? this.grayTailMs) : 0;
     this.includeStaticGratings =
       props.includeStaticGratings ?? this.includeStaticGratings;
     this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
@@ -71,7 +78,7 @@ export abstract class StimsSpec {
   }
 
   // Returns POJOs not randomized, without integrity flashes or rest periods
-  abstract baseStimuli(): Stimulus[];
+  abstract baseStimuli(): NestedStimuli;
 
   // Would be more efficient to calculate instead of regenerate stimuli every time
   count(): number {
@@ -85,8 +92,8 @@ export abstract class StimsSpec {
   // TODO: return from private cache if JSON has not changed?
   // If we don't use a cache stims will be reshuffled every time.
   stimuli(): Stimulus[] {
-    // Shuffle before inserting integrity flashes at regular intervals
-    const shuffledStims = this.baseStimuli().sort(() => Math.random() - 0.5); // in-place shuffle
+    // Shuffle groups before inserting integrity flashes
+    const shuffledNestedStims = this.baseStimuli().sort(() => Math.random() - 0.5); // in-place shuffle
 
     if (this.integrityFlashIntervalMins && this.integrityFlashIntervalMins > 0) {
       const integrityFlashGroup = [
@@ -98,35 +105,38 @@ export abstract class StimsSpec {
       const nStimsIntegrityInterval = Math.round(
         (this.integrityFlashIntervalMins * 60 * 1000) / (this.bodyMs * 2)
       );
-      const augmentedStims = shuffledStims.reduce((acc, stim, i) => {
-        if (i % nStimsIntegrityInterval === 0) {
-          acc.push(...integrityFlashGroup);
-          if (i > 0 && this.restMinutesAfterIntegrityFlash > 0) {
-            // Add a rest period after the integrity flash
+      const augmentedStims = shuffledNestedStims.reduce(
+        (acc: NestedStimuli, stim, i) => {
+          if (i % nStimsIntegrityInterval === 0) {
+            acc.push(integrityFlashGroup);
+            if (i > 0 && this.restMinutesAfterIntegrityFlash > 0) {
+              // Add a rest period after the integrity flash
 
-            // BUG! BUG! single long Solid duration crashes the program
-            // Perhaps because the audio is to long?
-            for (let min = 0; min < this.restMinutesAfterIntegrityFlash; min++) {
-              // Add one minute of rest
-              acc.push(new Solid({ bgColor: 'black', durationMs: 60 * 1000 }));
+              // BUG! BUG! single long Solid duration crashes the program
+              // Perhaps because the audio is to long?
+              for (let min = 0; min < this.restMinutesAfterIntegrityFlash; min++) {
+                // Add one minute of rest
+                acc.push(new Solid({ bgColor: 'black', durationMs: 60 * 1000 }));
+              }
             }
           }
-        }
-        acc.push(stim); // Push the current stimulus
-        return acc;
-      }, [] as Stimulus[]); // Start with empty accumulator
-      return augmentedStims;
+          acc.push(stim); // Push the current stimulus or stimulus group
+          return acc;
+        },
+        [] as Stimulus[]
+      ); // Start with empty accumulator
+      return augmentedStims.flat(10) as Stimulus[]; // Flatten the nested arrays
     }
-    return shuffledStims; // Without integrity flashes
+    return shuffledNestedStims.flat(10) as Stimulus[]; // Without integrity flashes
   }
 }
 
-export class SqrGratingStimsSpec extends StimsSpec {
+export class SqrGratingPairsStimsSpec extends StimsSpec {
   cpds: RangeSpec = new RangeSpec({ start: 0.3, step: 0.2, nSteps: 1 });
   contrasts: RangeSpec = new RangeSpec({ start: 0, step: -0.1, nSteps: 1 });
   speeds: RangeSpec = new RangeSpec({ start: 3, step: 1, nSteps: 1 });
 
-  constructor(props: Partial<SqrGratingStimsSpec> = {}) {
+  constructor(props: Partial<SqrGratingPairsStimsSpec> = {}) {
     // TODO: Check that cpds, contrasts, and speeds are all in valid ranges
     super({
       ...props,
@@ -138,8 +148,8 @@ export class SqrGratingStimsSpec extends StimsSpec {
     this.speeds = (props.speeds && new RangeSpec(props.speeds)) ?? this.speeds;
   }
 
-  baseStimuli(): Stimulus[] {
-    const stimuli: Stimulus[] = [];
+  baseStimuli(): NestedStimuli {
+    const nestedStimuli: NestedStimuli = [];
     const cpds = this.cpds?.list;
     const contrasts = this.contrasts?.list;
     const speeds = this.speeds?.list;
@@ -147,6 +157,7 @@ export class SqrGratingStimsSpec extends StimsSpec {
       for (const cpd of cpds) {
         for (const speed of speeds) {
           for (const contrast of contrasts) {
+            const stimSet: NestedStimuli = [];
             // Push pair of matching stimuli with opposite speeds
             const [fgColor, bgColor] = contrastPair(contrast);
             const gratingPojo = {
@@ -159,9 +170,9 @@ export class SqrGratingStimsSpec extends StimsSpec {
               speed: speed,
               meta: { contrast: contrast },
             };
-            stimuli.push(new SqrGrating(gratingPojo));
+            stimSet.push(new SqrGrating(gratingPojo)); // First stimulus
             // Second stimulus identical but with opposite speed
-            stimuli.push(
+            stimSet.push(
               new SqrGrating({
                 ...gratingPojo,
                 speed: -speed,
@@ -169,30 +180,41 @@ export class SqrGratingStimsSpec extends StimsSpec {
             );
             if (this.includeStaticGratings) {
               // Third stimulus identical but not moving
-              stimuli.push(
+              stimSet.push(
                 new SqrGrating({
                   ...gratingPojo,
                   speed: 0,
                 })
               );
             }
+            if (!this.grayMs) {
+              nestedStimuli.push(stimSet);
+            } else {
+              const greyStim = new Solid({
+                durationMs: this.grayMs + this.grayTailMs,
+                bodyMs: this.grayMs,
+                tailMs: this.grayTailMs,
+                bgColor: linearToHex(0.5), // Grey color
+              });
+              nestedStimuli.push(stimSet.map((stim) => [stim, greyStim]));
+            }
           }
         }
       }
     }
-    return stimuli;
+    return nestedStimuli;
   }
 }
 
 // Map of constructors that create new StimsSpec class objects (with methods)
 // from simple parsed JSON POJOs (with no methods) using lookup by name.
-// Each StimsSpec must be assigned or thankfully, Typescript complains.
+// Every possible StimSpecType must be assigned or thankfully, Typescript complains.
 type StimsSpecConstructors = {
-  [key in StimSpecType]: new (args: Partial<StimsSpec>) => StimsSpec;
+  [key in StimSpecType]: new (args: Partial<StimsSpecProps>) => StimsSpec;
 };
 export const stimsSpecConstructors: StimsSpecConstructors = {
-  SqrGratingPairs: SqrGratingStimsSpec,
-  TBD: SqrGratingStimsSpec, // Placeholder just for now
+  SqrGratingPairs: SqrGratingPairsStimsSpec,
+  TBD: SqrGratingPairsStimsSpec, // Placeholder just for now
 };
 
 // Create a new StimsSpec class instance from POJO or parsed JSON object.

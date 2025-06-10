@@ -79,7 +79,15 @@ export function getFileExtension(filename: string) {
 }
 
 // To be used as second argument to JSON.stringify
-export function filterPrivateProperties(key, value) {
+export interface FilterPrivatePropertiesThis {
+  [key: string]: unknown;
+}
+
+export function filterPrivateProperties(
+  this: FilterPrivatePropertiesThis,
+  key: string,
+  value: unknown
+): unknown {
   // `this` refers to the object containing the property being processed.
   // `key` is the name of the property.
   // `value` is the value of the property.
