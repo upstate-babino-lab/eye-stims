@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { RangeSpec } from '@specs/index';
+import { Tooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css';
 
 export const INPUT_STYLES =
   'shadow appearance-none border border-gray-500 rounded w-18 ' +
   'py-1 px-3 text-gray-300 placeholder-gray-700 leading-tight ' +
   'focus:outline-none focus:shadow-outline';
 
+export const TOOLTIP_STYLES = '!bg-gray-700 !text-gray-300 !text-xs !rounded-sm';
 interface RangeSpecFormProps {
   title: string;
+  toolTip?: string;
   onUpdate: (rangeSpec: RangeSpec) => void;
   initialRange: RangeSpec;
 }
 
 const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
   title,
+  toolTip,
   initialRange,
   onUpdate,
 }) => {
@@ -41,36 +46,44 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
   }, [initialRange]);
 
   return (
-    <form className="text-gray-400 text-xs font-bold shadow-md bg-gray-800 rounded-xl px-2 py-1 mb-4">
-      <div className="text-gray-100 text-sm ml-2 mb-2">{title}</div>
-      <div className="flex flex-row">
-        <NumberInputField
-          label="Start"
-          value={start} // Can be number | undefined
-          onChange={(n) => setStart(n)}
-        />
-        <NumberInputField
-          label="Step"
-          value={step} // Can be number | undefined
-          onChange={(n) => setStep(n)}
-        />
-        <NumberInputField
-          label="nSteps"
-          value={nSteps} // Can be number | undefined
-          onChange={(n) => setNSteps(n)}
-        />
-      </div>
-      <div className="mb-2 flex items-center space-x-2">
-        <label className="w-20 text-right">List:</label>
-        <span className="text-gray-200 font-normal">
-          {JSON.stringify(
-            list.map((e) => Math.round(e * 1000) / 1000), // For more compact formatting
-            null,
-            1
-          )}
-        </span>
-      </div>
-    </form>
+    <div>
+      <form
+        className="text-gray-400 text-xs font-bold shadow-md bg-gray-800 rounded-xl px-2 py-1 mb-4"
+        data-tooltip-id={title + '-id'} // Unique ID for the tooltip
+        data-tooltip-content={toolTip}
+        data-tooltip-place="right" // Position (top, right, bottom, left)
+      >
+        <div className="text-gray-100 text-sm ml-2 mb-2">{title}</div>
+        <div className="flex flex-row">
+          <NumberInputField
+            label="Start"
+            value={start} // Can be number | undefined
+            onChange={(n) => setStart(n)}
+          />
+          <NumberInputField
+            label="Step"
+            value={step} // Can be number | undefined
+            onChange={(n) => setStep(n)}
+          />
+          <NumberInputField
+            label="nSteps"
+            value={nSteps} // Can be number | undefined
+            onChange={(n) => setNSteps(n)}
+          />
+        </div>
+        <div className="mb-2 flex items-center space-x-2">
+          <label className="w-20 text-right">List:</label>
+          <span className="text-gray-200 font-normal">
+            {JSON.stringify(
+              list.map((e) => Math.round(e * 1000) / 1000), // For more compact formatting
+              null,
+              1
+            )}
+          </span>
+        </div>
+      </form>
+      <Tooltip id={title + '-id'} className={TOOLTIP_STYLES} />
+    </div>
   );
 };
 

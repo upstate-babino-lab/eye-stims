@@ -1,5 +1,8 @@
 import Button from '@renderer/components/Button';
-import RangeSpecForm, { INPUT_STYLES } from '@renderer/components/RangeSpecForm';
+import RangeSpecForm, {
+  INPUT_STYLES,
+  TOOLTIP_STYLES,
+} from '@renderer/components/RangeSpecForm';
 import { saveFileDialogAsync } from '@renderer/render-utils';
 import { useAppState } from '@renderer/StateContext';
 import { RangeSpec } from '@specs/index';
@@ -10,8 +13,9 @@ import {
 } from '@specs/StimsSpec';
 import { useEffect, useState } from 'react';
 import { filterPrivateProperties } from '@src/shared-utils';
-// import StimSequence from '@renderer/StimSequence';
-//import { SqrGratingStimsSpec } from '@specs/StimsSpec';
+import { Tooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css';
+
 
 export default function SpecTab() {
   //const { theStimSequence, setTheStimSequence } = useTheStimSequence();
@@ -74,13 +78,21 @@ export default function SpecTab() {
             onChange={(newType) => newType}
           />
         </div>
-        <TwoSpecProps nameA="bodyMs" nameB="tailMs" />
+        <TwoSpecProps
+          nameA="bodyMs"
+          nameB="tailMs"
+          toolTip="All grating body durations are followed by a black tail"
+        />
         <GratingRanges />
-        <TwoSpecProps nameA="grayMs" nameB="grayTailMs" />
+        <TwoSpecProps
+          nameA="grayMs"
+          nameB="grayTailMs"
+          toolTip="If grayMs > 0, each grating tail is followed by a gray flash and another black tail"
+        />
 
         <div className="mb-1 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
-            Include static gratings:
+            Add static gratings:
           </label>
           <input
             type="checkbox"
@@ -205,6 +217,7 @@ function GratingRanges() {
     <div>
       <RangeSpecForm
         title="Cycles per degree"
+        toolTip="One dark and one light bar make one cycle"
         onUpdate={(cpds: RangeSpec) => {
           console.log('>>>>> cpds=' + JSON.stringify(cpds));
           setTheStimsSpec(
@@ -218,6 +231,7 @@ function GratingRanges() {
       />
       <RangeSpecForm
         title="Contrasts"
+        toolTip="LogContrast of 0 is max (black & white), -2.2 is minimal contrast"
         onUpdate={(contrasts: RangeSpec) => {
           console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
           setTheStimsSpec(
@@ -231,6 +245,7 @@ function GratingRanges() {
       />
       <RangeSpecForm
         title="Speeds"
+        toolTip="Degrees per second"
         onUpdate={(speeds: RangeSpec) => {
           console.log('>>>>> speeds=' + JSON.stringify(speeds));
           setTheStimsSpec(
@@ -247,7 +262,7 @@ function GratingRanges() {
 }
 
 //-----------------------------------------------------------------------------
-function TwoSpecProps(props: { nameA: string; nameB: string }) {
+function TwoSpecProps(props: { nameA: string; nameB: string; toolTip?: string }) {
   const { theStimsSpec, setTheStimsSpec } = useAppState();
   const defaultStimSpec = newStimSpec({
     stimSpecType: StimSpecType.SqrGratingPairs,
@@ -284,86 +299,42 @@ function TwoSpecProps(props: { nameA: string; nameB: string }) {
   };
 
   return (
-    <div className="flex items-center bg-gray-800 rounded-xl px-2 py-1 mb-4">
-      <label className="text-sm font-bold text-gray-100 px-4">
-        {props.nameA}:
-      </label>
-      <input
-        type="number"
-        className={INPUT_STYLES}
-        // Use the helper function for display value
-        value={getDisplayValue(props.nameA)}
-        onChange={(e) => handleInputChange(e, props.nameA)}
-        min={0}
-        step={20}
-      />
-      <label className="text-sm font-bold text-gray-100 px-4">
-        {props.nameB}:
-      </label>
-      <input
-        type="number"
-        className={INPUT_STYLES}
-        // Use the helper function for display value
-        value={getDisplayValue(props.nameB)}
-        onChange={(e) => handleInputChange(e, props.nameB)}
-        min={0} // Make sure this is 0 if you want 0 input to be valid
-        step={20}
-      />
-      <div className="px-4">
-        Durations = {(theStimsSpec[props.nameA] ?? 0) + (theStimsSpec[props.nameB] ?? 0)}ms
+    <div>
+      <div
+        className="flex items-center bg-gray-800 rounded-xl px-2 py-1 mb-4"
+        data-tooltip-id={props.nameA + '-id'}
+        data-tooltip-content={props.toolTip}
+        data-tooltip-place="right"
+      >
+        <label className="text-sm font-bold text-gray-100 px-4">
+          {props.nameA}:
+        </label>
+        <input
+          type="number"
+          className={INPUT_STYLES}
+          // Use the helper function for display value
+          value={getDisplayValue(props.nameA)}
+          onChange={(e) => handleInputChange(e, props.nameA)}
+          min={0}
+          step={20}
+        />
+        <label className="text-sm font-bold text-gray-100 px-4">
+          {props.nameB}:
+        </label>
+        <input
+          type="number"
+          className={INPUT_STYLES}
+          // Use the helper function for display value
+          value={getDisplayValue(props.nameB)}
+          onChange={(e) => handleInputChange(e, props.nameB)}
+          min={0} // Make sure this is 0 if you want 0 input to be valid
+          step={20}
+        />
+        <div className="px-4">
+          Durations = {(theStimsSpec[props.nameA] ?? 0) + (theStimsSpec[props.nameB] ?? 0)}ms
+        </div>
       </div>
+      <Tooltip id={props.nameA + '-id'} className={TOOLTIP_STYLES} />
     </div>
   );
 }
-/*
-function TwoSpecProps(props: { nameA: string; nameB: string }) {
-  const { theStimsSpec, setTheStimsSpec } = useAppState();
-  const defaultStimSpec = newStimSpec({
-    stimSpecType: StimSpecType.SqrGratingPairs,
-  });
-  if (!theStimsSpec) {
-    return <div className="text-red-500">No StimsSpec available</div>;
-  }
-  return (
-    <div className="flex items-center bg-gray-800 rounded-xl px-2 py-1 mb-4">
-      <label className="text-sm font-bold text-gray-100 px-4">
-        {props.nameA}:
-      </label>
-      <input
-        type="number"
-        className={INPUT_STYLES}
-        value={theStimsSpec[props.nameA] || defaultStimSpec[props.nameA]}
-        onChange={(e) => {
-          const newValue =
-            e.target.value === '' ? undefined : parseFloat(e.target.value);
-          const newSpec = newStimSpec({ ...theStimsSpec });
-          newSpec[props.nameA] = newValue;
-          setTheStimsSpec(newSpec);
-        }}
-        min={20}
-        step={20}
-      />
-      <label className="text-sm font-bold text-gray-100 px-4">
-        {props.nameB}:
-      </label>
-      <input
-        type="number"
-        className={INPUT_STYLES}
-        value={theStimsSpec[props.nameB] || defaultStimSpec[props.nameB]}
-        onChange={(e) => {
-          const newValue =
-            e.target.value === '' ? undefined : parseFloat(e.target.value);
-          const newSpec = newStimSpec({ ...theStimsSpec });
-          newSpec[props.nameB] = newValue;
-          setTheStimsSpec(newSpec);
-        }}
-        min={0}
-        step={20}
-      />
-      <div className="px-4">
-        Durations = {(theStimsSpec?.bodyMs || 0) + (theStimsSpec?.tailMs || 0)}ms
-      </div>
-    </div>
-  );
-}
-*/
