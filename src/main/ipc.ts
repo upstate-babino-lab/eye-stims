@@ -5,7 +5,11 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
 import { theMainWindow } from '.';
-import { buildFromCacheAsync, spawnFfmpegAsync } from './spawn-ffmpeg';
+import {
+  addJsonSubtitleAsync,
+  buildFromCacheAsync,
+  spawnFfmpegAsync,
+} from './spawn-ffmpeg';
 import {
   audioChoices,
   generateToneFilesAsync,
@@ -116,6 +120,13 @@ export function setupIpcHandlers() {
     }
   );
 
+  ipcMain.handle(
+    'addJsonSubtitle',
+    async (_event, filename, durationMs: number, text: string) => {
+      return await addJsonSubtitleAsync(filename, durationMs, text);
+    }
+  );
+
   ipcMain.handle('ensureSilentCache', async (_event, durationMs: number) => {
     return await ensureSilentFileAsync(durationMs);
   });
@@ -126,7 +137,7 @@ export function setupIpcHandlers() {
       const hashedFilename = hashFilename(unhashedFilename);
       const filePath = path.join(stimsCacheDir, hashedFilename);
       await access(filePath); // Throws if file doesn't exist
-      return hashedFilename;
+      return filePath;
     } catch {
       return false;
     }
@@ -146,7 +157,7 @@ export function setupIpcHandlers() {
   });
 }
 
-// Generate filename that's guaranteed to be valid on Windows, and of limited length.
+// Generate filename with same that's guaranteed to be valid on Windows, and of limited length.
 function hashFilename(unhashedFilename: string): string {
   const extension = path.extname(unhashedFilename);
   const filename =

@@ -25,7 +25,8 @@ Stimulus.prototype.encode = function (encoder: Encoder): void {
   for (let iFrame = 0; iFrame < nFrames; iFrame++) {
     const ageMs = iFrame && (iFrame / encoder.displayProps.fps) * 1000;
     if (ageMs < 0 || ageMs > this.durationMs) {
-      // Nothing to do
+      // eslint-disable-next-line no-debugger
+      debugger; // Should never happen
       continue;
     }
     if (
@@ -47,15 +48,13 @@ Stimulus.prototype.encode = function (encoder: Encoder): void {
 
 Stimulus.prototype.cacheStimVideoAsync = async function (displayKey: DisplayKey) {
   if (!window?.electron) {
-    console.error('>>>>> saveToCacheAsync() called without Electron');
+    console.error('>>>>> cacheStimVideoAsync() requires Electron');
     return;
   }
   const displayProps = displays[displayKey];
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { meta, _videoCacheFilename: _cachedFilename, ...filteredProps } = this; // Exclude props that don't affect encoding
   const unhashedFilename =
     `${displayProps.width}x${displayProps.height}-${displayProps.fps}` +
-    stableStringify(filteredProps) + // Excludes private props
+    stableStringify(this) + // Excludes private props
     '.mp4';
   [this._videoCacheFilename, this._silentCacheFilename] = await Promise.all([
     await window.electron.isCachedAsync(unhashedFilename),
@@ -72,11 +71,15 @@ Stimulus.prototype.cacheStimVideoAsync = async function (displayKey: DisplayKey)
   this.encode(encoder);
   try {
     const videoBuffer = await encoder.getBufferAsync();
-    const path = await window.electron.saveBufferToCacheAsync(
+    const cachedFilePath = await window.electron.saveBufferToCacheAsync(
       videoBuffer,
       unhashedFilename
     );
-    this._videoCacheFilename = path;
+    this._videoCacheFilename = await window.electron.addJsonSubtitleAsync(
+      cachedFilePath,
+      this.durationMs,
+      stableStringify(this)
+    );
   } catch (error) {
     throw new Error('Caching stim failed: ' + error);
   }

@@ -7,6 +7,8 @@ import {
   ensureSilentFileAsync,
 } from './ipc';
 import { writeFile as writeFileAsync } from 'fs/promises';
+import { unlink as rmAsync } from 'fs/promises';
+import { cp as cpAsync } from 'fs/promises';
 import * as path from 'path';
 import { audioChoices, AudioProps, toneBasename } from './generate-tones';
 import { DisplayKey, displays } from '../displays';
@@ -72,6 +74,68 @@ export async function spawnFfmpegAsync(args: string[]): Promise<string> {
   });
 }
 
+/**
+ * Converts a given number of milliseconds into an SRT timestamp string.
+ * Format: HH:MM:SS,mmm (e.g., 00:00:00,000)
+ *
+ * @param ms The total number of milliseconds.
+ * @returns A string representing the SRT timestamp.
+ */
+function convertMsToSrtTimestamp(ms: number): string {
+  if (ms < 0) {
+    // Handle negative milliseconds gracefully, or throw an error if preferred
+    console.warn(
+      "Input milliseconds cannot be negative. Returning '00:00:00,000'."
+    );
+    ms = 0;
+  }
+  const hours = Math.floor(ms / (1000 * 60 * 60));
+  ms %= 1000 * 60 * 60; // Remaining milliseconds after extracting hours
+  const minutes = Math.floor(ms / (1000 * 60));
+  ms %= 1000 * 60; // Remaining milliseconds after extracting minutes
+  const seconds = Math.floor(ms / 1000);
+  const milliseconds = ms % 1000; // Remaining milliseconds for the decimal part
+
+  // Format with leading zeros
+  const formattedHours = String(hours).padStart(2, '0');
+  const formattedMinutes = String(minutes).padStart(2, '0');
+  const formattedSeconds = String(seconds).padStart(2, '0');
+  const formattedMilliseconds = String(milliseconds).padStart(3, '0'); // For 3 digits
+
+  return `${formattedHours}:${formattedMinutes}:${formattedSeconds},${formattedMilliseconds}`;
+}
+
+export async function addJsonSubtitleAsync(
+  filename: string,
+  durationMs: number,
+  text: string
+): Promise<string> {
+  const subsFilename = filename.replace('.mp4', '-subs.srt');
+  const subtitledFilename = filename.replace('.mp4', '-with-subs.mp4');
+  // Create subtitles file
+  const srt: string =
+    `1\n` +
+    `00:00:00,000 --> ${convertMsToSrtTimestamp(durationMs)}\n` +
+    text +
+    '\n';
+  await writeFileAsync(subsFilename, srt, 'utf-8');
+  /* prettier-ignore */
+  const args = [
+    '-i', filename,
+    '-i', subsFilename,
+    '-map', '0',
+    '-map', '1',
+    '-c', 'copy', // Copy video and audio streams without re-encoding
+    '-c:s', 'mov_text', // Use mov_text codec for subtitles
+    '-metadata:s:s:0', 'language=eng', // Set subtitle language to English
+    subtitledFilename,
+  ];
+  await spawnFfmpegAsync(args);
+  await cpAsync(subtitledFilename, filename); // Replace original file with subtitled one
+  await Promise.all([rmAsync(subsFilename), rmAsync(subtitledFilename)]); // Remove temporary files
+  return filename;
+}
+
 // TODO: Separate out call to assembleAudioFile() so it can be done first and reported to progress bar
 export async function buildFromCacheAsync(
   displayKey: DisplayKey,
@@ -101,12 +165,13 @@ export async function buildFromCacheAsync(
     '-safe', '0', // Allows relative or absolute paths in the input list
     '-i', vInputListFilename,
     '-i', audioFilename,
-    '-map', '0:v',
-    '-map', '1:a',
+    '-map', '0',
     '-c:v', 'copy', // copy video directly without re-encoding to go faster
     //'-c:v', 'libx264', // Re-encode video
-    '-copyts',
-    '-r', displayProps.fps.toString(), // Video framerate
+    '-c:s', 'copy', // copy subtitles 
+    '-map', '1:a',
+    // '-copyts',
+    // '-r', displayProps.fps.toString(), // Video framerate should not be necessary
     //'-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
   ];

@@ -20,6 +20,11 @@ export interface ElectronAPI {
     buffer: ArrayBuffer,
     filename: string
   ) => Promise<string>;
+  addJsonSubtitleAsync: (
+    filename: string,
+    durationMs: number,
+    text: string
+  ) => Promise<string>;
   ensureSilentCacheAsync: (durationMs: number) => Promise<string>;
   readFromCache: (filename: string) => Promise<ArrayBuffer>;
   isCachedAsync: (unhashedFilename: string) => Promise<string>;

@@ -54,6 +54,10 @@ contextBridge.exposeInMainWorld('electron', {
     return ipcRenderer.invoke('saveBufferToCache', buffer, unhashedFilename);
   },
 
+  addJsonSubtitleAsync: (filename: string, durationMs: number, text: string) => {
+    return ipcRenderer.invoke('addJsonSubtitle', filename, durationMs, text);
+  },
+
   readFromCacheAsync: (filename: string) => {
     return ipcRenderer.invoke('readFromCache', filename);
   },
