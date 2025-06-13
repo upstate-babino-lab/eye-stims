@@ -58,7 +58,6 @@ export default class StimSequence {
     return getStartTimes(this.stimuli.map((s) => s.durationMs));
   }
 
-  // Calculate total duration and populate startTimes array
   // Returns total milliseconds
   duration(): number {
     if (this.stimuli.length === 0) {

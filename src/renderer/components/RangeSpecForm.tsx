@@ -28,7 +28,7 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
   const [list, setList] = useState<number[]>([]); // Initialize list as empty or based on initialRange for immediate calc
 
   useEffect(() => {
-    console.log(`>>>>> useEffect() start=${start} step=${step} nSteps=${nSteps}`);
+    // console.log(`>>>>> useEffect() start=${start} step=${step} nSteps=${nSteps}`);
     // Provide default values if start, step, nSteps are undefined for RangeSpec constructor
     const newRangeSpec = new RangeSpec({
       start: start ?? 0, // Default start to 0 if undefined

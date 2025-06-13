@@ -74,6 +74,7 @@ export async function spawnFfmpegAsync(args: string[]): Promise<string> {
   });
 }
 
+// TODO: consolidate with render-utils formatSeconds()
 /**
  * Converts a given number of milliseconds into an SRT timestamp string.
  * Format: HH:MM:SS,mmm (e.g., 00:00:00,000)

@@ -80,15 +80,6 @@ export abstract class StimsSpec {
   // Returns POJOs not randomized, without integrity flashes or rest periods
   abstract baseStimuli(): NestedStimuli;
 
-  // Would be more efficient to calculate instead of regenerate stimuli every time
-  count(): number {
-    return this.stimuli().length;
-  }
-  // Would be more efficient to calculate instead of regenerate stimuli every time
-  duration(): number {
-    return this.stimuli().reduce((acc, stim) => acc + stim.durationMs, 0);
-  }
-
   // TODO: return from private cache if JSON has not changed?
   // If we don't use a cache stims will be reshuffled every time.
   stimuli(): Stimulus[] {

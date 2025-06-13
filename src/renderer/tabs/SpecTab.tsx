@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 import { filterPrivateProperties } from '@src/shared-utils';
 import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
-
+import StimSequence from '../StimSequence';
 
 export default function SpecTab() {
   //const { theStimSequence, setTheStimSequence } = useTheStimSequence();
@@ -23,12 +23,15 @@ export default function SpecTab() {
   const { theStimsMeta, setTheStimsMeta } = useAppState();
 
   useEffect(() => {
+    // TODO?: Calculate count and duration without creating a StimSequence
+    const stimSeq = theStimsSpec && new StimSequence(theStimsSpec.stimuli());
+
     setTheStimsMeta({
       ...theStimsMeta,
       name: theStimsSpec?.name,
       description: theStimsSpec?.description,
-      count: theStimsSpec?.count(),
-      totalDurationMS: theStimsSpec?.duration(),
+      count: stimSeq?.stimuli.length || 0,
+      totalDurationMS: stimSeq?.duration(),
     });
   }, [theStimsSpec, setTheStimsMeta]);
 
@@ -219,7 +222,7 @@ function GratingRanges() {
         title="Cycles per degree"
         toolTip="One dark and one light bar make one cycle"
         onUpdate={(cpds: RangeSpec) => {
-          console.log('>>>>> cpds=' + JSON.stringify(cpds));
+          // console.log('>>>>> cpds=' + JSON.stringify(cpds));
           setTheStimsSpec(
             new SqrGratingPairsStimsSpec({
               ...theStimsSpec,
@@ -233,7 +236,7 @@ function GratingRanges() {
         title="Contrasts"
         toolTip="LogContrast of 0 is max (black & white), -2.2 is minimal contrast"
         onUpdate={(contrasts: RangeSpec) => {
-          console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
+          // console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
           setTheStimsSpec(
             new SqrGratingPairsStimsSpec({
               ...theStimsSpec,
@@ -247,7 +250,7 @@ function GratingRanges() {
         title="Speeds"
         toolTip="Degrees per second"
         onUpdate={(speeds: RangeSpec) => {
-          console.log('>>>>> speeds=' + JSON.stringify(speeds));
+          // console.log('>>>>> speeds=' + JSON.stringify(speeds));
           setTheStimsSpec(
             new SqrGratingPairsStimsSpec({
               ...theStimsSpec,
