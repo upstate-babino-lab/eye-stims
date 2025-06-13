@@ -106,7 +106,7 @@ export class Encoder {
 
   // Only if NOT using fileStream
   async getBufferAsync(): Promise<ArrayBuffer> {
-    this.encodeOneFrame(); // One additional before saving, else too short
+    // this.encodeOneFrame(); // One additional before saving, else too short
     await this.videoEncoder.flush();
     this.muxer.finalize();
 
