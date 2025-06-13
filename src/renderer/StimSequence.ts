@@ -17,7 +17,7 @@ export default class StimSequence {
   private _cachedDuration: number = -1; // Sum of all stimuli durations
   private _cancelSaving: boolean = false; // Set to true to cancel saving
   // @ts-ignore: TS6133
-  private isEncoding: boolean = false;
+  private _isEncoding: boolean = false;
 
   constructor(
     stimPojos?: Stimulus[] // Can be POJOs or Stimulus class instances
@@ -126,7 +126,7 @@ export default class StimSequence {
     displayKey: DisplayKey,
     fileStream?: FileSystemWritableFileStream
   ): Promise<void> {
-    this.isEncoding = true;
+    this._isEncoding = true;
     try {
       const encoder = new Encoder(displayKey, fileStream);
       const duration = this.duration();
@@ -170,7 +170,7 @@ export default class StimSequence {
     } catch (err) {
       throw new Error(`encodeAsync() ${err}`);
     } finally {
-      this.isEncoding = false;
+      this._isEncoding = false;
     }
   }
 }

@@ -18,9 +18,9 @@ import 'react-tooltip/dist/react-tooltip.css';
 import StimSequence from '../StimSequence';
 
 export default function SpecTab() {
-  //const { theStimSequence, setTheStimSequence } = useTheStimSequence();
   const { theStimsSpec, setTheStimsSpec } = useAppState();
   const { theStimsMeta, setTheStimsMeta } = useAppState();
+  const { theStimSequence } = useAppState();
 
   useEffect(() => {
     // TODO?: Calculate count and duration without creating a StimSequence
@@ -170,22 +170,51 @@ export default function SpecTab() {
           />
         </div>
       </div>
-      <Button
-        className="ml-auto"
-        onClick={async () => {
-          const filePath = await saveFileDialogAsync(
-            (theStimsSpec?.name.toLowerCase() || 'stims') + '.spec.json'
-          );
-          setTheStimsMeta({ ...theStimsMeta, loadedPath: filePath });
-          const content = JSON.stringify(theStimsSpec, filterPrivateProperties, 4);
-          window.electron.send('saveFile', {
-            filePath: filePath,
-            content: content,
-          });
-        }}
-      >
-        Save Spec
-      </Button>
+      <div className="flex flex-col gap-2 ml-auto">
+        <Button
+          className="ml-auto"
+          onClick={async () => {
+            const filePath = await saveFileDialogAsync(
+              (theStimsSpec?.name.toLowerCase() || 'unnamed') + '.spec.json'
+            );
+            setTheStimsMeta({ ...theStimsMeta, loadedPath: filePath });
+            const content = JSON.stringify(
+              theStimsSpec,
+              filterPrivateProperties,
+              4
+            );
+            window.electron.send('saveFile', {
+              filePath: filePath,
+              content: content,
+            });
+          }}
+        >
+          Save Spec
+        </Button>
+        <Button
+          className="ml-auto"
+          onClick={async () => {
+            const filePath = await saveFileDialogAsync(
+              (theStimsSpec?.name.toLowerCase() || 'unnamed') + '.stims.json'
+            );
+            const content = JSON.stringify(
+              {
+                name: theStimsMeta?.name,
+                description: theStimsMeta?.description,
+                stimuli: theStimSequence?.stimuli || [],
+              },
+              filterPrivateProperties,
+              4
+            );
+            window.electron.send('saveFile', {
+              filePath: filePath,
+              content: content,
+            });
+          }}
+        >
+          Save Stims
+        </Button>
+      </div>
     </div>
   );
 }
@@ -339,7 +368,8 @@ function TwoSpecProps(props: { nameA: string; nameB: string; toolTip?: string })
           step={20}
         />
         <div className="px-4">
-          Durations = {(theStimsSpec[props.nameA] ?? 0) + (theStimsSpec[props.nameB] ?? 0)}ms
+          Durations ={' '}
+          {(theStimsSpec[props.nameA] ?? 0) + (theStimsSpec[props.nameB] ?? 0)}ms
         </div>
       </div>
       <Tooltip id={props.nameA + '-id'} className={TOOLTIP_STYLES} />

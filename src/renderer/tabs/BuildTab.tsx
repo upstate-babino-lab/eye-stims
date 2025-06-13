@@ -101,7 +101,7 @@ export default function BuildTab() {
               }
             }}
           >
-            Build
+            Build Video
           </Button>
           <div className="flex flex-row items-center w-full gap-4">
             <div className="whitespace-nowrap">{progressText}</div>

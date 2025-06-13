@@ -60,6 +60,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
       window.electron.removeListener('file-loaded', handleFileLoaded);
       window.electron.removeListener('request-file-to-save', handleFileLoaded);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
