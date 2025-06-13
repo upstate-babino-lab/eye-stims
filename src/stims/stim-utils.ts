@@ -1,3 +1,7 @@
+import { TONE_DURATION_MS } from '../constants';
+import { Solid } from '.';
+import { StimType, Stimulus } from './Stimulus';
+
 export function degreesToRadians(degrees: number): number {
   return degrees * (Math.PI / 180);
 }
@@ -90,4 +94,31 @@ export function contrastPair(logContrast: number) {
   }
 
   return logContrastToLinearPair(logContrast).map((c) => linearToHex(c));
+}
+
+// Add initial and final black if necessary to ensure video starts with a black frame, and
+// to avoid final encoding glitches with a/v synchronization
+export function frameWithBlack(stims: Stimulus[]): Stimulus[] {
+  const lastStim = stims?.at(-1);
+  if (lastStim?.stimType != StimType.Solid || lastStim.bgColor != 'black') {
+    stims?.push(
+      new Solid({
+        durationMs: TONE_DURATION_MS,
+        meta: { comment: 'final black' },
+      })
+    );
+  }
+
+  // Add initial black if necessary, so paused video about to play is black,
+  // and sync-tone plays on first visible stim
+  const firstStim = stims[0];
+  if (firstStim?.stimType != StimType.Solid || firstStim.bgColor != 'black') {
+    stims?.unshift(
+      new Solid({
+        durationMs: TONE_DURATION_MS,
+        meta: { comment: 'initial black' },
+      })
+    );
+  }
+  return stims;
 }

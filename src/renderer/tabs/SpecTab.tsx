@@ -33,7 +33,12 @@ export default function SpecTab() {
       count: stimSeq?.stimuli.length || 0,
       totalDurationMS: stimSeq?.duration(),
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theStimsSpec, setTheStimsMeta]);
+
+  if (!theStimsSpec) {
+    return <div></div>;
+  }
 
   return (
     <div className="flex flex-row items-start p-4 bg-gray-900 -mx-4">

@@ -43,7 +43,7 @@ export abstract class Stimulus {
   headMs?: number; // Duration of black before body
   bodyMs?: number; // Duration between head and tail, multiple of 20
   tailMs?: number; // Duration of black after body
-  meta?: Record<string, unknown> = {};
+  meta?: Record<string, unknown>;
   _videoCacheFilename?: string;
   _silentCacheFilename?: string;
   constructor(props: StimProps) {

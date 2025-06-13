@@ -23,7 +23,7 @@ export default function SequencePreviewTab() {
             <StimList
               data={theStimSequence.stimuli}
               onRowClick={(index) => {
-                console.log(`>>>>> onRowClick(${index})`);
+                // console.log(`>>>>> onRowClick(${index})`);
                 setSelectedStimIndex(index);
               }}
             />

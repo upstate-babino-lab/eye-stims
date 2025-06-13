@@ -37,6 +37,9 @@ export default function App(): JSX.Element {
     setActiveTab(tabLabels[0]); // Reset to the first tab
   }, [theStimsSpec]);
 
+  const durationSeconds =
+    (theStimsMeta?.totalDurationMS || theStimSequence?.duration() || 0) / 1000;
+
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-gray-400 text-sm p-4">
       <div className="flex flex-row gap-1.5">
@@ -54,11 +57,11 @@ export default function App(): JSX.Element {
                       : '?' + (theStimsSpec ? '.spec' : '') + '.json'}
                   </span>{' '}
                   {' | '}
-                  Count: {(theStimsMeta.count || '?') + ' | '}
+                  Count:{' '}
+                  {(theStimsMeta.count || theStimSequence?.stimuli.length || '?') +
+                    ' | '}
                   Duration:{' '}
-                  {theStimsMeta.totalDurationMS
-                    ? formatSeconds(theStimsMeta.totalDurationMS / 1000)
-                    : '?'}
+                  {durationSeconds ? formatSeconds(durationSeconds) : '?'}
                 </div>
                 <div className="text-gray-400">
                   {theStimsMeta.description}&nbsp;
