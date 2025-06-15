@@ -89,6 +89,8 @@ export default class StimSequence {
   async buildFromCacheAsync(
     basename: string,
     displayKey: DisplayKey,
+    title: string = '',
+    description: string = '',
     cbProgress?: ProgressCallback
   ) {
     const [outputFilename] = await Promise.all([
@@ -103,13 +105,14 @@ export default class StimSequence {
       return 'Canceled';
     }
     if (cbProgress) {
-      cbProgress('buildFromCache...');
+      cbProgress('Building from cache...');
     }
     const result = await window.electron.buildFromCacheAsync(
-      displayKey,
       this.stimuli.map((stim) => stim._videoCacheFilename || ''),
       this.stimuli.map((s) => s.durationMs),
-      outputFilename
+      outputFilename,
+      title,
+      description
     );
     if (cbProgress) {
       cbProgress(

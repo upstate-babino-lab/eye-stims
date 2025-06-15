@@ -8,7 +8,7 @@ import { SqrGratingStimsSpec, RangeSpec } from '@specs/index';
 import { frameWithBlack } from '@stims/stim-utils';
 
 const stimsSpec = new SqrGratingStimsSpec({
-  name: 'Blazer4',
+  title: 'Blazer4',
   description:
     'Pairs of gratings moving left and right for each cpd, contrast, and speed.',
   bodyMs: 260,
@@ -46,7 +46,7 @@ console.error(
 console.log(
   JSON.stringify(
     {
-      name: stimsSpec.name,
+      title: stimsSpec.title,
       description: stimsSpec.description,
       stimuli: stimuli,
     },

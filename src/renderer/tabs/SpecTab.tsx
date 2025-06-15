@@ -28,7 +28,7 @@ export default function SpecTab() {
 
     setTheStimsMeta({
       ...theStimsMeta,
-      name: theStimsSpec?.name,
+      title: theStimsSpec?.title,
       description: theStimsSpec?.description,
       count: stimSeq?.stimuli.length || 0,
       totalDurationMS: stimSeq?.duration(),
@@ -44,16 +44,16 @@ export default function SpecTab() {
     <div className="flex flex-row items-start p-4 bg-gray-900 -mx-4">
       <div className="flex flex-col w-130">
         <div className="mb-3 flex items-center w-full">
-          <label className="text-sm font-bold text-gray-100 px-4">Name:</label>
+          <label className="text-sm font-bold text-gray-100 px-4">Title:</label>
           <input
             type="text"
             className={INPUT_STYLES + ' w-full'}
-            value={theStimsSpec?.name}
+            value={theStimsSpec?.title}
             onChange={(e) => {
               setTheStimsSpec(
                 newStimSpec({
                   ...theStimsSpec,
-                  name: e.target.value,
+                  title: e.target.value,
                 })
               );
             }}
@@ -175,7 +175,7 @@ export default function SpecTab() {
           className="ml-auto"
           onClick={async () => {
             const filePath = await saveFileDialogAsync(
-              (theStimsSpec?.name.toLowerCase() || 'unnamed') + '.spec.json'
+              (theStimsSpec?.title.toLowerCase() || 'untitled') + '.spec.json'
             );
             setTheStimsMeta({ ...theStimsMeta, loadedPath: filePath });
             const content = JSON.stringify(
@@ -195,11 +195,11 @@ export default function SpecTab() {
           className="ml-auto"
           onClick={async () => {
             const filePath = await saveFileDialogAsync(
-              (theStimsSpec?.name.toLowerCase() || 'unnamed') + '.stims.json'
+              (theStimsSpec?.title.toLowerCase() || 'untitled') + '.stims.json'
             );
             const content = JSON.stringify(
               {
-                name: theStimsMeta?.name,
+                name: theStimsMeta?.title,
                 description: theStimsMeta?.description,
                 stimuli: theStimSequence?.stimuli || [],
               },

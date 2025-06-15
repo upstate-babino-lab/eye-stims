@@ -15,7 +15,6 @@ import {
   generateToneFilesAsync,
   toneBasename,
 } from './generate-tones';
-import { DisplayKey } from '../displays';
 import { AudioKey, CHOSEN_AUDIO_KEY } from '../constants';
 import { assert } from '../shared-utils';
 
@@ -81,20 +80,24 @@ export function setupIpcHandlers() {
     'buildFromCache',
     async (
       _event,
-      displayKey: DisplayKey,
       stimFiles: string[],
       durations: number[],
-      outputFullPathname: string
+      outputFullPathname: string,
+      title: string,
+      description: string,
+      audioKey: AudioKey = CHOSEN_AUDIO_KEY
     ) => {
       console.log(
         `>>>>> main got 'buildFromCache' with outputFilename ${outputFullPathname})`
       );
       await ensureCacheDirAsync();
       return await buildFromCacheAsync(
-        displayKey,
         stimFiles,
         durations,
-        outputFullPathname
+        outputFullPathname,
+        title,
+        description,
+        audioKey
       );
     }
   );

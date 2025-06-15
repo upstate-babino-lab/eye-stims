@@ -35,7 +35,10 @@ export function StateProvider({ children }: { children: ReactNode }) {
 
       setTheStimsMeta({
         loadedPath: filePath,
-        name: parsedContents['name'] || fileNameWithExtension,
+        title:
+          parsedContents['title'] ||
+          parsedContents['name'] || // For backward compatibility
+          fileNameWithExtension,
         description: parsedContents['description'] ?? '',
         count: stimSequence?.stimuli.length,
         totalDurationMS: stimSequence?.duration(),
@@ -78,25 +81,3 @@ export function StateProvider({ children }: { children: ReactNode }) {
     </StateContext.Provider>
   );
 }
-
-/*
-function oldStimList2New(old) {
-  if (!old || !old.stimulus_list) {
-    return null;
-  }
-
-  return old.stimulus_list.map((oldItem) => {
-    const oldStim = oldItem.stimulus;
-    let name = capitalize(oldStim.stimulusType);
-    if (name === 'Wait') {
-      name = 'Solid'; // TODO: Are these really the same?
-    }
-    const newStim = {
-      name: name,
-      duration: oldStim.lifespan,
-      bgColor: oldStim.backgroundColor,
-    };
-    return newStim;
-  });
-}
-*/

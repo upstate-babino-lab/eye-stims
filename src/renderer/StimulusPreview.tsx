@@ -102,7 +102,14 @@ function StimForm(props: {
     .filter(
       // Hide props that are not to be interacted with
       (k) =>
-        !['name', 'headMs', 'bodyMs', 'tailMs', 'gratingType', 'meta'].includes(k)
+        ![
+          'stimType',
+          'headMs',
+          'bodyMs',
+          'tailMs',
+          'gratingType',
+          'meta',
+        ].includes(k)
     );
 
   return (

@@ -29,7 +29,7 @@ export const stimSpecsInfo: Record<StimSpecType, StimSpecInfo> = {
 
 type StimsSpecProps = {
   stimSpecType: StimSpecType;
-  name?: string;
+  title?: string;
   description?: string;
   // Duration of body and tail in milliseconds
   // Total duration of each Stimulus will be
@@ -45,7 +45,7 @@ type StimsSpecProps = {
 };
 export abstract class StimsSpec {
   stimSpecType: StimSpecType = Object.values(StimSpecType)[0];
-  name: string = '';
+  title: string = '';
   description: string = '';
   bodyMs: number = 260;
   tailMs: number = 520;
@@ -60,7 +60,7 @@ export abstract class StimsSpec {
 
   constructor(props: StimsSpecProps) {
     this.stimSpecType = props.stimSpecType ?? this.stimSpecType;
-    this.name = props.name ?? this.name;
+    this.title = props.title ?? this.title;
     this.description =
       props.description ??
       (this.description || stimSpecsInfo[this.stimSpecType].description);

@@ -1,5 +1,3 @@
-import { DisplayKey } from '@renderer/displays';
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ElectronAPI {
   process: any;
@@ -8,10 +6,11 @@ export interface ElectronAPI {
   removeListener: (channel: string, callback: (...args: any[]) => void) => void;
   runFfmpeg: (args: string[]) => Promise<string>;
   buildFromCacheAsync: (
-    displayKey: DisplayKey,
-    stimFilenames: string[],
+    stimVideoFilenames: string[],
     durations: number[],
-    outputFilename: string
+    outputFilename: string,
+    title?: string,
+    description?: string
   ) => Promise<string>;
   showSaveDialogAsync: (
     options: Electron.SaveDialogOptions

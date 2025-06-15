@@ -4,7 +4,7 @@ import { StimsSpec } from '@specs/StimsSpec';
 
 export type StimsMeta = {
   loadedPath?: string;
-  name?: string;
+  title?: string;
   description?: string;
   count?: number;
   totalDurationMS?: number;

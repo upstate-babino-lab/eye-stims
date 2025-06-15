@@ -8,7 +8,6 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import { contextBridge, ipcRenderer } from 'electron';
-import { DisplayKey } from '../displays';
 
 contextBridge.exposeInMainWorld('electron', {
   send: (channel: string, data?: any) => {
@@ -31,17 +30,19 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('showSaveDialog', options),
 
   buildFromCacheAsync: (
-    displayKey: DisplayKey,
-    stimFilenames: string[],
+    stimVideoFilenames: string[],
     durations: number[],
-    outputFullPathname: string
+    outputFullPathname: string,
+    title?: string,
+    description?: string
   ): Promise<string> => {
     return ipcRenderer.invoke(
       'buildFromCache',
-      displayKey,
-      stimFilenames,
+      stimVideoFilenames,
       durations,
-      outputFullPathname
+      outputFullPathname,
+      title,
+      description
     );
   },
 

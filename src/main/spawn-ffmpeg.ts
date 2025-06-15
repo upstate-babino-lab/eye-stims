@@ -11,7 +11,6 @@ import { unlink as rmAsync } from 'fs/promises';
 import { cp as cpAsync } from 'fs/promises';
 import * as path from 'path';
 import { audioChoices, AudioProps, toneBasename } from './generate-tones';
-import { DisplayKey, displays } from '../displays';
 import { TONE_DURATION_MS, AudioKey, CHOSEN_AUDIO_KEY } from '../constants';
 import { getStartTimes } from '../shared-utils';
 import { app } from 'electron';
@@ -139,17 +138,17 @@ export async function addJsonSubtitleAsync(
 
 // TODO: Separate out call to assembleAudioFile() so it can be done first and reported to progress bar
 export async function buildFromCacheAsync(
-  displayKey: DisplayKey,
   inputFilenames: string[],
   durations: number[],
   outputPath: string,
+  title: string = 'EyeStims Video',
+  description: string = 'Generated video with audio sync-tones for retinal stimulation',
   audioKey: AudioKey = CHOSEN_AUDIO_KEY // TODO: Choose from GUI
   //reEncodeAudio: boolean,
 ): Promise<string> {
-  const displayProps = displays[displayKey];
   const audioProps = audioChoices[audioKey];
   await ensureCacheDirAsync();
-  // TODO: uuid name to allow more than one call to ffmpeg (e.g. for multiple displays)
+  // TODO: uuid filename to allow more than one call to ffmpeg (e.g. for multiple displays)
   const vInputListFilename: string = 'v-input-list.txt';
   const fileList: string =
     inputFilenames.map((name) => `file '${name}'`).join('\n') + '\n';
@@ -175,6 +174,8 @@ export async function buildFromCacheAsync(
     // '-r', displayProps.fps.toString(), // Video framerate should not be necessary
     //'-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
+    '-metadata', `title=${title}`,
+    '-metadata', `comment=${description}`,
   ];
   // args.push('-shortest'); // Removes audio completely when using mp3, or not re-encoding with opus
   args.push(outputPath);

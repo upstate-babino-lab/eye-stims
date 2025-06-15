@@ -47,7 +47,7 @@ export default function App(): JSX.Element {
           {theStimsMeta && (
             <>
               <div className="font-bold text-xl text-white">
-                {theStimsMeta.name}
+                {theStimsMeta.title}
               </div>
               <div className="bg-gray-950 rounded-md p-2">
                 <div className="text-gray-400">

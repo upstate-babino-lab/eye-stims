@@ -13,7 +13,7 @@ This four-stim video was built from the file `example.stims.json` below
 
 ```json
 {
-  "name": "Minimal Example",
+  "title": "Minimal Example",
   "description": "From README",
   "stimuli": [
     {
