@@ -14,6 +14,7 @@ import { audioChoices, AudioProps, toneBasename } from './generate-tones';
 import { TONE_DURATION_MS, AudioKey, CHOSEN_AUDIO_KEY } from '../constants';
 import { getStartTimes } from '../shared-utils';
 import { app } from 'electron';
+import { parseSrtFileAsync } from './parse-subtitles';
 
 if (!ffmpegPathStatic) {
   throw new Error('FFmpeg path is not defined');
@@ -105,13 +106,14 @@ function convertMsToSrtTimestamp(ms: number): string {
   return `${formattedHours}:${formattedMinutes}:${formattedSeconds},${formattedMilliseconds}`;
 }
 
-export async function addJsonSubtitleAsync(
-  filename: string,
+// Add text as subtitle to existing mp4 video file
+export async function addSubtitleAsync(
+  mp4Filename: string,
   durationMs: number,
   text: string
 ): Promise<string> {
-  const subsFilename = filename.replace('.mp4', '-subs.srt');
-  const subtitledFilename = filename.replace('.mp4', '-with-subs.mp4');
+  const subsFilename = mp4Filename.replace('.mp4', '-subs.srt');
+  const subtitledFilename = mp4Filename.replace('.mp4', '-with-subs.mp4');
   // Create subtitles file
   const srt: string =
     `1\n` +
@@ -119,21 +121,39 @@ export async function addJsonSubtitleAsync(
     text +
     '\n';
   await writeFileAsync(subsFilename, srt, 'utf-8');
+
   /* prettier-ignore */
   const args = [
-    '-i', filename,
+    '-i', mp4Filename,
     '-i', subsFilename,
     '-map', '0',
     '-map', '1',
     '-c', 'copy', // Copy video and audio streams without re-encoding
     '-c:s', 'mov_text', // Use mov_text codec for subtitles
-    '-metadata:s:s:0', 'language=eng', // Set subtitle language to English
+    '-metadata:s:s:0', 'language=eng', // Set subtitle language
     subtitledFilename,
   ];
   await spawnFfmpegAsync(args);
-  await cpAsync(subtitledFilename, filename); // Replace original file with subtitled one
+  await cpAsync(subtitledFilename, mp4Filename); // Replace original file with subtitled one
   await Promise.all([rmAsync(subsFilename), rmAsync(subtitledFilename)]); // Remove temporary files
-  return filename;
+  return mp4Filename;
+}
+
+export async function extractSubtitlesAsync(
+  mp4Filename: string
+): Promise<unknown> {
+  const subsFilename = mp4Filename.replace('.mp4', '.srt');
+  const newLocal = '-map';
+  /* prettier-ignore */
+  const args = [
+    '-i', mp4Filename,
+    newLocal, '0:s', // Map all subtitle streams
+    subsFilename,
+  ];
+  await spawnFfmpegAsync(args);
+  const subtitles = await parseSrtFileAsync(subsFilename);
+  console.warn(`>>>>> parsed subtitles=${JSON.stringify(subtitles, null, 2)}`);
+  return subtitles;
 }
 
 // TODO: Separate out call to assembleAudioFile() so it can be done first and reported to progress bar

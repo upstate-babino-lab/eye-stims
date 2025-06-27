@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { theMainWindow } from '.';
 import {
-  addJsonSubtitleAsync,
+  addSubtitleAsync,
   buildFromCacheAsync,
   spawnFfmpegAsync,
 } from './spawn-ffmpeg';
@@ -126,7 +126,7 @@ export function setupIpcHandlers() {
   ipcMain.handle(
     'addJsonSubtitle',
     async (_event, filename, durationMs: number, text: string) => {
-      return await addJsonSubtitleAsync(filename, durationMs, text);
+      return await addSubtitleAsync(filename, durationMs, text);
     }
   );
 
