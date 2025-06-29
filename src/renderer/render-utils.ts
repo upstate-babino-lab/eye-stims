@@ -35,11 +35,22 @@ export function downloadBlob(blob: Blob, filename: string) {
 // Allows deep comparison of JSON (not counting _private properties)
 export function stableStringify(obj: unknown, skipPrivate = true): string {
   if (Array.isArray(obj)) {
+    // For arrays, JSON.stringify converts undefined to null.
+    // To match this, we'll keep the recursive call.
+    // If you wanted to *remove* undefined from arrays too,
+    // you'd add a filter here: obj.filter(item => item !== undefined).
     return `[${obj.map((item) => stableStringify(item, skipPrivate)).join(',')}]`;
   } else if (obj && typeof obj === 'object') {
     const keys = Object.keys(obj)
-      .filter((key) => !skipPrivate || !key.startsWith('_')) // Exclude private
-      .sort();
+      .filter((key) => {
+        // Exclude private keys if skipPrivate is true
+        if (skipPrivate && key.startsWith('_')) {
+          return false;
+        }
+        // Eliminate properties whose value is undefined
+        return obj[key] !== undefined;
+      })
+      .sort(); // Sort keys for stable output
 
     const entries = keys.map(
       (key) => `${JSON.stringify(key)}:${stableStringify(obj[key], skipPrivate)}`
@@ -47,6 +58,14 @@ export function stableStringify(obj: unknown, skipPrivate = true): string {
 
     return `{${entries.join(',')}}`;
   } else {
+    // For primitive values:
+    // JSON.stringify(undefined) returns undefined (the JS primitive),
+    // which is not valid JSON if it's the root value.
+    // If the top-level `obj` is undefined, we return "null" as a valid JSON representation.
+    // If it's a property's value, it would have been filtered out above.
+    if (obj === undefined) {
+      return 'null'; // Or throw an error, depending on desired behavior for root undefined
+    }
     return JSON.stringify(obj);
   }
 }

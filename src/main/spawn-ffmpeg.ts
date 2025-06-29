@@ -1,5 +1,8 @@
 import { spawn } from 'child_process';
-import ffmpegPathStatic from 'ffmpeg-static';
+import {
+  ffmpegPath as ffmpegPathStatic,
+  ffprobePath as ffprobePathStatic,
+} from 'ffmpeg-ffprobe-static';
 import {
   stimsCacheDir,
   ensureCacheDirAsync,
@@ -8,41 +11,73 @@ import {
 } from './ipc';
 import { writeFile as writeFileAsync } from 'fs/promises';
 import { unlink as rmAsync } from 'fs/promises';
-import { cp as cpAsync } from 'fs/promises';
+import { cp as cpAsync, access } from 'fs/promises';
+import { constants as fsConstants } from 'fs';
 import * as path from 'path';
 import { audioChoices, AudioProps, toneBasename } from './generate-tones';
 import { TONE_DURATION_MS, AudioKey, CHOSEN_AUDIO_KEY } from '../constants';
-import { getStartTimes } from '../shared-utils';
+import { assert, getStartTimes } from '../shared-utils';
 import { app } from 'electron';
 import { parseSrtFileAsync } from './parse-subtitles';
 
-if (!ffmpegPathStatic) {
-  throw new Error('FFmpeg path is not defined');
+if (!ffmpegPathStatic || !ffprobePathStatic) {
+  throw new Error('FFmpeg of FFprobe path not defined');
 }
 const ffmpegPath = app.isPackaged
   ? ffmpegPathStatic.replace('app.asar', 'app.asar.unpacked')
   : ffmpegPathStatic;
-console.log('>>>>> FFmpeg executable path:', ffmpegPath);
+access(ffmpegPath, fsConstants.X_OK)
+  .then(() => {
+    console.log('>>>>> FFmpeg executable path:', ffmpegPath);
+  })
+  .catch(() => {
+    console.error(
+      '>>>>> FFmpeg executable not found or not executable:',
+      ffmpegPath
+    );
+  });
 
-export async function spawnFfmpegAsync(args: string[]): Promise<string> {
+const ffprobePath = app.isPackaged
+  ? ffprobePathStatic.replace('app.asar', 'app.asar.unpacked')
+  : ffprobePathStatic;
+access(ffprobePath, fsConstants.X_OK)
+  .then(() => {
+    console.log('>>>>> FFprobe executable path:', ffprobePath);
+  })
+  .catch(() => {
+    console.error(
+      '>>>>> FFprobe executable not found or not executable:',
+      ffprobePath
+    );
+  });
+
+export async function spawnFfmpegAsync(
+  args: string[],
+  useFfprobe: boolean = false // Use ffprobePath instead of ffmpegPath
+): Promise<string> {
   const startTime = new Date().getTime();
   return new Promise<string>((resolve, reject) => {
-    if (!ffmpegPath) {
-      reject('ffmpegPath not found');
-      return;
+    if (useFfprobe) {
+      assert(!!ffprobePath, 'ffprobePath undefined');
+    } else {
+      assert(!!ffmpegPath, 'ffmpegPath undefined');
+      args.push('-y'); // Don't wait for user input
     }
-    args.push('-y'); // Don't wait for user input
-    console.log(`>>>>> cd '${stimsCacheDir}'\n>>>>> ffmpeg ` + args.join(' '));
-    const ffmpegProcess = spawn(ffmpegPath, args, { cwd: stimsCacheDir });
+    const ffPath = useFfprobe ? ffprobePath : ffmpegPath;
+    const ffCommand = useFfprobe ? 'ffprobe' : 'ffmpeg';
+    console.log(
+      `>>>>> cd '${stimsCacheDir}'\n>>>>> ${ffCommand} ` + args.join(' ')
+    );
+    const ffProcess = spawn(ffPath, args, { cwd: stimsCacheDir });
 
     let stdOutput: string = '';
-    ffmpegProcess.stdout.on('data', (data) => {
+    ffProcess.stdout.on('data', (data) => {
       stdOutput += data.toString();
-      console.log('>>>>> ffmpeg output:', data.toString());
+      // console.log(`>>>>> ${ffCommand} output: `, data.toString());
     });
 
     let errorOutput: string = '';
-    ffmpegProcess.stderr.on('data', (data) => {
+    ffProcess.stderr.on('data', (data) => {
       const dataStr = data.toString();
       /*
       errorOutput += dataStr;
@@ -54,21 +89,23 @@ export async function spawnFfmpegAsync(args: string[]): Promise<string> {
       errorOutput = dataStr; // Ignoring all but last stderr for now
     });
 
-    ffmpegProcess.on('close', (code) => {
+    ffProcess.on('close', (code) => {
       // console.error('ffmpeg stderr:', errorOutput);
       const elapsedTime = new Date().getTime() - startTime;
       const elapsedTimeString =
         `${(elapsedTime / 1000).toFixed(2)} seconds =` +
         `${(elapsedTime / 60000).toFixed(2)} minutes`;
       const resultString =
-        `ffmpeg exited after ${elapsedTimeString} ` +
+        `${ffCommand} exited after ${elapsedTimeString} ` +
         `with code=${code} stdOutput=${stdOutput} stdOutput.length=${stdOutput.length}`;
       console.log('>>>>> ' + resultString);
 
       if (code === 0) {
-        resolve(stdOutput || `Success with elapsedTime=${elapsedTimeString}`);
+        resolve(
+          stdOutput || `${ffCommand} success with elapsedTime=${elapsedTimeString}`
+        );
       } else {
-        reject(`ffmpeg exited with error code ${code}: ${errorOutput}`);
+        reject(`${ffCommand} exited with error code ${code}: ${errorOutput}`);
       }
     });
   });
@@ -145,15 +182,37 @@ export async function extractSubtitlesAsync(
   const subsFilename = mp4Filename.replace('.mp4', '.srt');
   const newLocal = '-map';
   /* prettier-ignore */
-  const args = [
+  const mpArgs = [
     '-i', mp4Filename,
     newLocal, '0:s', // Map all subtitle streams
     subsFilename,
   ];
-  await spawnFfmpegAsync(args);
+  await spawnFfmpegAsync(mpArgs);
   const subtitles = await parseSrtFileAsync(subsFilename);
-  console.warn(`>>>>> parsed subtitles=${JSON.stringify(subtitles, null, 2)}`);
-  return subtitles;
+  // console.warn(`>>>>> parsed subtitles=${JSON.stringify(subtitles, null, 2)}`);
+
+  /* prettier-ignore */
+  const probeArgs = [
+    '-v', 'quiet', // Suppress logging output
+    '-of', 'json',
+    '-show_entries', 'format_tags=title,description',
+    mp4Filename,
+  ];
+  const metaData = await spawnFfmpegAsync(probeArgs, true); // Use ffprobe to get video info
+  // console.log(`>>>>> ffprobe metadata: ${metaData}`);
+  const metadataJson = JSON.parse(metaData);
+  const title = metadataJson?.format?.tags?.title || '';
+  const description = metadataJson?.format?.tags?.description || '';
+
+  const result = {
+    title: title,
+    description: description,
+    stimuli: subtitles.map((e) => e.stim),
+  };
+  // console.log('>>>>> returning\n' + JSON.stringify(result, null, 2));
+
+  await rmAsync(subsFilename); // Remove temporary subtitles file
+  return result;
 }
 
 // TODO: Separate out call to assembleAudioFile() so it can be done first and reported to progress bar
@@ -195,7 +254,7 @@ export async function buildFromCacheAsync(
     //'-vsync', 'cfr', // Constant frame rate
     // '-bsf:v', 'h264_mp4toannexb',
     '-metadata', `title=${title}`,
-    '-metadata', `comment=${description}`,
+    '-metadata', `description=${description}`,
   ];
   // args.push('-shortest'); // Removes audio completely when using mp3, or not re-encoding with opus
   args.push(outputPath);

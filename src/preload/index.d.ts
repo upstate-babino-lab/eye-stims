@@ -19,7 +19,7 @@ export interface ElectronAPI {
     buffer: ArrayBuffer,
     filename: string
   ) => Promise<string>;
-  addJsonSubtitleAsync: (
+  addSubtitleAsync: (
     filename: string,
     durationMs: number,
     text: string

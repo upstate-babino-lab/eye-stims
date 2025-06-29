@@ -12,7 +12,7 @@ files:
   - '!junk/**' # Exclude all files in the junk directory
 asarUnpack:
   - resources/**
-  - '**/node_modules/ffmpeg-static/**/*'
+  - '**/node_modules/ffmpeg-ffprobe-static/**/*'
 win:
   executableName: EyeStims
 nsis:

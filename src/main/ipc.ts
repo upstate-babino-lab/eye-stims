@@ -124,7 +124,7 @@ export function setupIpcHandlers() {
   );
 
   ipcMain.handle(
-    'addJsonSubtitle',
+    'addSubtitle',
     async (_event, filename, durationMs: number, text: string) => {
       return await addSubtitleAsync(filename, durationMs, text);
     }

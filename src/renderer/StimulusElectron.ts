@@ -75,7 +75,7 @@ Stimulus.prototype.cacheStimVideoAsync = async function (displayKey: DisplayKey)
       videoBuffer,
       unhashedFilename
     );
-    this._videoCacheFilename = await window.electron.addJsonSubtitleAsync(
+    this._videoCacheFilename = await window.electron.addSubtitleAsync(
       cachedFilePath,
       this.durationMs,
       stableStringify(this)

@@ -91,7 +91,7 @@ export async function loadFileDialogAsync(mainWindow: BrowserWindow) {
     parsedContent = await readYamlFile(filePath);
   }
   if (mp4Endings.some((ending) => filePath.endsWith('.' + ending))) {
-    parsedContent = extractSubtitlesAsync(filePath);
+    parsedContent = await extractSubtitlesAsync(filePath);
   }
   console.log(`>>>>> main sending 'file-loaded' with parsedContent`);
   mainWindow.webContents.send('file-loaded', filePath, parsedContent);
