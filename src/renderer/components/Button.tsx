@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '../render-utils';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -18,24 +18,27 @@ export const BUTTON_STYLES =
 const Button: React.FC<ButtonProps> = ({
   className,
   children,
-  tooltipText: tooltip,
+  tooltipText,
   onClick,
 }) => {
-  const generatedTooltipId = `button-tooltip-${Math.random().toString(36).substring(2, 9)}`;
+  //const generatedTooltipId = `button-tooltip-${Math.random().toString(36).substring(2, 9)}`;
+  const generatedTooltipId = `button-tooltip-${useId()}-${tooltipText?.replace(/\s/g, '-')}`;
 
   return (
     <>
       <button
         className={BUTTON_STYLES + ' ' + className}
         //className="bg-blue-500 text-white px-4 py-0.5 rounded shadow-md hover:shadow-lg transition-shadow duration-300"
-
         onClick={onClick}
-        data-tooltip-id={generatedTooltipId} // Link button to tooltip
-        data-tooltip-content={tooltip} // Content directly on the button (simpler API)
+        data-tooltip-id={generatedTooltipId}
+        data-tooltip-content={tooltipText}
+        data-tooltip-hide={true}
       >
         {children}
       </button>
-      {tooltip && <Tooltip id={generatedTooltipId} className={TOOLTIP_STYLES} />}
+      {tooltipText && (
+        <Tooltip id={generatedTooltipId} className={TOOLTIP_STYLES} />
+      )}
     </>
   );
 };
