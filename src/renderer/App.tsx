@@ -73,6 +73,7 @@ export default function App(): JSX.Element {
         <div className="flex flex-col gap-2 ml-auto">
           <Button
             className="ml-auto"
+            tooltipText=".stims.json, .spec.json, or .mp4 file"
             onClick={() => {
               window.electron.send('loadFile');
             }}

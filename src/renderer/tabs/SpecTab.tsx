@@ -1,8 +1,5 @@
 import Button from '@renderer/components/Button';
-import RangeSpecForm, {
-  INPUT_STYLES,
-  TOOLTIP_STYLES,
-} from '@renderer/components/RangeSpecForm';
+import RangeSpecForm, { INPUT_STYLES } from '@renderer/components/RangeSpecForm';
 import { saveFileDialogAsync } from '@renderer/render-utils';
 import { useAppState } from '@renderer/StateContext';
 import { RangeSpec } from '@specs/index';
@@ -14,6 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { filterPrivateProperties } from '@src/shared-utils';
 import { Tooltip } from 'react-tooltip';
+import { TOOLTIP_STYLES } from '@renderer/render-utils';
 import 'react-tooltip/dist/react-tooltip.css';
 import StimSequence from '../StimSequence';
 

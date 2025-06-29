@@ -1,3 +1,5 @@
+export const TOOLTIP_STYLES = '!bg-gray-700 !text-gray-300 !text-xs !rounded-sm';
+
 export function capitalize(str: string) {
   if (!str) {
     return str;
