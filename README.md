@@ -56,10 +56,9 @@ Boundaries between each stimulus are marked by DTMF [sync-tones](sync-tones.md) 
 
 ## Getting started
 
-1. From [releases](https://github.com/upstate-babino-lab/eye-stims/releases), download and install the appropriate installation file for your platform (`.dmg` for Mac, `.exe` for Windows, or `.deb` for Linux)
+1. From [releases](https://github.com/upstate-babino-lab/eye-stims/releases/latest), download and install the appropriate installation file for your platform (`.dmg` for Mac, `.exe` for Windows, or `.deb` for Linux)
 
 2. Create a `.stims.json` file. You can do this in several ways:
-
    - By hand in a text editor (e.g. by copying the example above)
    - Run a command-line TypeScript program [like one of these](./stimlist-creators/)
    - Run a command-line Python program using [py-stims](https://github.com/upstate-babino-lab/py-stims)
