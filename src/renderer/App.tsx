@@ -9,9 +9,12 @@ import { formatSeconds } from './render-utils';
 import { getBasename } from '../shared-utils';
 import { newStimSpec, StimSpecType } from '@specs/StimsSpec';
 
-const tabLabels = ['Preview', 'Build', 'Run'];
-
 export default function App(): JSX.Element {
+  const [tabLabels, setTabLabels] = useState<string[]>([
+    'Preview',
+    'Build',
+    'Run',
+  ]);
   const [activeTab, setActiveTab] = useState(tabLabels[0]);
   const {
     theStimsMeta,
@@ -23,18 +26,10 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     if (theStimsSpec) {
-      // First tab should be 'Spec'
-      if (tabLabels[0] !== 'Spec') {
-        tabLabels.unshift('Spec');
-      }
+      setTabLabels(['Spec', 'Preview', 'Build', 'Run']);
     } else {
-      // Remove 'Spec' tab if it exists
-      const specIndex = tabLabels.indexOf('Spec');
-      if (specIndex !== -1) {
-        tabLabels.splice(specIndex, 1);
-      }
+      setTabLabels(['Preview', 'Build', 'Run']);
     }
-    setActiveTab(tabLabels[0]); // Reset to the first tab
   }, [theStimsSpec]);
 
   const durationSeconds =
@@ -73,8 +68,10 @@ export default function App(): JSX.Element {
         <div className="flex flex-col gap-2 ml-auto">
           <Button
             className="ml-auto"
+            tooltipText=".stims.json, .spec.json, or .mp4 file"
             onClick={() => {
               window.electron.send('loadFile');
+              setActiveTab('Preview');
             }}
           >
             Load
@@ -87,20 +84,11 @@ export default function App(): JSX.Element {
               });
               setTheStimsSpec(stimSpec);
               setTheStimsMeta({});
+              setActiveTab('Spec');
             }}
           >
             New Spec
           </Button>{' '}
-          {/*}
-          <a
-            target="_blank"
-            className="underline text-blue-700"
-            href="https://github.com/upstate-babino-lab/eye-stims/issues/"
-            rel="noreferrer"
-          >
-            GitHub issues
-          </a>
-          */}
         </div>
       </div>
 

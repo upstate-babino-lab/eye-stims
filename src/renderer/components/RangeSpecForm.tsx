@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RangeSpec } from '@specs/index';
 import { Tooltip } from 'react-tooltip';
+import { TOOLTIP_STYLES } from '../render-utils';
 import 'react-tooltip/dist/react-tooltip.css';
 
 export const INPUT_STYLES =
@@ -8,7 +9,6 @@ export const INPUT_STYLES =
   'py-1 px-3 text-gray-300 placeholder-gray-700 leading-tight ' +
   'focus:outline-none focus:shadow-outline';
 
-export const TOOLTIP_STYLES = '!bg-gray-700 !text-gray-300 !text-xs !rounded-sm';
 interface RangeSpecFormProps {
   title: string;
   toolTip?: string;

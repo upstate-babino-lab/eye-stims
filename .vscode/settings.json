@@ -28,6 +28,7 @@
     "cpds",
     "DTMF",
     "eyestims",
+    "ffprobe",
     "lavfi",
     "libmp",
     "libopus",

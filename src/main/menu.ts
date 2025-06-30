@@ -4,6 +4,7 @@ import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as fsp from 'fs/promises'; // Use fs/promises for async file operations
 import { clearStimCacheAsync } from './ipc';
+import { extractSubtitlesAsync } from './spawn-ffmpeg';
 
 export function modifyDefaultMenu(mainWindow: BrowserWindow) {
   const defaultMenu = Menu.getApplicationMenu();
@@ -66,12 +67,13 @@ export function modifyDefaultMenu(mainWindow: BrowserWindow) {
 export async function loadFileDialogAsync(mainWindow: BrowserWindow) {
   const jsonlEndings = ['jsonl', 'JSONL'];
   const yamlEndings = ['yaml', 'yml', 'json', 'stims'];
+  const mp4Endings = ['mp4', 'MP4'];
   const { filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'], // Only one single file
     filters: [
       {
         name: 'StimSequence',
-        extensions: [...jsonlEndings, ...yamlEndings],
+        extensions: [...jsonlEndings, ...yamlEndings, ...mp4Endings],
       },
       { name: 'MP4 video files', extensions: ['mp4'] },
     ],
@@ -87,6 +89,9 @@ export async function loadFileDialogAsync(mainWindow: BrowserWindow) {
   }
   if (yamlEndings.some((ending) => filePath.endsWith('.' + ending))) {
     parsedContent = await readYamlFile(filePath);
+  }
+  if (mp4Endings.some((ending) => filePath.endsWith('.' + ending))) {
+    parsedContent = await extractSubtitlesAsync(filePath);
   }
   console.log(`>>>>> main sending 'file-loaded' with parsedContent`);
   mainWindow.webContents.send('file-loaded', filePath, parsedContent);

@@ -57,6 +57,15 @@ export abstract class Stimulus {
       props.bodyMs,
       props.tailMs
     );
+    if (this.headMs == 0) {
+      delete this.headMs;
+    }
+    if (this.bodyMs == 0) {
+      delete this.bodyMs;
+    }
+    if (this.tailMs == 0) {
+      delete this.tailMs;
+    }
     this.meta = props.meta ?? this.meta;
   }
 
