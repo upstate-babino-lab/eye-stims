@@ -9,7 +9,6 @@ import { formatSeconds } from './render-utils';
 import { getBasename } from '../shared-utils';
 import { newStimSpec, StimSpecType } from '@specs/StimsSpec';
 
-
 export default function App(): JSX.Element {
   const [tabLabels, setTabLabels] = useState<string[]>([
     'Preview',
@@ -72,7 +71,7 @@ export default function App(): JSX.Element {
             tooltipText=".stims.json, .spec.json, or .mp4 file"
             onClick={() => {
               window.electron.send('loadFile');
-              //setActiveTab('Preview');
+              setActiveTab('Preview');
             }}
           >
             Load

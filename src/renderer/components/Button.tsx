@@ -26,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <>
-      <button
+      <div
         className={BUTTON_STYLES + ' ' + className}
         //className="bg-blue-500 text-white px-4 py-0.5 rounded shadow-md hover:shadow-lg transition-shadow duration-300"
         onClick={onClick}
@@ -35,7 +35,7 @@ const Button: React.FC<ButtonProps> = ({
         data-tooltip-hide={true}
       >
         {children}
-      </button>
+      </div>
       {tooltipText && (
         <Tooltip id={generatedTooltipId} className={TOOLTIP_STYLES} />
       )}
