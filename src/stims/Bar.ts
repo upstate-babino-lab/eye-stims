@@ -2,7 +2,6 @@ import { StimType, Stimulus } from './Stimulus';
 import { degreesToRadians, diagonalLength } from './stim-utils';
 
 export class Bar extends Stimulus {
-  // TODO: change parameters to match eye-candy
   fgColor: string = 'white';
   width: number = 10; // Degrees
   speed: number = 10; // Degrees per second

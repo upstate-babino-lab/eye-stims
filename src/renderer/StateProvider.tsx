@@ -3,7 +3,7 @@ import { useEffect, useState, ReactNode } from 'react';
 import { StateContext, StimsMeta } from './StateContext';
 import StimSequence from './StimSequence';
 import { Stimulus } from '@stims/index';
-import { newStimSpec, StimsSpec } from '@specs/StimsSpec';
+import { StimsSpec, newStimSpec } from '@specs/index';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimsMeta, setTheStimsMeta] = useState<StimsMeta | null>(null);

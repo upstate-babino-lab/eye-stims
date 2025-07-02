@@ -1,19 +1,22 @@
 import Button from '@renderer/components/Button';
-import RangeSpecForm, { INPUT_STYLES } from '@renderer/components/RangeSpecForm';
+import { INPUT_STYLES } from '@renderer/components/RangeSpecForm';
 import { saveFileDialogAsync } from '@renderer/render-utils';
 import { useAppState } from '@renderer/StateContext';
-import { RangeSpec } from '@specs/index';
 import {
   newStimSpec,
-  SqrGratingPairsStimsSpec,
   StimSpecType,
-} from '@specs/StimsSpec';
+  stimSpecsInfo,
+  SqrGratingStimsSpec,
+  ScanningDotStimsSpec,
+} from '@specs/index';
 import { useEffect, useState } from 'react';
 import { filterPrivateProperties } from '@src/shared-utils';
 import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '@renderer/render-utils';
 import 'react-tooltip/dist/react-tooltip.css';
 import StimSequence from '../StimSequence';
+import { GratingRanges } from './GratingRanges';
+import { ScanningDotRanges } from './ScanningDotRanges';
 
 export default function SpecTab() {
   const { theStimsSpec, setTheStimsSpec } = useAppState();
@@ -81,40 +84,38 @@ export default function SpecTab() {
             initialValue={
               theStimsSpec?.stimSpecType || StimSpecType.SqrGratingPairs
             }
-            onChange={(newType) => newType}
-          />
-        </div>
-        <TwoSpecProps
-          nameA="bodyMs"
-          nameB="tailMs"
-          toolTip="All grating body durations are followed by a black tail"
-        />
-        <GratingRanges />
-        <TwoSpecProps
-          nameA="grayMs"
-          nameB="grayTailMs"
-          toolTip="If grayMs > 0, each grating tail is followed by a gray flash and another black tail"
-        />
-
-        <div className="mb-1 flex items-center">
-          <label className="text-sm font-bold text-gray-100 px-4">
-            Add static gratings:
-          </label>
-          <input
-            type="checkbox"
-            // TODO: restyle using Tailwind’s peer utility
-            className="h-4 w-4 border border-gray-500 rounded-xl text-gray-200 bg-transparent checked:bg-current"
-            checked={theStimsSpec?.includeStaticGratings}
-            onChange={(e) => {
+            onChange={(newType: StimSpecType) => {
+              console.log('>>>>> SpecType changed to: ' + newType);
+              // Create a new StimsSpec instance
               setTheStimsSpec(
                 newStimSpec({
                   ...theStimsSpec,
-                  includeStaticGratings: !!e.target.checked,
+                  stimSpecType: newType,
+                  description: stimSpecsInfo[newType].description,
                 })
               );
             }}
           />
         </div>
+        <TwoSpecProps
+          nameA="bodyMs"
+          nameB="tailMs"
+          toolTip="All stimulus body duration is followed by a black tail"
+        />
+        <TwoSpecProps
+          nameA="grayMs"
+          nameB="grayTailMs"
+          toolTip="If grayMs > 0, each stim is followed by a gray flash with its black tail"
+        />
+
+        {(theStimsSpec instanceof SqrGratingStimsSpec ||
+          theStimsSpec.stimSpecType === StimSpecType.SqrGratingPairs) &&
+          <GratingRanges />
+        }
+        {(theStimsSpec instanceof ScanningDotStimsSpec ||
+          theStimsSpec.stimSpecType === StimSpecType.ScanningDot) &&
+          <ScanningDotRanges />
+        }
 
         <div className="mb-1 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
@@ -167,7 +168,37 @@ export default function SpecTab() {
             step={1}
           />
         </div>
+        <>
+          <div
+            className="mb-1 flex items-center w-50"
+            data-tooltip-id={'do-shuffle-id'}
+            data-tooltip-content={
+              'Randomize order of all stimuli (except integrity flashes)'
+            }
+            data-tooltip-place="right"
+          >
+            <label className="text-sm font-bold text-gray-100 px-4">
+              Shuffle stimuli:
+            </label>
+            <input
+              type="checkbox"
+              // TODO?: restyle using Tailwind’s peer utility
+              className="h-4 w-4 border border-gray-500 rounded-xl text-gray-200 bg-transparent checked:bg-current"
+              checked={theStimsSpec.doShuffle}
+              onChange={(e) => {
+                setTheStimsSpec(
+                  newStimSpec({
+                    ...theStimsSpec,
+                    doShuffle: !!e.target.checked,
+                  })
+                );
+              }}
+            />
+          </div>
+          <Tooltip id={'do-shuffle-id'} className={TOOLTIP_STYLES} />
+        </>
       </div>
+
       <div className="flex flex-col gap-2 ml-auto">
         <Button
           className="ml-auto"
@@ -244,63 +275,10 @@ function SpecTypeDropdown(props: {
 }
 
 //-----------------------------------------------------------------------------
-function GratingRanges() {
-  const { theStimsSpec, setTheStimsSpec } = useAppState();
-  const { cpds, contrasts, speeds } = theStimsSpec as SqrGratingPairsStimsSpec;
-
-  return (
-    <div>
-      <RangeSpecForm
-        title="Cycles per degree"
-        toolTip="One dark and one light bar make one cycle"
-        onUpdate={(cpds: RangeSpec) => {
-          // console.log('>>>>> cpds=' + JSON.stringify(cpds));
-          setTheStimsSpec(
-            new SqrGratingPairsStimsSpec({
-              ...theStimsSpec,
-              cpds: cpds,
-            })
-          );
-        }}
-        initialRange={cpds}
-      />
-      <RangeSpecForm
-        title="Contrasts"
-        toolTip="LogContrast of 0 is max (black & white), -2.2 is minimal contrast"
-        onUpdate={(contrasts: RangeSpec) => {
-          // console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
-          setTheStimsSpec(
-            new SqrGratingPairsStimsSpec({
-              ...theStimsSpec,
-              contrasts: contrasts,
-            })
-          );
-        }}
-        initialRange={contrasts}
-      />
-      <RangeSpecForm
-        title="Speeds"
-        toolTip="Degrees per second"
-        onUpdate={(speeds: RangeSpec) => {
-          // console.log('>>>>> speeds=' + JSON.stringify(speeds));
-          setTheStimsSpec(
-            new SqrGratingPairsStimsSpec({
-              ...theStimsSpec,
-              speeds: speeds,
-            })
-          );
-        }}
-        initialRange={speeds}
-      />
-    </div>
-  );
-}
-
-//-----------------------------------------------------------------------------
 function TwoSpecProps(props: { nameA: string; nameB: string; toolTip?: string }) {
   const { theStimsSpec, setTheStimsSpec } = useAppState();
   const defaultStimSpec = newStimSpec({
-    stimSpecType: StimSpecType.SqrGratingPairs,
+    stimSpecType: theStimsSpec?.stimSpecType || StimSpecType.SqrGratingPairs,
   });
 
   if (!theStimsSpec) {

@@ -7,7 +7,7 @@ import RunTab from './tabs/RunTab';
 import SequencePreviewTab from './tabs/SequencePreviewTab';
 import { formatSeconds } from './render-utils';
 import { getBasename } from '../shared-utils';
-import { newStimSpec, StimSpecType } from '@specs/StimsSpec';
+import { StimSpecType, newStimSpec } from '@specs/index';
 
 export default function App(): JSX.Element {
   const [tabLabels, setTabLabels] = useState<string[]>([

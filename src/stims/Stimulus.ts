@@ -1,9 +1,12 @@
+import { displays } from '../displays';
 import { TONE_DURATION_MS } from '../constants';
+import { diagonalLength } from '@stims/stim-utils';
 import { assert } from '../shared-utils';
 
 export enum StimType {
   Uninitialized = 'Uninitialized',
   Solid = 'Solid',
+  Dot = 'Dot',
   Bar = 'Bar',
   SinGrating = 'SinGrating',
   SqrGrating = 'SqrGrating',
@@ -83,8 +86,11 @@ export abstract class Stimulus {
         lastTimestamp = newTimestamp;
       }
       const ageSeconds = (newTimestamp - lastTimestamp) / 1000; // Seconds
+      const approxPxPerDegree = // Based on current window relative to final display
+        (diagonalLength(ctx) * displays.SD.pxPerDegree) /
+        Math.sqrt(displays.SD.height ** 2 + displays.SD.width ** 2);
       if (ageSeconds < this.durationMs / 1000) {
-        this.renderFrame(ctx, 12, ageSeconds); // Unknown pxPerDegree on user's screen
+        this.renderFrame(ctx, approxPxPerDegree, ageSeconds);
         requestAnimationFrame(animate);
       } else {
         if (onAllFramesDone) {
