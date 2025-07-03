@@ -21,9 +21,7 @@ export const stimSpecsInfo: Record<StimSpecType, StimSpecInfo> = {
       'for each cpd, contrast, and speed.',
   },
   ScanningDot: {
-    description:
-      'Flash a Dot at each position on grid ' +
-      'for each xDegree, and yDegree, and diameter.',
+    description: 'Flash Dot on grid for each xDegree yDegree, and diameter.',
   },
 };
 
