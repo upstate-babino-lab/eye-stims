@@ -3,10 +3,10 @@ import { StimType, Stimulus } from './Stimulus';
 export class Dot extends Stimulus {
   fgColor: string = 'white';
   d: number = 10; // Diameter in degrees
-  x: number = 0; // Horizontal degrees of center from top left corner
-  y: number = 0; // Vertical degrees of center from top left corner
-  toX: number; // Horizontal degrees of center from top left corner at end of duration
-  toY: number; // Vertical degrees of center from top left corner at end of duration
+  x: number = 0; // Horizontal degrees of center from left
+  y: number = 0; // Vertical degrees of center from top
+  toX: number; // Horizontal degrees of center from left at duration
+  toY: number; // Vertical degrees of center from top at duration
 
   constructor(props: Partial<Dot> = {}) {
     // console.log(`>>>>> constructor Dot(duration=${duration}, bgColor=${bgColor}, ...)`);
