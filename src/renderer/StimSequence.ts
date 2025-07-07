@@ -2,7 +2,7 @@ import { Stimulus } from '@stims/index';
 import './StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
-import { getStartTimes } from '../shared-utils';
+import { filterPrivateProperties, getStartTimes } from '../shared-utils';
 import { newStimulus } from '@stims/stimConstructors';
 import { saveFileDialogAsync } from './render-utils';
 import { frameWithBlack } from '@src/stims/stim-utils';
@@ -122,6 +122,26 @@ export default class StimSequence {
       );
     }
     return result;
+  }
+
+  saveStims(
+    filePath: string,
+    title: string = 'Untitled',
+    description: string = ''
+  ) {
+    const content = JSON.stringify(
+      {
+        name: title,
+        description: description,
+        stimuli: this.stimuli || [],
+      },
+      filterPrivateProperties,
+      4
+    );
+    window.electron.send('saveFile', {
+      filePath: filePath,
+      content: content,
+    });
   }
 
   // Streaming encoder no longer used because too slow (not enough parallelism or caching)

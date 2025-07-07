@@ -21,7 +21,6 @@ import { ScanningDotRanges } from './ScanningDotRanges';
 export default function SpecTab() {
   const { theStimsSpec, setTheStimsSpec } = useAppState();
   const { theStimsMeta, setTheStimsMeta } = useAppState();
-  const { theStimSequence } = useAppState();
 
   useEffect(() => {
     // TODO?: Calculate count and duration without creating a StimSequence
@@ -219,29 +218,6 @@ export default function SpecTab() {
           }}
         >
           Save Spec
-        </Button>
-        <Button
-          className="ml-auto"
-          onClick={async () => {
-            const filePath = await saveFileDialogAsync(
-              (theStimsSpec?.title.toLowerCase() || 'untitled') + '.stims.json'
-            );
-            const content = JSON.stringify(
-              {
-                name: theStimsMeta?.title,
-                description: theStimsMeta?.description,
-                stimuli: theStimSequence?.stimuli || [],
-              },
-              filterPrivateProperties,
-              4
-            );
-            window.electron.send('saveFile', {
-              filePath: filePath,
-              content: content,
-            });
-          }}
-        >
-          Save Stims
         </Button>
       </div>
     </div>
