@@ -91,7 +91,10 @@ export default function BuildTab() {
               setFfmpegOutput('');
               try {
                 const resultMessage = await theStimSequence.buildFromCacheAsync(
-                  getBasename(theStimsMeta?.loadedPath || 'mystims', true),
+                  getBasename(
+                    theStimsMeta?.loadedPath || theStimsMeta?.title || 'mystims',
+                    true
+                  ),
                   displayKey,
                   theStimsMeta?.title,
                   theStimsMeta?.description,

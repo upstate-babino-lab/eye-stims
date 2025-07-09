@@ -64,7 +64,7 @@ Stimulus.prototype.cacheStimVideoAsync = async function (displayKey: DisplayKey)
     ),
   ]);
   if (this._videoCacheFilename && this._silentCacheFilename) {
-    console.log('>>>>> Stim already cached');
+    // console.log('>>>>> Stim already cached');
     return; // Nothing more to do
   }
   const encoder = new Encoder(displayKey);

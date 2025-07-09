@@ -110,7 +110,7 @@ export default function App(): JSX.Element {
             <Button
               className="ml-auto"
               onClick={async () => {
-                const title = theStimsMeta?.title?.toLowerCase() || 'untitled';
+                const title = theStimsMeta?.title || 'untitled';
                 const filePath = await saveFileDialogAsync(title + '.stims.json');
                 theStimSequence?.saveStims(
                   filePath,
