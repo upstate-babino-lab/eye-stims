@@ -49,17 +49,18 @@ export abstract class Stimulus {
   meta?: Record<string, unknown>;
   _videoCacheFilename?: string;
   _silentCacheFilename?: string;
+
   constructor(props: StimProps) {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
     this.stimType = props.stimType;
-    this.durationMs = roundToValidDuration(props.durationMs ?? this.durationMs);
     this.bgColor = props.bgColor ?? this.bgColor;
     [this.headMs, this.bodyMs, this.tailMs] = calculateDurations(
-      this.durationMs,
+      props.durationMs ?? this.durationMs,
       props.headMs,
       props.bodyMs,
       props.tailMs
     );
+    this.durationMs = this.headMs + this.bodyMs + this.tailMs;
     if (this.headMs == 0) {
       delete this.headMs;
     }
@@ -110,6 +111,7 @@ function calculateDurations(
 ): [number, number, number] {
   const defined = (head ? '1' : '0') + (body ? '1' : '0') + (tail ? '1' : '0');
   duration = Math.max(TONE_DURATION_MS, duration); // Leave room for sync tones
+  roundToValidDuration(duration); // Round to nearest 20ms
   switch (defined) {
     case '000': // All durations are undefined
       return [0, duration, 0];

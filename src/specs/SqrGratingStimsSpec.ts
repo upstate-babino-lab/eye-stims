@@ -1,4 +1,4 @@
-import { NestedStimuli } from '@stims/Stimulus';
+import { Stimulus } from '@stims/Stimulus';
 import { RangeSpec } from './RangeSpec';
 import { StimSpecType, StimsSpec } from './StimsSpec';
 import { contrastPair, linearToHex } from '@stims/stim-utils';
@@ -25,8 +25,8 @@ export class SqrGratingStimsSpec extends StimsSpec {
       props.includeStaticGratings ?? this.includeStaticGratings;
   }
 
-  baseStimuli(): NestedStimuli {
-    const nestedStimuli: NestedStimuli = [];
+  baseStimuli(): Stimulus[] {
+    const stimuli: Stimulus[] = [];
     const cpds = this.cpds?.list;
     const contrasts = this.contrasts?.list;
     const speeds = this.speeds?.list;
@@ -34,7 +34,7 @@ export class SqrGratingStimsSpec extends StimsSpec {
       for (const cpd of cpds) {
         for (const speed of speeds) {
           for (const contrast of contrasts) {
-            const stimSet: NestedStimuli = [];
+            const stimSet: Stimulus[] = [];
             // Push pair of matching stimuli with opposite speeds
             const [fgColor, bgColor] = contrastPair(contrast);
             const gratingPojo = {
@@ -65,7 +65,7 @@ export class SqrGratingStimsSpec extends StimsSpec {
               );
             }
             if (!this.grayMs) {
-              nestedStimuli.push(stimSet);
+              stimuli.push(...stimSet);
             } else {
               const greyStim = new Solid({
                 durationMs: this.grayMs + this.grayTailMs,
@@ -73,12 +73,16 @@ export class SqrGratingStimsSpec extends StimsSpec {
                 tailMs: this.grayTailMs,
                 bgColor: linearToHex(0.5), // Grey color
               });
-              nestedStimuli.push(stimSet.map((stim) => [stim, greyStim]));
+              // Add grey stimulus after each grating
+              stimSet.forEach((stim) => {
+                stimuli.push(stim);
+                stimuli.push(greyStim);
+              });
             }
           }
         }
       }
     }
-    return nestedStimuli;
+    return stimuli;
   }
 }

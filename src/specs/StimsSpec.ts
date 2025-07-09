@@ -3,7 +3,6 @@
   that can be saved to a .stims.json file or used to create a StimSequence
 */
 import { Stimulus, Solid } from '@stims/index';
-import { NestedStimuli } from '@stims/Stimulus';
 
 // TODO: Create StimSpec subclasses for each type of StimSpec
 export enum StimSpecType {
@@ -39,20 +38,22 @@ export type StimsSpecProps = {
   includeStaticGratings?: boolean;
   nRepetitions?: number; // Number of repetitions of the whole sequence
   integrityFlashIntervalMins?: number;
-  restMinutesAfterIntegrityFlash?: number;
+  restIntervalMins?: number; // Minutes between rests
+  restDurationMins?: number; // Minutes of solid black
   doShuffle?: boolean;
 };
 export abstract class StimsSpec {
   stimSpecType: StimSpecType = Object.values(StimSpecType)[0];
   title: string = '';
   description: string = '';
-  bodyMs: number = 260;
-  tailMs: number = 520;
+  bodyMs: number = 500;
+  tailMs: number = 1000;
   grayMs: number = 0;
   grayTailMs: number = 520; // only used if grayMs > 0
   nRepetitions: number = 1;
   integrityFlashIntervalMins: number = 0;
-  restMinutesAfterIntegrityFlash: number = 1;
+  restIntervalMins: number = 2;
+  restDurationMins: number = 2;
   doShuffle: boolean = false; // Shuffle the stimuli by default
   //private _stimsCache: Stimulus[] = [];
   //private _jsonCache: string = '';
@@ -70,54 +71,77 @@ export abstract class StimsSpec {
     this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
     this.integrityFlashIntervalMins =
       props.integrityFlashIntervalMins ?? this.integrityFlashIntervalMins;
-    this.restMinutesAfterIntegrityFlash =
-      props.restMinutesAfterIntegrityFlash ?? this.restMinutesAfterIntegrityFlash;
+    this.restIntervalMins = props.restIntervalMins ?? this.restIntervalMins;
+    this.restDurationMins = props.restDurationMins ?? this.restDurationMins;
     this.doShuffle = props.doShuffle ?? this.doShuffle;
   }
 
   // Returns POJOs not shuffled and without integrity flashes or rest periods
-  abstract baseStimuli(): NestedStimuli;
+  abstract baseStimuli(): Stimulus[];
 
   // TODO: return from private cache if JSON has not changed?
   // If we don't use cache stims will be reshuffled every time.
   stimuli(): Stimulus[] {
-    // Optional in-place shuffle groups before inserting integrity flashes
+    // Optional in-place shuffle before inserting integrity flashes and rests
     const shuffledNestedStims = this.doShuffle
       ? this.baseStimuli().sort(() => Math.random() - 0.5)
       : this.baseStimuli();
+    const integrityFlashGroup = [
+      new Solid({ bgColor: 'oklch(0.5 0 0)', durationMs: 1260, bodyMs: 260 }), // Perceptually gray
+      new Solid({ bgColor: 'red', durationMs: 1260, bodyMs: 260 }),
+      new Solid({ bgColor: 'green', durationMs: 1260, bodyMs: 260 }),
+      new Solid({ bgColor: 'blue', durationMs: 1260, bodyMs: 260 }),
+    ];
 
+    // Required integrity flashes at start
+    let result: Stimulus[] = [...integrityFlashGroup, ...shuffledNestedStims];
+
+    // Insert optional integrity flashes
     if (this.integrityFlashIntervalMins && this.integrityFlashIntervalMins > 0) {
-      const integrityFlashGroup = [
-        new Solid({ bgColor: 'white', durationMs: 1260, bodyMs: 260 }),
-        new Solid({ bgColor: 'red', durationMs: 1260, bodyMs: 260 }),
-        new Solid({ bgColor: 'green', durationMs: 1260, bodyMs: 260 }),
-        new Solid({ bgColor: 'blue', durationMs: 1260, bodyMs: 260 }),
-      ];
-      const nStimsIntegrityInterval = Math.round(
-        (this.integrityFlashIntervalMins * 60 * 1000) / (this.bodyMs * 2)
+      result = insertAtIntervals(
+        result,
+        this.integrityFlashIntervalMins,
+        integrityFlashGroup
       );
-      const augmentedStims = shuffledNestedStims.reduce(
-        (acc: NestedStimuli, stim, i) => {
-          if (i % nStimsIntegrityInterval === 0) {
-            acc.push(integrityFlashGroup);
-            if (i > 0 && this.restMinutesAfterIntegrityFlash > 0) {
-              // Add a rest period after the integrity flash
-
-              // BUG! BUG! single long Solid duration crashes the program
-              // Perhaps because the audio is to long?
-              for (let min = 0; min < this.restMinutesAfterIntegrityFlash; min++) {
-                // Add one minute of rest
-                acc.push(new Solid({ bgColor: 'black', durationMs: 60 * 1000 }));
-              }
-            }
-          }
-          acc.push(stim); // Push the current stimulus or stimulus group
-          return acc;
-        },
-        [] as Stimulus[]
-      ); // Start with empty accumulator
-      return augmentedStims.flat(10) as Stimulus[]; // Flatten the nested arrays
     }
-    return shuffledNestedStims.flat(10) as Stimulus[]; // Without integrity flashes
+
+    // Insert optional rest periods
+    if (this.restIntervalMins && this.restIntervalMins > 0) {
+      const oneMinuteRest = new Solid({
+        bgColor: 'black',
+        durationMs: 60 * 1000,
+        meta: { comment: `rest` },
+      });
+      result = insertAtIntervals(
+        result,
+        this.restIntervalMins,
+        Array(Math.round(this.restDurationMins)).fill(oneMinuteRest)
+      );
+    }
+
+    // Required integrity flashes at end
+    result = [...result, ...integrityFlashGroup];
+
+    return result;
   }
+}
+
+//-----------------------------------------------------------------------------
+function insertAtIntervals(
+  inStims: Stimulus[],
+  intervalMins: number,
+  newStims: Stimulus[]
+): Stimulus[] {
+  const outStims: Stimulus[] = [];
+  const intervalMs = intervalMins * 60 * 1000; // Convert minutes
+  let timeElapsed = 0;
+  inStims.forEach((stim) => {
+    timeElapsed += stim.durationMs;
+    if (timeElapsed >= intervalMs) {
+      outStims.push(...newStims); // Insert newStims at the interval
+      timeElapsed = 0; // Reset time elapsed after inserting newStims
+    }
+    outStims.push(stim);
+  });
+  return outStims;
 }

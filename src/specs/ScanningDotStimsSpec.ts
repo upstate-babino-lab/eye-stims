@@ -1,7 +1,6 @@
-import { NestedStimuli } from '@stims/Stimulus';
 import { RangeSpec } from './RangeSpec';
 import { StimSpecType, StimsSpec } from './StimsSpec';
-import { Dot } from '@stims/index';
+import { Dot, Stimulus } from '@stims/index';
 import { displays } from '../displays';
 // TODO: used last selected display
 export const maxXDegrees = Math.round(displays.SD.width / displays.SD.pxPerDegree);
@@ -36,8 +35,8 @@ export class ScanningDotStimsSpec extends StimsSpec {
       (props.yDegrees && new RangeSpec(props.yDegrees)) ?? this.yDegrees;
   }
 
-  baseStimuli(): NestedStimuli {
-    const nestedStimuli: NestedStimuli = [];
+  baseStimuli(): Stimulus[] {
+    const stimuli: Stimulus[] = [];
     const diameters = this.diameters?.list;
     const xDegrees = this.xDegrees?.list;
     const yDegrees = this.yDegrees?.list;
@@ -55,11 +54,11 @@ export class ScanningDotStimsSpec extends StimsSpec {
               x: xDegree,
               y: yDegree,
             };
-            nestedStimuli.push(new Dot(dotPojo));
+            stimuli.push(new Dot(dotPojo));
           }
         }
       }
     }
-    return nestedStimuli;
+    return stimuli;
   }
 }

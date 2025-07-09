@@ -42,7 +42,7 @@ export default function SpecTab() {
 
   return (
     <div className="flex flex-row items-start p-4 bg-gray-900 -mx-4">
-      <div className="flex flex-col w-130">
+      <div className="flex flex-col w-130 gap-0.5">
         <div className="mb-3 flex items-center w-full">
           <label className="text-sm font-bold text-gray-100 px-4">Title:</label>
           <input
@@ -99,22 +99,22 @@ export default function SpecTab() {
         <TwoSpecProps
           nameA="bodyMs"
           nameB="tailMs"
-          toolTip="All stimulus body duration is followed by a black tail"
+          toolTip="Each stimulus body is followed by a black tail"
         />
         <TwoSpecProps
           nameA="grayMs"
           nameB="grayTailMs"
-          toolTip="If grayMs > 0, each stim is followed by a gray flash with its black tail"
+          toolTip="If grayMs > 0, each stim is followed by a gray flash and its black tail"
         />
 
         {(theStimsSpec instanceof SqrGratingStimsSpec ||
-          theStimsSpec.stimSpecType === StimSpecType.SqrGratingPairs) &&
-          <GratingRanges />
-        }
+          theStimsSpec.stimSpecType === StimSpecType.SqrGratingPairs) && (
+            <GratingRanges />
+          )}
         {(theStimsSpec instanceof ScanningDotStimsSpec ||
-          theStimsSpec.stimSpecType === StimSpecType.ScanningDot) &&
-          <ScanningDotRanges />
-        }
+          theStimsSpec.stimSpecType === StimSpecType.ScanningDot) && (
+            <ScanningDotRanges />
+          )}
 
         <div className="mb-1 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
@@ -139,40 +139,12 @@ export default function SpecTab() {
             step={1}
           />
         </div>
-
-        <div className="mb-1 flex items-center">
-          <label className="text-sm font-bold text-gray-100 px-4">
-            IntegrityFlashInterval (minutes):
-          </label>
-          <input
-            type="number"
-            className={INPUT_STYLES}
-            value={
-              theStimsSpec?.integrityFlashIntervalMins
-                ? theStimsSpec?.integrityFlashIntervalMins
-                : 0
-            }
-            onChange={(e) => {
-              const newValue =
-                e.target.value === '' ? undefined : parseFloat(e.target.value);
-              setTheStimsSpec(
-                newStimSpec({
-                  ...theStimsSpec,
-                  integrityFlashIntervalMins: newValue,
-                })
-              );
-            }}
-            min={0}
-            max={100}
-            step={1}
-          />
-        </div>
         <>
           <div
             className="mb-1 flex items-center w-50"
             data-tooltip-id={'do-shuffle-id'}
             data-tooltip-content={
-              'Randomize order of all stimuli (except integrity flashes)'
+              'Randomize order of all stimuli (except integrity flashes and rests)'
             }
             data-tooltip-place="right"
           >
@@ -196,6 +168,48 @@ export default function SpecTab() {
           </div>
           <Tooltip id={'do-shuffle-id'} className={TOOLTIP_STYLES} />
         </>
+        <>
+          <div
+            className="mb-1 flex items-center w-90"
+            data-tooltip-id={'integrity-flash-id'}
+            data-tooltip-content={
+              'gray, red, green, blue flashes optional at interval, required at start and end'
+            }
+            data-tooltip-place="right"
+          >
+            <label className="text-sm font-bold text-gray-100 px-4">
+              Integrity flashes interval (mins):
+            </label>
+            <input
+              type="number"
+              className={INPUT_STYLES}
+              value={
+                theStimsSpec?.integrityFlashIntervalMins
+                  ? theStimsSpec?.integrityFlashIntervalMins
+                  : 0
+              }
+              onChange={(e) => {
+                const newValue =
+                  e.target.value === '' ? undefined : parseFloat(e.target.value);
+                setTheStimsSpec(
+                  newStimSpec({
+                    ...theStimsSpec,
+                    integrityFlashIntervalMins: newValue,
+                  })
+                );
+              }}
+              min={0}
+              max={100}
+              step={1}
+            />
+          </div>
+          <Tooltip id={'integrity-flash-id'} className={TOOLTIP_STYLES} />
+        </>
+        <TwoSpecProps
+          nameA="restIntervalMins"
+          nameB="restDurationMins"
+          toolTip="How often and how long to rest with solid black"
+        />
       </div>
 
       <div className="flex flex-col gap-2 ml-auto">
@@ -305,7 +319,7 @@ function TwoSpecProps(props: { nameA: string; nameB: string; toolTip?: string })
           value={getDisplayValue(props.nameA)}
           onChange={(e) => handleInputChange(e, props.nameA)}
           min={0}
-          step={20}
+          step={props.nameA.endsWith('Ms') ? 20 : 1}
         />
         <label className="text-sm font-bold text-gray-100 px-4">
           {props.nameB}:
@@ -317,12 +331,14 @@ function TwoSpecProps(props: { nameA: string; nameB: string; toolTip?: string })
           value={getDisplayValue(props.nameB)}
           onChange={(e) => handleInputChange(e, props.nameB)}
           min={0} // Make sure this is 0 if you want 0 input to be valid
-          step={20}
+          step={props.nameA.endsWith('Ms') ? 20 : 1}
         />
-        <div className="px-4">
-          Durations ={' '}
-          {(theStimsSpec[props.nameA] ?? 0) + (theStimsSpec[props.nameB] ?? 0)}ms
-        </div>
+        {props.nameA.endsWith('Ms') && props.nameB.endsWith('Ms') && (
+          <div className="px-4">
+            Durations ={' '}
+            {(theStimsSpec[props.nameA] ?? 0) + (theStimsSpec[props.nameB] ?? 0)}ms
+          </div>
+        )}
       </div>
       <Tooltip id={props.nameA + '-id'} className={TOOLTIP_STYLES} />
     </div>
