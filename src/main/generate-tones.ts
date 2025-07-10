@@ -34,7 +34,7 @@ export const audioChoices: Record<AudioKey, AudioProps> = {
   MP3: {
     sampleRate: 44100,
     fileExtension: '.mp3',
-    ffEncode: ['-c:a', 'libmp3lame', '-b:a', '320k'],
+    ffEncode: ['-c:a', 'libmp3lame', '-b:a', '320k'], // Constant bitrate
   },
   OPUS: {
     // Durations are more precise than MP3
@@ -42,6 +42,11 @@ export const audioChoices: Record<AudioKey, AudioProps> = {
     fileExtension: '.opus',
     // -strict -2 allows experimental codec
     ffEncode: ['-strict', '-2', '-c:a', 'opus', '-b:a', '320k'],
+  },
+  FLAC: {
+    sampleRate: 44100,
+    fileExtension: '.flac',
+    ffEncode: ['-c:a', 'flac', '-compression_level', '8', '-sample_fmt', 's16'], // 16 bit samples to save space
   },
 };
 

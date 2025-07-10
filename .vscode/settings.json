@@ -29,6 +29,7 @@
     "DTMF",
     "eyestims",
     "ffprobe",
+    "FLAC",
     "lavfi",
     "libmp",
     "libopus",
