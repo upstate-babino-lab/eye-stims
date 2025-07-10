@@ -13,7 +13,9 @@ export class RangeSpec {
     const result: number[] = [];
     if (this.start != undefined) {
       for (let i = 0; i < (this.nSteps ?? 1); i++) {
-        result.push(this.start + i * (this.step ?? 1));
+        let nextValue = this.start + i * (this.step ?? 1);
+        nextValue = Math.round(nextValue * 100_000) / 100_000; // Round to 5 decimal places
+        result.push(nextValue);
       }
     }
     return result;

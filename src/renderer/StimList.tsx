@@ -71,7 +71,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   if (!partial.headMs && !partial.tailMs) {
     delete partial.bodyMs;
   }
-  // Display comment
+  // Display comment, but not other meta properties
   if (row?.meta?.comment) {
     partial['meta'] = { comment: row?.meta?.comment };
   }
