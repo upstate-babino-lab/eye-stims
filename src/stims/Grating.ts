@@ -21,6 +21,9 @@ export class Grating extends Stimulus {
     });
     this.gratingType = props.gratingType ?? this.gratingType;
     this.fgColor = props.fgColor ?? this.fgColor;
+    if (this.fgColor === '#ffffff') {
+      this.fgColor = 'white';
+    }
     this.speed = props.speed ?? this.speed;
     this.cpd = (props.cpd && props.cpd > 0 ? props.cpd : 0) ?? this.cpd;
     this.angle = props.angle ?? this.angle;

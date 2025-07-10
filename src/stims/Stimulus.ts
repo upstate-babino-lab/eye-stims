@@ -54,6 +54,9 @@ export abstract class Stimulus {
     // console.log(`>>>>> constructor abstract Stimulus(${name}, ${duration} ${bgColor})`);
     this.stimType = props.stimType;
     this.bgColor = props.bgColor ?? this.bgColor;
+    if (this.bgColor === '#000000') {
+      this.bgColor = 'black';
+    }
     [this.headMs, this.bodyMs, this.tailMs] = calculateDurations(
       props.durationMs ?? this.durationMs,
       props.headMs,
