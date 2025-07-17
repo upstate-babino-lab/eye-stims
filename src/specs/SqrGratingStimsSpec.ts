@@ -67,16 +67,16 @@ export class SqrGratingStimsSpec extends StimsSpec {
             if (!this.grayMs) {
               stimuli.push(...stimSet);
             } else {
-              const greyStim = new Solid({
+              const grayStim = new Solid({
                 durationMs: this.grayMs + this.grayTailMs,
                 bodyMs: this.grayMs,
                 tailMs: this.grayTailMs,
-                bgColor: linearToHex(0.5), // Grey color
+                bgColor: linearToHex(0.5, 0.5, 0.5), // Gray
               });
-              // Add grey stimulus after each grating
+              // Add gray stimulus after each grating
               stimSet.forEach((stim) => {
                 stimuli.push(stim);
-                stimuli.push(greyStim);
+                stimuli.push(grayStim);
               });
             }
           }

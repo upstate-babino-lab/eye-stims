@@ -1,5 +1,13 @@
 import { SqrGrating } from './SqrGrating';
-import { StimTypeName, Stimulus, Solid, Dot, Bar, SinGrating } from './index';
+import {
+  StimTypeName,
+  Stimulus,
+  Solid,
+  Dot,
+  Bar,
+  SinGrating,
+  FFSine,
+} from './index';
 
 // Should never actually be used.
 class Uninitialized extends Stimulus {
@@ -41,6 +49,7 @@ export const stimConstructors: StimConstructors = {
   Bar: Bar,
   SinGrating: SinGrating,
   SqrGrating: SqrGrating,
+  FFSine: FFSine,
 };
 
 // Create a new Stimulus class instance from POJO or parsed JSON object.

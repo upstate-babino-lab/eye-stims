@@ -7,7 +7,7 @@ export enum GratingType {
 }
 export class Grating extends Stimulus {
   gratingType: GratingType = GratingType.Sin;
-  fgColor = 'white';
+  fgColor = 'white'; // TODO? change to contrast?
   speed: number = 10; // degrees per second TODO?: change to temporal frequency (Hz)?
   cpd: number = 10;
   angle = 45; // degrees
