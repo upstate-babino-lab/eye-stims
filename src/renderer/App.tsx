@@ -112,7 +112,7 @@ export default function App(): JSX.Element {
               onClick={async () => {
                 const title = theStimsMeta?.title || 'untitled';
                 const filePath = await saveFileDialogAsync(title + '.stims.json');
-                theStimSequence?.saveStims(
+                await theStimSequence?.saveStimsAsync(
                   filePath,
                   title,
                   theStimsMeta?.description

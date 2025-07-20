@@ -124,7 +124,7 @@ export default class StimSequence {
     return result;
   }
 
-  saveStims(
+  async saveStimsAsync(
     filePath: string,
     title: string = 'Untitled',
     description: string = ''
@@ -133,6 +133,7 @@ export default class StimSequence {
       {
         name: title,
         description: description,
+        appVersion: await window.electron.getAppVersion(),
         stimuli: this.stimuli || [],
       },
       filterPrivateProperties,

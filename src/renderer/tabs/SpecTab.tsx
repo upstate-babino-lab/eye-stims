@@ -21,18 +21,21 @@ import { ScanningDotRanges } from './ScanningDotRanges';
 export default function SpecTab() {
   const { theStimsSpec, setTheStimsSpec } = useAppState();
   const { theStimsMeta, setTheStimsMeta } = useAppState();
+  const { setTheStimSequence } = useAppState();
 
   useEffect(() => {
     // TODO?: Calculate count and duration without creating a StimSequence
-    const stimSeq = theStimsSpec && new StimSequence(theStimsSpec.stimuli());
-
-    setTheStimsMeta({
-      ...theStimsMeta,
-      title: theStimsSpec?.title,
-      description: theStimsSpec?.description,
-      count: stimSeq?.stimuli.length || 0,
-      totalDurationMS: stimSeq?.duration(),
-    });
+    if (theStimsSpec) {
+      const stimSeq = new StimSequence(theStimsSpec.stimuli());
+      setTheStimSequence(stimSeq);
+      setTheStimsMeta({
+        ...theStimsMeta,
+        title: theStimsSpec?.title,
+        description: theStimsSpec?.description,
+        count: stimSeq?.stimuli.length || 0,
+        totalDurationMS: stimSeq?.duration(),
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theStimsSpec, setTheStimsMeta]);
 

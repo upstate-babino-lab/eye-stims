@@ -195,7 +195,7 @@ export async function extractSubtitlesAsync(
   const probeArgs = [
     '-v', 'quiet', // Suppress logging output
     '-of', 'json',
-    '-show_entries', 'format_tags=title,description',
+    '-show_entries', 'format_tags=title,description,comment',
     mp4Filename,
   ];
   const metaData = await spawnFfmpegAsync(probeArgs, true); // Use ffprobe to get video info
@@ -203,10 +203,19 @@ export async function extractSubtitlesAsync(
   const metadataJson = JSON.parse(metaData);
   const title = metadataJson?.format?.tags?.title || '';
   const description = metadataJson?.format?.tags?.description || '';
+  const comment = metadataJson?.format?.tags?.comment || '';
+  try {
+    JSON.parse(comment);
+  } catch (err) {
+    console.warn(
+      `>>>>> Failed to parse comment as JSON: ${(err as Error).message}`
+    );
+  }
 
   const result = {
     title: title,
     description: description,
+    comment: comment,
     stimuli: subtitles.map((e) => e.stim),
   };
   // console.log('>>>>> returning\n' + JSON.stringify(result, null, 2));
@@ -255,6 +264,7 @@ export async function buildFromCacheAsync(
     // '-bsf:v', 'h264_mp4toannexb',
     '-metadata', `title=${title}`,
     '-metadata', `description=${description}`,
+    '-metadata', `comment=${JSON.stringify({appVersion: app.getVersion()})}`
   ];
   // args.push('-shortest'); // Removes audio completely when using mp3, or not re-encoding with opus
   args.push(outputPath);

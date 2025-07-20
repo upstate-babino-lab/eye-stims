@@ -67,4 +67,8 @@ contextBridge.exposeInMainWorld('electron', {
     // Returns filename (without full path)
     return ipcRenderer.invoke('isCached', unhashedFilename);
   },
+
+  getAppVersion: () => {
+    return ipcRenderer.invoke('getAppVersion');
+  },
 });

@@ -158,6 +158,11 @@ export function setupIpcHandlers() {
       throw error;
     }
   });
+
+  ipcMain.handle('getAppVersion', async () => {
+    // console.log(`>>>>> main got 'getAppVersion'`);
+    return app.getVersion();
+  });
 }
 
 // Generate filename with same that's guaranteed to be valid on Windows, and of limited length.
