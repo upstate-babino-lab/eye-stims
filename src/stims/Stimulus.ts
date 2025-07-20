@@ -1,6 +1,6 @@
 import { displays } from '../displays';
 import { TONE_DURATION_MS } from '../constants';
-import { diagonalLength } from '@stims/stim-utils';
+import { diagonalLength } from './stim-utils';
 import { assert } from '../shared-utils';
 
 export enum StimType {
@@ -10,6 +10,7 @@ export enum StimType {
   Bar = 'Bar',
   SinGrating = 'SinGrating',
   SqrGrating = 'SqrGrating',
+  FFSine = 'FFSine',
 }
 
 // Make sure durations align with 50fps frame rate
