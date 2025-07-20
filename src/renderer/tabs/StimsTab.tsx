@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import StimList from '../StimList';
 import StimSequence from '@renderer/StimSequence';
 
-export default function SequencePreviewTab() {
-  const { theStimsSpec, theStimSequence, setTheStimSequence } = useAppState();
+export default function StimsTab() {
+  const { theParadigm: theStimsSpec, theStimSequence, setTheStimSequence } = useAppState();
   const [selectedStimIndex, setSelectedStimIndex] = useState(-1);
 
   // Update from StimsSpec if we're using one

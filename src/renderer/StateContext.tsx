@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import StimSequence from './StimSequence';
-import { StimsSpec } from '@specs/StimsSpec';
+import { Paradigm } from '@paradigms/Paradigm';
 
 export type StimsMeta = {
   loadedPath?: string;
@@ -15,8 +15,8 @@ type StateContextType = {
   setTheStimsMeta: (value: StimsMeta) => void;
   theStimSequence: StimSequence | null;
   setTheStimSequence: (value: StimSequence) => void;
-  theStimsSpec: StimsSpec | null;
-  setTheStimsSpec: (value: StimsSpec | null) => void;
+  theParadigm: Paradigm | null;
+  setTheParadigm: (value: Paradigm | null) => void;
 };
 
 // Create Context with default value

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { RangeSpec } from '@specs/index';
+import { RangeSpec } from '@src/paradigms/index';
 import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '../render-utils';
 import 'react-tooltip/dist/react-tooltip.css';

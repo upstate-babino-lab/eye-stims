@@ -1,21 +1,21 @@
 import { Stimulus } from '@stims/Stimulus';
 import { RangeSpec } from './RangeSpec';
-import { StimSpecType, StimsSpec } from './StimsSpec';
+import { ParadigmType, Paradigm } from './Paradigm';
 import { contrastPair, linearToHex } from '@stims/stim-utils';
 import { SqrGrating } from '@stims/SqrGrating';
 import { Solid } from '@stims/Solid';
 
-export class SqrGratingStimsSpec extends StimsSpec {
+export class SqrGratingParadigm extends Paradigm {
   cpds: RangeSpec = new RangeSpec({ start: 0.3, step: 0.2, nSteps: 1 });
   contrasts: RangeSpec = new RangeSpec({ start: 0, step: -0.1, nSteps: 1 });
   speeds: RangeSpec = new RangeSpec({ start: 3, step: 1, nSteps: 1 });
   includeStaticGratings: boolean = false;
 
-  constructor(props: Partial<SqrGratingStimsSpec> = {}) {
+  constructor(props: Partial<SqrGratingParadigm> = {}) {
     // TODO: Check that cpds, contrasts, and speeds are all in valid ranges
     super({
       ...props,
-      stimSpecType: StimSpecType.SqrGratingPairs,
+      paradigmType: ParadigmType.SqrGratingPairs,
     });
     this.cpds = (props.cpds && new RangeSpec(props.cpds)) ?? this.cpds;
     this.contrasts =

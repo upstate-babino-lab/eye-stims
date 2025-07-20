@@ -1,17 +1,17 @@
 import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
-import { RangeSpec } from '@src/specs';
+import { RangeSpec } from '@paradigms';
 import {
-  ScanningDotStimsSpec,
+  ScanningDotParadigm,
   maxXDegrees,
   maxYDegrees,
-} from '@src/specs/ScanningDotStimsSpec';
+} from '@src/paradigms/ScanningDotParadigm';
 
 export function ScanningDotRanges() {
-  const { theStimsSpec, setTheStimsSpec } = useAppState();
-  const { diameters, xDegrees, yDegrees } = theStimsSpec as ScanningDotStimsSpec;
+  const { theParadigm: theStimsSpec, setTheParadigm: setTheStimsSpec } = useAppState();
+  const { diameters, xDegrees, yDegrees } = theStimsSpec as ScanningDotParadigm;
 
-  if (!theStimsSpec || !(theStimsSpec instanceof ScanningDotStimsSpec)) {
+  if (!theStimsSpec || !(theStimsSpec instanceof ScanningDotParadigm)) {
     return (
       <div className="text-red-500">No valid ScanningDotStimsSpec available</div>
     );
@@ -24,7 +24,7 @@ export function ScanningDotRanges() {
         toolTip="Degrees of visual angle"
         onUpdate={(diameters: RangeSpec) => {
           setTheStimsSpec(
-            new ScanningDotStimsSpec({
+            new ScanningDotParadigm({
               ...theStimsSpec,
               diameters: diameters,
             })
@@ -38,7 +38,7 @@ export function ScanningDotRanges() {
         onUpdate={(xDegrees: RangeSpec) => {
           // console.log('>>>>> xDegrees=' + JSON.stringify(xDegrees));
           setTheStimsSpec(
-            new ScanningDotStimsSpec({
+            new ScanningDotParadigm({
               ...theStimsSpec,
               xDegrees: xDegrees,
             })
@@ -52,7 +52,7 @@ export function ScanningDotRanges() {
         onUpdate={(yDegrees: RangeSpec) => {
           // console.log('>>>>> yDegrees=' + JSON.stringify(yDegrees));
           setTheStimsSpec(
-            new ScanningDotStimsSpec({
+            new ScanningDotParadigm({
               ...theStimsSpec,
               yDegrees: yDegrees,
             })

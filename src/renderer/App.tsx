@@ -1,34 +1,30 @@
 import { useEffect, useState } from 'react';
 import Button from './components/Button';
 import { useAppState } from './StateContext';
-import SpecTab from './tabs/SpecTab';
+import ParadigmTab from './tabs/ParadigmTab';
 import BuildTab from './tabs/BuildTab';
 import RunTab from './tabs/RunTab';
-import SequencePreviewTab from './tabs/SequencePreviewTab';
+import StimsTab from './tabs/StimsTab';
 import { formatSeconds, saveFileDialogAsync } from './render-utils';
 import { getBasename } from '../shared-utils';
-import { StimSpecType, newStimSpec } from '@specs/index';
+import { ParadigmType, newParadigm } from '@src/paradigms/index';
 
 export default function App(): JSX.Element {
-  const [tabLabels, setTabLabels] = useState<string[]>([
-    'Preview',
-    'Build',
-    'Run',
-  ]);
+  const [tabLabels, setTabLabels] = useState<string[]>(['Stims', 'Build', 'Run']);
   const [activeTab, setActiveTab] = useState(tabLabels[0]);
   const {
     theStimsMeta,
     setTheStimsMeta,
-    theStimsSpec,
-    setTheStimsSpec,
+    theParadigm: theStimsSpec,
+    setTheParadigm: setTheStimsSpec,
     theStimSequence,
   } = useAppState();
 
   useEffect(() => {
     if (theStimsSpec) {
-      setTabLabels(['Spec', 'Preview', 'Build', 'Run']);
+      setTabLabels(['Paradigm', 'Stims', 'Build', 'Run']);
     } else {
-      setTabLabels(['Preview', 'Build', 'Run']);
+      setTabLabels(['Stims', 'Build', 'Run']);
     }
   }, [theStimsSpec]);
 
@@ -49,7 +45,7 @@ export default function App(): JSX.Element {
                   <span className="text-gray-300">
                     {theStimsMeta.loadedPath
                       ? getBasename(theStimsMeta.loadedPath)
-                      : '?' + (theStimsSpec ? '.spec' : '') + '.json'}
+                      : '?' + (theStimsSpec ? '.paradigm' : '') + '.json'}
                   </span>{' '}
                   {' | '}
                   Count:{' '}
@@ -68,10 +64,10 @@ export default function App(): JSX.Element {
         <div className="flex flex-col gap-2 ml-auto">
           <Button
             className="ml-auto"
-            tooltipText=".stims.json, .spec.json, or .mp4 file"
+            tooltipText=".stims.json, .paradigm.json, or .mp4 file"
             onClick={() => {
               window.electron.send('loadFile');
-              setActiveTab('Preview');
+              setActiveTab('Stims');
             }}
           >
             Load
@@ -79,15 +75,15 @@ export default function App(): JSX.Element {
           <Button
             className="ml-auto"
             onClick={() => {
-              const stimSpec = newStimSpec({
-                stimSpecType: StimSpecType.SqrGratingPairs,
+              const stimsParadigm = newParadigm({
+                paradigmType: ParadigmType.SqrGratingPairs,
               });
-              setTheStimsSpec(stimSpec);
+              setTheStimsSpec(stimsParadigm);
               setTheStimsMeta({});
-              setActiveTab('Spec');
+              setActiveTab('Paradigm');
             }}
           >
-            New Spec
+            New Paradigm
           </Button>{' '}
         </div>
       </div>
@@ -122,8 +118,8 @@ export default function App(): JSX.Element {
               Save Stims
             </Button>
           </div>
-          {activeTab === 'Spec' && <SpecTab />}
-          {activeTab === 'Preview' && <SequencePreviewTab />}
+          {activeTab === 'Paradigm' && <ParadigmTab />}
+          {activeTab === 'Stims' && <StimsTab />}
           {activeTab === 'Build' && <BuildTab />}
           {activeTab === 'Run' && <RunTab />}
         </>

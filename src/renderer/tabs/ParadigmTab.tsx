@@ -3,12 +3,12 @@ import { INPUT_STYLES } from '@renderer/components/RangeSpecForm';
 import { saveFileDialogAsync } from '@renderer/render-utils';
 import { useAppState } from '@renderer/StateContext';
 import {
-  newStimSpec,
-  StimSpecType,
-  stimSpecsInfo,
-  SqrGratingStimsSpec,
-  ScanningDotStimsSpec,
-} from '@specs/index';
+  newParadigm,
+  ParadigmType,
+  paradigmsInfo,
+  SqrGratingParadigm,
+  ScanningDotParadigm,
+} from '@src/paradigms/index';
 import { useEffect, useState } from 'react';
 import { filterPrivateProperties } from '@src/shared-utils';
 import { Tooltip } from 'react-tooltip';
@@ -18,28 +18,29 @@ import StimSequence from '../StimSequence';
 import { GratingRanges } from './GratingRanges';
 import { ScanningDotRanges } from './ScanningDotRanges';
 
-export default function SpecTab() {
-  const { theStimsSpec, setTheStimsSpec } = useAppState();
+export default function ParadigmTab() {
+  const { theParadigm: theParadigm, setTheParadigm: setTheParadigm } =
+    useAppState();
   const { theStimsMeta, setTheStimsMeta } = useAppState();
   const { setTheStimSequence } = useAppState();
 
   useEffect(() => {
     // TODO?: Calculate count and duration without creating a StimSequence
-    if (theStimsSpec) {
-      const stimSeq = new StimSequence(theStimsSpec.stimuli());
+    if (theParadigm) {
+      const stimSeq = new StimSequence(theParadigm.stimuli());
       setTheStimSequence(stimSeq);
       setTheStimsMeta({
         ...theStimsMeta,
-        title: theStimsSpec?.title,
-        description: theStimsSpec?.description,
+        title: theParadigm?.title,
+        description: theParadigm?.description,
         count: stimSeq?.stimuli.length || 0,
         totalDurationMS: stimSeq?.duration(),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theStimsSpec, setTheStimsMeta]);
+  }, [theParadigm, setTheStimsMeta]);
 
-  if (!theStimsSpec) {
+  if (!theParadigm) {
     return <div></div>;
   }
 
@@ -51,11 +52,11 @@ export default function SpecTab() {
           <input
             type="text"
             className={INPUT_STYLES + ' w-full'}
-            value={theStimsSpec?.title}
+            value={theParadigm?.title}
             onChange={(e) => {
-              setTheStimsSpec(
-                newStimSpec({
-                  ...theStimsSpec,
+              setTheParadigm(
+                newParadigm({
+                  ...theParadigm,
                   title: e.target.value,
                 })
               );
@@ -69,11 +70,11 @@ export default function SpecTab() {
           <input
             type="text"
             className={INPUT_STYLES + ' w-full'}
-            value={theStimsSpec?.description}
+            value={theParadigm?.description}
             onChange={(e) => {
-              setTheStimsSpec(
-                newStimSpec({
-                  ...theStimsSpec,
+              setTheParadigm(
+                newParadigm({
+                  ...theParadigm,
                   description: e.target.value,
                 })
               );
@@ -81,19 +82,19 @@ export default function SpecTab() {
           />
         </div>
         <div className="mb-3 flex items-center">
-          <label className="text-sm font-bold text-gray-100 px-4">SpecType:</label>
-          <SpecTypeDropdown
+          <label className="text-sm font-bold text-gray-100 px-4">ParadigmType:</label>
+          <ParadigmTypeDropdown
             initialValue={
-              theStimsSpec?.stimSpecType || StimSpecType.SqrGratingPairs
+              theParadigm?.paradigmType || ParadigmType.SqrGratingPairs
             }
-            onChange={(newType: StimSpecType) => {
-              console.log('>>>>> SpecType changed to: ' + newType);
+            onChange={(newType: ParadigmType) => {
+              console.log('>>>>> ParadigmType changed to: ' + newType);
               // Create a new StimsSpec instance
-              setTheStimsSpec(
-                newStimSpec({
-                  ...theStimsSpec,
-                  stimSpecType: newType,
-                  description: stimSpecsInfo[newType].description,
+              setTheParadigm(
+                newParadigm({
+                  ...theParadigm,
+                  paradigmType: newType,
+                  description: paradigmsInfo[newType].description,
                 })
               );
             }}
@@ -110,12 +111,12 @@ export default function SpecTab() {
           toolTip="If grayMs > 0, each stim is followed by a gray flash and its black tail"
         />
 
-        {(theStimsSpec instanceof SqrGratingStimsSpec ||
-          theStimsSpec.stimSpecType === StimSpecType.SqrGratingPairs) && (
+        {(theParadigm instanceof SqrGratingParadigm ||
+          theParadigm.paradigmType === ParadigmType.SqrGratingPairs) && (
             <GratingRanges />
           )}
-        {(theStimsSpec instanceof ScanningDotStimsSpec ||
-          theStimsSpec.stimSpecType === StimSpecType.ScanningDot) && (
+        {(theParadigm instanceof ScanningDotParadigm ||
+          theParadigm.paradigmType === ParadigmType.ScanningDot) && (
             <ScanningDotRanges />
           )}
 
@@ -126,13 +127,13 @@ export default function SpecTab() {
           <input
             type="number"
             className={INPUT_STYLES}
-            value={theStimsSpec?.nRepetitions ? theStimsSpec?.nRepetitions : 0}
+            value={theParadigm?.nRepetitions ? theParadigm?.nRepetitions : 0}
             onChange={(e) => {
               const newValue =
                 e.target.value === '' ? undefined : parseFloat(e.target.value);
-              setTheStimsSpec(
-                newStimSpec({
-                  ...theStimsSpec,
+              setTheParadigm(
+                newParadigm({
+                  ...theParadigm,
                   nRepetitions: newValue,
                 })
               );
@@ -158,11 +159,11 @@ export default function SpecTab() {
               type="checkbox"
               // TODO?: restyle using Tailwind’s peer utility
               className="h-4 w-4 border border-gray-500 rounded-xl text-gray-200 bg-transparent checked:bg-current"
-              checked={theStimsSpec.doShuffle}
+              checked={theParadigm.doShuffle}
               onChange={(e) => {
-                setTheStimsSpec(
-                  newStimSpec({
-                    ...theStimsSpec,
+                setTheParadigm(
+                  newParadigm({
+                    ...theParadigm,
                     doShuffle: !!e.target.checked,
                   })
                 );
@@ -187,16 +188,16 @@ export default function SpecTab() {
               type="number"
               className={INPUT_STYLES}
               value={
-                theStimsSpec?.integrityFlashIntervalMins
-                  ? theStimsSpec?.integrityFlashIntervalMins
+                theParadigm?.integrityFlashIntervalMins
+                  ? theParadigm?.integrityFlashIntervalMins
                   : 0
               }
               onChange={(e) => {
                 const newValue =
                   e.target.value === '' ? undefined : parseFloat(e.target.value);
-                setTheStimsSpec(
-                  newStimSpec({
-                    ...theStimsSpec,
+                setTheParadigm(
+                  newParadigm({
+                    ...theParadigm,
                     integrityFlashIntervalMins: newValue,
                   })
                 );
@@ -220,11 +221,11 @@ export default function SpecTab() {
           className="ml-auto"
           onClick={async () => {
             const filePath = await saveFileDialogAsync(
-              (theStimsSpec?.title.toLowerCase() || 'untitled') + '.spec.json'
+              (theParadigm?.title.toLowerCase() || 'untitled') + '.paradigm.json'
             );
             setTheStimsMeta({ ...theStimsMeta, loadedPath: filePath });
             const content = JSON.stringify(
-              theStimsSpec,
+              theParadigm,
               filterPrivateProperties,
               4
             );
@@ -234,7 +235,7 @@ export default function SpecTab() {
             });
           }}
         >
-          Save Spec
+          Save Paradigm
         </Button>
       </div>
     </div>
@@ -242,22 +243,22 @@ export default function SpecTab() {
 }
 
 //-----------------------------------------------------------------------------
-function SpecTypeDropdown(props: {
-  initialValue: StimSpecType;
-  onChange: (value: StimSpecType) => void;
+function ParadigmTypeDropdown(props: {
+  initialValue: ParadigmType;
+  onChange: (value: ParadigmType) => void;
 }) {
   const [selectedValue, setSelectedValue] = useState(props.initialValue);
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = event.target.value;
-    setSelectedValue(StimSpecType[newValue]);
-    props.onChange(StimSpecType[newValue]);
+    setSelectedValue(ParadigmType[newValue]);
+    props.onChange(ParadigmType[newValue]);
   };
 
   return (
     <div className="inline-flex">
       <select value={selectedValue} onChange={handleChange}>
-        {Object.keys(StimSpecType).map((key) => (
+        {Object.keys(ParadigmType).map((key) => (
           <option key={key} value={key}>
             {key}
           </option>
@@ -269,9 +270,10 @@ function SpecTypeDropdown(props: {
 
 //-----------------------------------------------------------------------------
 function TwoSpecProps(props: { nameA: string; nameB: string; toolTip?: string }) {
-  const { theStimsSpec, setTheStimsSpec } = useAppState();
-  const defaultStimSpec = newStimSpec({
-    stimSpecType: theStimsSpec?.stimSpecType || StimSpecType.SqrGratingPairs,
+  const { theParadigm: theStimsSpec, setTheParadigm: setTheStimsSpec } =
+    useAppState();
+  const defaultParadigm = newParadigm({
+    paradigmType: theStimsSpec?.paradigmType || ParadigmType.SqrGratingPairs,
   });
 
   if (!theStimsSpec) {
@@ -288,18 +290,18 @@ function TwoSpecProps(props: { nameA: string; nameB: string; toolTip?: string })
     const newValue =
       e.target.value === '' ? undefined : parseFloat(e.target.value);
 
-    const newSpec = newStimSpec({ ...theStimsSpec });
+    const newSpec = newParadigm({ ...theStimsSpec });
     newSpec[propName] = newValue;
     setTheStimsSpec(newSpec);
   };
 
   // Helper to safely get the value for display
   // This function ensures that if a property exists on theStimsSpec (even if 0),
-  // it's used. Only if it's strictly null or undefined will defaultStimSpec be used.
+  // it's used. Only if it's strictly null or undefined will defaultParadigm be used.
   const getDisplayValue = (propName: string) => {
     // Check if the property exists on theStimsSpec and is not null/undefined
     // Use `??` to allow 0 as a valid value
-    const value = theStimsSpec[propName] ?? defaultStimSpec[propName];
+    const value = theStimsSpec[propName] ?? defaultParadigm[propName];
     // Convert undefined back to empty string for the input field to allow clearing
     return value === undefined ? '' : String(value);
   };

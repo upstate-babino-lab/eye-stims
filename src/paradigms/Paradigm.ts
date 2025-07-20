@@ -1,19 +1,19 @@
 /*
-  A StimsSpec is used to create a list of POJO stimuli
+  A StimsParadigm is used to create a list of POJO stimuli
   that can be saved to a .stims.json file or used to create a StimSequence
 */
 import { Stimulus, Solid } from '@stims/index';
 
-// TODO: Create StimSpec subclasses for each type of StimSpec
-export enum StimSpecType {
+// TODO: Create StimsParadigm subclasses for each type of StimsParadigm
+export enum ParadigmType {
   SqrGratingPairs = 'SqrGratingPairs',
   ScanningDot = 'ScanningDot',
 }
 
-type StimSpecInfo = {
+type ParadigmInfo = {
   description: string;
 };
-export const stimSpecsInfo: Record<StimSpecType, StimSpecInfo> = {
+export const paradigmsInfo: Record<ParadigmType, ParadigmInfo> = {
   SqrGratingPairs: {
     description:
       'Pairs of gratings moving left and right ' +
@@ -24,8 +24,8 @@ export const stimSpecsInfo: Record<StimSpecType, StimSpecInfo> = {
   },
 };
 
-export type StimsSpecProps = {
-  stimSpecType: StimSpecType;
+export type ParadigmProps = {
+  paradigmType: ParadigmType;
   title?: string;
   description?: string;
   // Duration of body and tail in milliseconds
@@ -42,8 +42,8 @@ export type StimsSpecProps = {
   restDurationMins?: number; // Minutes of solid black
   doShuffle?: boolean;
 };
-export abstract class StimsSpec {
-  stimSpecType: StimSpecType = Object.values(StimSpecType)[0];
+export abstract class Paradigm {
+  paradigmType: ParadigmType = Object.values(ParadigmType)[0];
   title: string = '';
   description: string = '';
   bodyMs: number = 500;
@@ -58,12 +58,12 @@ export abstract class StimsSpec {
   //private _stimsCache: Stimulus[] = [];
   //private _jsonCache: string = '';
 
-  constructor(props: StimsSpecProps) {
-    this.stimSpecType = props.stimSpecType ?? this.stimSpecType;
+  constructor(props: ParadigmProps) {
+    this.paradigmType = props.paradigmType ?? this.paradigmType;
     this.title = props.title ?? this.title;
     this.description =
       props.description ??
-      (this.description || stimSpecsInfo[this.stimSpecType].description);
+      (this.description || paradigmsInfo[this.paradigmType].description);
     this.bodyMs = props.bodyMs ?? this.bodyMs;
     this.tailMs = props.tailMs ?? this.tailMs;
     this.grayMs = props.grayMs ?? this.grayMs;

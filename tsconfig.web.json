@@ -7,7 +7,7 @@
     "src/preload/*.d.ts",
     "src/*.ts",
     "src/stims",
-    "src/specs/*.ts",
+    "src/paradigms/*.ts",
   ],
   "compilerOptions": {
     "composite": true,
@@ -23,8 +23,8 @@
       "@stims/*": [
         "src/stims/*"
       ],
-      "@specs/*": [
-        "src/specs/*"
+      "@paradigms/*": [
+        "src/paradigms/*"
       ]
     }
   }
