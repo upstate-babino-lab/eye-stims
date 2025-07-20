@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as fsp from 'fs/promises'; // Use fs/promises for async file operations
 import { clearStimCacheAsync } from './ipc';
 import { extractSubtitlesAsync } from './spawn-ffmpeg';
+import { app } from 'electron';
 
 export function modifyDefaultMenu(mainWindow: BrowserWindow) {
   const defaultMenu = Menu.getApplicationMenu();
@@ -48,6 +49,9 @@ export function modifyDefaultMenu(mainWindow: BrowserWindow) {
               {
                 label: 'Clear Stim Cache',
                 click: clearStimCacheAsync,
+              },
+              {
+                label: `Version ${app.getVersion()}`,
               },
               { type: 'separator' },
               { role: 'quit' },
