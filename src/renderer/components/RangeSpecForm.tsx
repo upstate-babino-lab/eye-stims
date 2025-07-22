@@ -5,7 +5,7 @@ import { TOOLTIP_STYLES } from '../render-utils';
 import 'react-tooltip/dist/react-tooltip.css';
 
 export const INPUT_STYLES =
-  'shadow appearance-none border border-gray-500 rounded w-18 ' +
+  'shadow appearance-none border border-gray-500 rounded w-19 ' +
   'py-1 px-3 text-gray-300 placeholder-gray-700 leading-tight ' +
   'focus:outline-none focus:shadow-outline';
 

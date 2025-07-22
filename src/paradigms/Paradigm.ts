@@ -8,6 +8,7 @@ import { Stimulus, Solid } from '@stims/index';
 export enum ParadigmType {
   SqrGratingPairs = 'SqrGratingPairs',
   ScanningDot = 'ScanningDot',
+  FullFieldSine = 'FullFieldSine',
 }
 
 type ParadigmInfo = {
@@ -21,6 +22,9 @@ export const paradigmsInfo: Record<ParadigmType, ParadigmInfo> = {
   },
   ScanningDot: {
     description: 'Flash Dot on grid for each xDegree yDegree, and diameter.',
+  },
+  FullFieldSine: {
+    description: 'Sinusoidal variation of intensity over full field.',
   },
 };
 

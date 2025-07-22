@@ -8,6 +8,7 @@ import {
   paradigmsInfo,
   SqrGratingParadigm,
   ScanningDotParadigm,
+  FullFieldSineParadigm,
 } from '@src/paradigms/index';
 import { useEffect, useState } from 'react';
 import { filterPrivateProperties } from '@src/shared-utils';
@@ -17,10 +18,10 @@ import 'react-tooltip/dist/react-tooltip.css';
 import StimSequence from '../StimSequence';
 import { GratingRanges } from './GratingRanges';
 import { ScanningDotRanges } from './ScanningDotRanges';
+import { FullFieldSineRanges } from './FullFieldSineRanges';
 
 export default function ParadigmTab() {
-  const { theParadigm: theParadigm, setTheParadigm: setTheParadigm } =
-    useAppState();
+  const { theParadigm, setTheParadigm } = useAppState();
   const { theStimsMeta, setTheStimsMeta } = useAppState();
   const { setTheStimSequence } = useAppState();
 
@@ -82,14 +83,15 @@ export default function ParadigmTab() {
           />
         </div>
         <div className="mb-3 flex items-center">
-          <label className="text-sm font-bold text-gray-100 px-4">ParadigmType:</label>
+          <label className="text-sm font-bold text-gray-100 px-4">
+            ParadigmType:
+          </label>
           <ParadigmTypeDropdown
             initialValue={
               theParadigm?.paradigmType || ParadigmType.SqrGratingPairs
             }
             onChange={(newType: ParadigmType) => {
-              console.log('>>>>> ParadigmType changed to: ' + newType);
-              // Create a new StimsSpec instance
+              console.log('>>>>> ParadigmType changed to ' + newType);
               setTheParadigm(
                 newParadigm({
                   ...theParadigm,
@@ -100,25 +102,18 @@ export default function ParadigmTab() {
             }}
           />
         </div>
-        <TwoSpecProps
+        <TwoPropsForm
           nameA="bodyMs"
           nameB="tailMs"
           toolTip="Each stimulus body is followed by a black tail"
         />
-        <TwoSpecProps
+        <TwoPropsForm
           nameA="grayMs"
           nameB="grayTailMs"
           toolTip="If grayMs > 0, each stim is followed by a gray flash and its black tail"
         />
 
-        {(theParadigm instanceof SqrGratingParadigm ||
-          theParadigm.paradigmType === ParadigmType.SqrGratingPairs) && (
-            <GratingRanges />
-          )}
-        {(theParadigm instanceof ScanningDotParadigm ||
-          theParadigm.paradigmType === ParadigmType.ScanningDot) && (
-            <ScanningDotRanges />
-          )}
+        <SubParadigmRanges />
 
         <div className="mb-1 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
@@ -209,7 +204,7 @@ export default function ParadigmTab() {
           </div>
           <Tooltip id={'integrity-flash-id'} className={TOOLTIP_STYLES} />
         </>
-        <TwoSpecProps
+        <TwoPropsForm
           nameA="restIntervalMins"
           nameB="restDurationMins"
           toolTip="How often and how long to rest with solid black"
@@ -269,7 +264,7 @@ function ParadigmTypeDropdown(props: {
 }
 
 //-----------------------------------------------------------------------------
-function TwoSpecProps(props: { nameA: string; nameB: string; toolTip?: string }) {
+function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string }) {
   const { theParadigm: theStimsSpec, setTheParadigm: setTheStimsSpec } =
     useAppState();
   const defaultParadigm = newParadigm({
@@ -348,4 +343,33 @@ function TwoSpecProps(props: { nameA: string; nameB: string; toolTip?: string })
       <Tooltip id={props.nameA + '-id'} className={TOOLTIP_STYLES} />
     </div>
   );
+}
+
+//-----------------------------------------------------------------------------
+function SubParadigmRanges() {
+  const { theParadigm } = useAppState();
+
+  if (
+    theParadigm instanceof SqrGratingParadigm ||
+    theParadigm?.paradigmType === ParadigmType.SqrGratingPairs
+  ) {
+    return <GratingRanges />;
+  }
+
+  if (
+    theParadigm instanceof ScanningDotParadigm ||
+    theParadigm?.paradigmType === ParadigmType.ScanningDot
+  ) {
+    return <ScanningDotRanges />;
+  }
+
+  if (
+    theParadigm instanceof FullFieldSineParadigm ||
+    theParadigm?.paradigmType === ParadigmType.FullFieldSine
+  ) {
+    return <FullFieldSineRanges />;
+  }
+
+  // If no match
+  return <div className="text-red-500">Unexpected theParadigm.</div>;
 }

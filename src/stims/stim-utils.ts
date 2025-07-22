@@ -72,14 +72,14 @@ export function rgbToHex(rgb: { r: number; g: number; b: number }) {
 
 export function linearToHex(r: number, g: number, b: number): string {
   if (r < 0 || r > 1 || g < 0 || g > 1 || b < 0 || b > 1) {
-    throw new Error(`linearToHex() got ${r}, ${g}, ${b}, expected 0-1`);
+    throw new Error(`linearToHex() got r=${r}, g=${g}, b=${b}, expected 0-1`);
   }
   return '#' + lToHex(r) + lToHex(g) + lToHex(b);
 }
 
 function lToHex(f: number) {
   if (f < 0 || f > 1) {
-    throw new Error(`linearToHex() got ${f}, expected 0-1`);
+    throw new Error(`lToHex() got ${f}, expected 0-1`);
   }
   // Gamma compress linear light intensity between zero and one
   const n = Math.round(Math.pow(f, 1 / 2.2) * 255);

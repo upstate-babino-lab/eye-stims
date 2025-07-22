@@ -1,6 +1,6 @@
 import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
-import { RangeSpec } from '@paradigms';
+import { RangeSpec } from '@src/paradigms';
 import {
   ScanningDotParadigm,
   maxXDegrees,
@@ -8,12 +8,12 @@ import {
 } from '@src/paradigms/ScanningDotParadigm';
 
 export function ScanningDotRanges() {
-  const { theParadigm: theStimsSpec, setTheParadigm: setTheStimsSpec } = useAppState();
-  const { diameters, xDegrees, yDegrees } = theStimsSpec as ScanningDotParadigm;
+  const { theParadigm, setTheParadigm } = useAppState();
+  const { diameters, xDegrees, yDegrees } = theParadigm as ScanningDotParadigm;
 
-  if (!theStimsSpec || !(theStimsSpec instanceof ScanningDotParadigm)) {
+  if (!theParadigm || !(theParadigm instanceof ScanningDotParadigm)) {
     return (
-      <div className="text-red-500">No valid ScanningDotStimsSpec available</div>
+      <div className="text-red-500">No valid ScanningDotParadigm available</div>
     );
   }
 
@@ -23,9 +23,9 @@ export function ScanningDotRanges() {
         title="Diameters"
         toolTip="Degrees of visual angle"
         onUpdate={(diameters: RangeSpec) => {
-          setTheStimsSpec(
+          setTheParadigm(
             new ScanningDotParadigm({
-              ...theStimsSpec,
+              ...theParadigm,
               diameters: diameters,
             })
           );
@@ -37,9 +37,9 @@ export function ScanningDotRanges() {
         toolTip={`Horizontal degrees of visual angle starting from left (max ~${maxXDegrees})`}
         onUpdate={(xDegrees: RangeSpec) => {
           // console.log('>>>>> xDegrees=' + JSON.stringify(xDegrees));
-          setTheStimsSpec(
+          setTheParadigm(
             new ScanningDotParadigm({
-              ...theStimsSpec,
+              ...theParadigm,
               xDegrees: xDegrees,
             })
           );
@@ -51,9 +51,9 @@ export function ScanningDotRanges() {
         toolTip={`Vertical degrees of visual angle starting from top (max ~${maxYDegrees})`}
         onUpdate={(yDegrees: RangeSpec) => {
           // console.log('>>>>> yDegrees=' + JSON.stringify(yDegrees));
-          setTheStimsSpec(
+          setTheParadigm(
             new ScanningDotParadigm({
-              ...theStimsSpec,
+              ...theParadigm,
               yDegrees: yDegrees,
             })
           );
