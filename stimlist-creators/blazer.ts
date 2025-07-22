@@ -4,7 +4,7 @@
   complete processing of stimulations to data collection to analysis of
   retinal acuity, using all our new systems and code.
 */
-import { SqrGratingStimsSpec, RangeSpec } from '@specs/index';
+import { SqrGratingStimsSpec, RangeSpec } from '@paradigms/index';
 import { frameWithBlack } from '@stims/stim-utils';
 
 const stimsSpec = new SqrGratingStimsSpec({

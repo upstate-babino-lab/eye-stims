@@ -1,5 +1,5 @@
 import { RangeSpec } from './RangeSpec';
-import { StimSpecType, StimsSpec } from './StimsSpec';
+import { ParadigmType, Paradigm } from './Paradigm';
 import { Dot, Stimulus } from '@stims/index';
 import { displays } from '../displays';
 // TODO: used last selected display
@@ -8,7 +8,7 @@ export const maxYDegrees = Math.round(
   displays.SD.height / displays.SD.pxPerDegree
 );
 
-export class ScanningDotStimsSpec extends StimsSpec {
+export class ScanningDotParadigm extends Paradigm {
   diameters: RangeSpec = new RangeSpec({ start: 3, step: 3, nSteps: 1 });
   xDegrees: RangeSpec = new RangeSpec({
     start: 3,
@@ -21,11 +21,11 @@ export class ScanningDotStimsSpec extends StimsSpec {
     nSteps: 10,
   });
 
-  constructor(props: Partial<ScanningDotStimsSpec> = {}) {
+  constructor(props: Partial<ScanningDotParadigm> = {}) {
     // TODO: Check that cpds, contrasts, and speeds are all in valid ranges
     super({
       ...props,
-      stimSpecType: StimSpecType.ScanningDot,
+      paradigmType: ParadigmType.ScanningDot,
     });
     this.diameters =
       (props.diameters && new RangeSpec(props.diameters)) ?? this.diameters;

@@ -1,19 +1,19 @@
 import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
-import { RangeSpec } from '@src/specs';
+import { RangeSpec } from '@src/paradigms';
 import {
-  ScanningDotStimsSpec,
+  ScanningDotParadigm,
   maxXDegrees,
   maxYDegrees,
-} from '@src/specs/ScanningDotStimsSpec';
+} from '@src/paradigms/ScanningDotParadigm';
 
 export function ScanningDotRanges() {
-  const { theStimsSpec, setTheStimsSpec } = useAppState();
-  const { diameters, xDegrees, yDegrees } = theStimsSpec as ScanningDotStimsSpec;
+  const { theParadigm, setTheParadigm } = useAppState();
+  const { diameters, xDegrees, yDegrees } = theParadigm as ScanningDotParadigm;
 
-  if (!theStimsSpec || !(theStimsSpec instanceof ScanningDotStimsSpec)) {
+  if (!theParadigm || !(theParadigm instanceof ScanningDotParadigm)) {
     return (
-      <div className="text-red-500">No valid ScanningDotStimsSpec available</div>
+      <div className="text-red-500">No valid ScanningDotParadigm available</div>
     );
   }
 
@@ -23,9 +23,9 @@ export function ScanningDotRanges() {
         title="Diameters"
         toolTip="Degrees of visual angle"
         onUpdate={(diameters: RangeSpec) => {
-          setTheStimsSpec(
-            new ScanningDotStimsSpec({
-              ...theStimsSpec,
+          setTheParadigm(
+            new ScanningDotParadigm({
+              ...theParadigm,
               diameters: diameters,
             })
           );
@@ -37,9 +37,9 @@ export function ScanningDotRanges() {
         toolTip={`Horizontal degrees of visual angle starting from left (max ~${maxXDegrees})`}
         onUpdate={(xDegrees: RangeSpec) => {
           // console.log('>>>>> xDegrees=' + JSON.stringify(xDegrees));
-          setTheStimsSpec(
-            new ScanningDotStimsSpec({
-              ...theStimsSpec,
+          setTheParadigm(
+            new ScanningDotParadigm({
+              ...theParadigm,
               xDegrees: xDegrees,
             })
           );
@@ -51,9 +51,9 @@ export function ScanningDotRanges() {
         toolTip={`Vertical degrees of visual angle starting from top (max ~${maxYDegrees})`}
         onUpdate={(yDegrees: RangeSpec) => {
           // console.log('>>>>> yDegrees=' + JSON.stringify(yDegrees));
-          setTheStimsSpec(
-            new ScanningDotStimsSpec({
-              ...theStimsSpec,
+          setTheParadigm(
+            new ScanningDotParadigm({
+              ...theParadigm,
               yDegrees: yDegrees,
             })
           );

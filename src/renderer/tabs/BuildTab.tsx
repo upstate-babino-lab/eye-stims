@@ -17,7 +17,7 @@ export default function BuildTab() {
   const [ffmpegOutput, setFfmpegOutput] = useState<string>('');
 
   // Update from StimsSpec if we're using one
-  const { theStimsSpec, setTheStimSequence } = useAppState();
+  const { theParadigm: theStimsSpec, setTheStimSequence } = useAppState();
   useEffect(() => {
     if (theStimsSpec) {
       setTheStimSequence(new StimSequence(theStimsSpec.stimuli()));

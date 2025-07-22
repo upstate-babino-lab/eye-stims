@@ -70,9 +70,16 @@ export function rgbToHex(rgb: { r: number; g: number; b: number }) {
   );
 }
 
-export function linearToHex(f: number) {
+export function linearToHex(r: number, g: number, b: number): string {
+  if (r < 0 || r > 1 || g < 0 || g > 1 || b < 0 || b > 1) {
+    throw new Error(`linearToHex() got r=${r}, g=${g}, b=${b}, expected 0-1`);
+  }
+  return '#' + lToHex(r) + lToHex(g) + lToHex(b);
+}
+
+function lToHex(f: number) {
   if (f < 0 || f > 1) {
-    throw new Error(`linearToHex() got ${f}, expected 0-1`);
+    throw new Error(`lToHex() got ${f}, expected 0-1`);
   }
   // Gamma compress linear light intensity between zero and one
   const n = Math.round(Math.pow(f, 1 / 2.2) * 255);
@@ -80,20 +87,20 @@ export function linearToHex(f: number) {
   if (n < 10) {
     hex = '0';
   }
-  hex = hex + n.toString(16);
-  return '#' + hex + hex + hex;
+  return hex + n.toString(16);
 }
 
 // Contrast values from eye-candy
 //  0   is max contrast (black & white)
 // -2.2 is minimal contrast
 export function contrastPair(logContrast: number) {
-  function logContrastToLinearPair(logC: number) {
-    const c = Math.pow(10, logC) / 2;
-    return [0.5 + c, 0.5 - c];
-  }
+  return logContrastToLinearPair(logContrast).map((c) => linearToHex(c, c, c));
+}
 
-  return logContrastToLinearPair(logContrast).map((c) => linearToHex(c));
+// Returns a pair of linear luminance values, 0-1, for the given log contrast
+export function logContrastToLinearPair(logC: number) {
+  const c = Math.pow(10, logC) / 2;
+  return [0.5 + c, 0.5 - c];
 }
 
 // Add initial and final black if necessary to ensure video starts with a black frame, and

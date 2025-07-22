@@ -8,7 +8,7 @@
     "tools/*",
     "eye-candy-program-ports/*",
     "src/*.ts",
-    "src/specs/*.ts",
+    "src/paradigms/*.ts",
   ],
   "compilerOptions": {
     "target": "es2015",
@@ -21,8 +21,8 @@
       "@stims/*": [
         "src/stims/*"
       ],
-      "@specs/*": [
-        "src/specs/*"
+      "@paradigms/*": [
+        "src/paradigms/*"
       ]
     }
   }
