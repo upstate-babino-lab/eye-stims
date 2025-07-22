@@ -1,7 +1,7 @@
 {
   "name": "eye-stims",
-  "version": "0.0.8",
-  "description": "Electron application to stimulate retinas",
+  "version": "0.0.9",
+  "description": "Electron application to build videos of visual stimuli",
   "main": "./out/main/index.js",
   "author": "Pierre Wellner, SUNY Upstate Medical University Center for Vision Research - Babino Lab",
   "homepage": "https://github.com/upstate-babino-lab/eye-stims",
