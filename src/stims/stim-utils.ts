@@ -129,3 +129,78 @@ export function frameWithBlack(stims: Stimulus[]): Stimulus[] {
   }
   return stims;
 }
+
+//-----------------------------------------------------------------------------
+// In-place
+export function shuffle(stims: Stimulus[]): Stimulus[] {
+  return stims.sort(() => Math.random() - 0.5);
+}
+
+//-----------------------------------------------------------------------------
+export function addIntegrityFlashes(
+  stims: Stimulus[],
+  intervalMins: number = 0 // optional interval between start and end
+): Stimulus[] {
+  const integrityFlashGroup = [
+    new Solid({ bgColor: 'oklch(0.5 0 0)', durationMs: 1260, bodyMs: 260 }), // Perceptually gray
+    new Solid({ bgColor: 'red', durationMs: 1260, bodyMs: 260 }),
+    new Solid({ bgColor: 'green', durationMs: 1260, bodyMs: 260 }),
+    new Solid({ bgColor: 'blue', durationMs: 1260, bodyMs: 260 }),
+  ];
+
+  // Required integrity flashes at start
+  let result: Stimulus[] = [...integrityFlashGroup, ...stims];
+
+  // Insert optional integrity flashes at intervals
+  if (intervalMins && intervalMins > 0 && integrityFlashGroup.length > 0) {
+    result = insertAtIntervals(result, intervalMins, integrityFlashGroup);
+  }
+
+  // Required integrity flashes at end
+  result = [...result, ...integrityFlashGroup];
+
+  return result;
+}
+
+//-----------------------------------------------------------------------------
+export function addRestPeriods(
+  stims: Stimulus[],
+  intervalMins: number,
+  restDurationMins: number
+): Stimulus[] {
+  if (intervalMins <= 0 || restDurationMins <= 0) {
+    return stims; // No rest periods to add
+  }
+
+  const oneMinuteRest = new Solid({
+    bgColor: 'black',
+    durationMs: 60 * 1000,
+    meta: { comment: `rest` },
+  });
+
+  return insertAtIntervals(
+    stims,
+    intervalMins,
+    Array(Math.round(restDurationMins)).fill(oneMinuteRest)
+  );
+}
+
+//-----------------------------------------------------------------------------
+export function insertAtIntervals(
+  inStims: Stimulus[],
+  intervalMins: number,
+  newStims: Stimulus[]
+): Stimulus[] {
+  const outStims: Stimulus[] = [];
+  const intervalMs = intervalMins * 60 * 1000; // Convert minutes
+  let timeElapsed = 0;
+  inStims.forEach((stim) => {
+    timeElapsed += stim.durationMs;
+    if (timeElapsed >= intervalMs) {
+      outStims.push(...newStims); // Insert newStims at the interval
+      timeElapsed = 0; // Reset time elapsed after inserting newStims
+    }
+    outStims.push(stim);
+  });
+  return outStims;
+}
