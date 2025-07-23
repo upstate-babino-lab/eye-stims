@@ -90,11 +90,15 @@ export default function BuildTab() {
               setProgressText(``);
               setFfmpegOutput('');
               try {
+                let basename = getBasename(
+                  theStimsMeta?.loadedPath || theStimsMeta?.title || 'mystims',
+                  true
+                );
+                if (basename.endsWith('.stims')) {
+                  basename = getBasename(basename, true);
+                }
                 const resultMessage = await theStimSequence.buildFromCacheAsync(
-                  getBasename(
-                    theStimsMeta?.loadedPath || theStimsMeta?.title || 'mystims',
-                    true
-                  ),
+                  basename,
                   displayKey,
                   theStimsMeta?.title,
                   theStimsMeta?.description,

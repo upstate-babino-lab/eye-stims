@@ -44,17 +44,13 @@ export function getBasename(
 
   const lastSeparatorIndex = Math.max(lastSlashIndex, lastBackslashIndex);
 
-  // 3. Extract the part after the last separator
-  if (lastSeparatorIndex === -1) {
-    return normalizedPath; // No separator, so the whole string is the basename
-  }
-
   const baseNameIncludingExtension = normalizedPath.substring(
     lastSeparatorIndex + 1
   );
 
-  if (removeExtension) return baseNameIncludingExtension.replace(/\.[^/.]+$/, '');
-  else {
+  if (removeExtension) {
+    return baseNameIncludingExtension.replace(/\.[^/.]+$/, '');
+  } else {
     return baseNameIncludingExtension;
   }
 }
