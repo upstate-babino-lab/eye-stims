@@ -8,7 +8,7 @@
 import { Solid } from '@stims/index';
 
 //console.error(JSON.stringify(process.argv));
-if (process.argv.length < 3) {
+if (process.argv.length < 4) {
   console.error(`Usage: ${process.argv[1]} <title> <nStimuli>`);
   process.exit(-1);
 }
