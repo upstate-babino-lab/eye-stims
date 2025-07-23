@@ -117,12 +117,17 @@ export function frameWithBlack(stims: Stimulus[]): Stimulus[] {
   }
 
   // Add initial black if necessary, so paused video about to play is black,
-  // and sync-tone plays on first visible stim
+  // and sync-tone plays on first visible stim.
+  // Minimum duration is 10 seconds to give player time to shut off text and borders
   const firstStim = stims[0];
-  if (firstStim?.stimType != StimType.Solid || firstStim.bgColor != 'black') {
+  if (
+    firstStim?.stimType != StimType.Solid ||
+    firstStim.bgColor != 'black' ||
+    firstStim.durationMs < 10_000
+  ) {
     stims?.unshift(
       new Solid({
-        durationMs: TONE_DURATION_MS,
+        durationMs: 10_000,
         meta: { comment: 'initial black' },
       })
     );
