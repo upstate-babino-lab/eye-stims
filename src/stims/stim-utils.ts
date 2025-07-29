@@ -147,10 +147,30 @@ export function addIntegrityFlashes(
   intervalMins: number = 0 // optional interval between start and end
 ): Stimulus[] {
   const integrityFlashGroup = [
-    new Solid({ bgColor: 'oklch(0.5 0 0)', durationMs: 1260, bodyMs: 260 }), // Perceptually gray
-    new Solid({ bgColor: 'red', durationMs: 1260, bodyMs: 260 }),
-    new Solid({ bgColor: 'green', durationMs: 1260, bodyMs: 260 }),
-    new Solid({ bgColor: 'blue', durationMs: 1260, bodyMs: 260 }),
+    new Solid({
+      bgColor: 'oklch(0.5 0 0)',
+      durationMs: 1260,
+      bodyMs: 260,
+      meta: { comment: 'integrity flash' },
+    }), // Perceptually gray
+    new Solid({
+      bgColor: 'red',
+      durationMs: 1260,
+      bodyMs: 260,
+      meta: { comment: 'integrity flash' },
+    }),
+    new Solid({
+      bgColor: 'green',
+      durationMs: 1260,
+      bodyMs: 260,
+      meta: { comment: 'integrity flash' },
+    }),
+    new Solid({
+      bgColor: 'blue',
+      durationMs: 1260,
+      bodyMs: 260,
+      meta: { comment: 'integrity flash' },
+    }),
   ];
 
   // Required integrity flashes at start
