@@ -52,7 +52,7 @@ export abstract class Paradigm {
   title: string = '';
   description: string = '';
   bodyMs: number = 500;
-  tailMs: number = 1000;
+  tailMs: number = 500;
   grayMs: number = 0;
   grayTailMs: number = 520; // only used if grayMs > 0
   nRepetitions: number = 1;
@@ -69,9 +69,8 @@ export abstract class Paradigm {
     this.description =
       props.description ??
       (this.description || paradigmsInfo[this.paradigmType].description);
-    this.bodyMs = props.bodyMs ?? this.bodyMs;
-    this.tailMs = props.tailMs ?? this.tailMs;
-    this.grayMs = props.grayMs ?? this.grayMs;
+    this.bodyMs = Math.max(0, props.bodyMs ?? this.bodyMs);
+    this.tailMs = Math.max(0, props.tailMs ?? this.tailMs);
     this.grayTailMs = this.grayMs > 0 ? (props.grayTailMs ?? this.grayTailMs) : 0;
     this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
     this.integrityFlashIntervalMins =
@@ -87,8 +86,10 @@ export abstract class Paradigm {
   // TODO: return from private cache if JSON has not changed?
   // If we don't use cache stims will be reshuffled every time.
   stimuli(): Stimulus[] {
-    // Optional in-place shuffle before inserting integrity flashes and rests
-    let result = this.doShuffle ? shuffle(this.baseStimuli()) : this.baseStimuli();
+    let result = this.baseStimuli();
+    if (this.doShuffle) {
+      shuffle(result); // Optional in-place shuffle before inserting integrity flashes and rests
+    }
 
     // Insert required and optional integrity flashes
     result = addIntegrityFlashes(result, this.integrityFlashIntervalMins);

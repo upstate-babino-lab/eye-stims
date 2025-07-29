@@ -3,10 +3,8 @@ import { ParadigmType, Paradigm } from './Paradigm';
 import { FFSine, Stimulus } from '@stims/index';
 
 export class FullFieldSineParadigm extends Paradigm {
-  bodyMs: number = 1000;
-  tailMs: number = 500;
   means: RangeSpec = new RangeSpec({ start: 50, step: 10, nSteps: 4 });
-  contrasts: RangeSpec = new RangeSpec({
+  mContrasts: RangeSpec = new RangeSpec({
     start: 90,
     step: -10,
     nSteps: 4,
@@ -24,8 +22,8 @@ export class FullFieldSineParadigm extends Paradigm {
       paradigmType: ParadigmType.FullFieldSine,
     });
     this.means = (props.means && new RangeSpec(props.means)) ?? this.means;
-    this.contrasts =
-      (props.contrasts && new RangeSpec(props.contrasts)) ?? this.contrasts;
+    this.mContrasts =
+      (props.mContrasts && new RangeSpec(props.mContrasts)) ?? this.mContrasts;
     this.frequencies =
       (props.frequencies && new RangeSpec(props.frequencies)) ?? this.frequencies;
   }
@@ -33,7 +31,7 @@ export class FullFieldSineParadigm extends Paradigm {
   baseStimuli(): Stimulus[] {
     const stimuli: Stimulus[] = [];
     const means = this.means?.list;
-    const contrasts = this.contrasts?.list;
+    const contrasts = this.mContrasts?.list;
     const frequencies = this.frequencies?.list;
     for (let rep = 0; rep < this.nRepetitions; rep++) {
       for (const m of means) {

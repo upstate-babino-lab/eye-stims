@@ -19,6 +19,7 @@ import StimSequence from '../StimSequence';
 import { GratingRanges } from './GratingRanges';
 import { ScanningDotRanges } from './ScanningDotRanges';
 import { FullFieldSineRanges } from './FullFieldSineRanges';
+import { ParadigmProps } from '@src/paradigms/Paradigm';
 
 export default function ParadigmTab() {
   const { theParadigm, setTheParadigm } = useAppState();
@@ -105,7 +106,7 @@ export default function ParadigmTab() {
         <TwoPropsForm
           nameA="bodyMs"
           nameB="tailMs"
-          toolTip="Each stimulus body is followed by a black tail"
+          toolTip="Each stimulus body is followed by a black tail (multiples of 20ms)"
         />
         <TwoPropsForm
           nameA="grayMs"
@@ -265,13 +266,25 @@ function ParadigmTypeDropdown(props: {
 
 //-----------------------------------------------------------------------------
 function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string }) {
-  const { theParadigm: theStimsSpec, setTheParadigm: setTheStimsSpec } =
-    useAppState();
-  const defaultParadigm = newParadigm({
-    paradigmType: theStimsSpec?.paradigmType || ParadigmType.SqrGratingPairs,
-  });
+  const { theParadigm, setTheParadigm } = useAppState();
+  // Default values to use when field is deleted by user  or undefined
+  const defaultParadigmProps: ParadigmProps = {
+    paradigmType: theParadigm?.paradigmType || ParadigmType.SqrGratingPairs,
+    title: '',
+    description: '',
+    bodyMs: 0,
+    tailMs: 0,
+    grayMs: 0,
+    grayTailMs: 0,
+    includeStaticGratings: false,
+    nRepetitions: 1,
+    integrityFlashIntervalMins: 0,
+    restIntervalMins: 0,
+    restDurationMins: 0,
+    doShuffle: false,
+  };
 
-  if (!theStimsSpec) {
+  if (!theParadigm) {
     return <div className="text-red-500">No StimsSpec available</div>;
   }
 
@@ -285,18 +298,17 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
     const newValue =
       e.target.value === '' ? undefined : parseFloat(e.target.value);
 
-    const newSpec = newParadigm({ ...theStimsSpec });
+    const newSpec = newParadigm({ ...theParadigm });
     newSpec[propName] = newValue;
-    setTheStimsSpec(newSpec);
+    setTheParadigm(newSpec);
   };
 
-  // Helper to safely get the value for display
-  // This function ensures that if a property exists on theStimsSpec (even if 0),
-  // it's used. Only if it's strictly null or undefined will defaultParadigm be used.
+  // Ensure that if a property exists on theParadigm (even if 0), it's used.
+  // Only if it's strictly null or undefined will defaultParadigm be used.
   const getDisplayValue = (propName: string) => {
     // Check if the property exists on theStimsSpec and is not null/undefined
     // Use `??` to allow 0 as a valid value
-    const value = theStimsSpec[propName] ?? defaultParadigm[propName];
+    const value = theParadigm[propName] ?? defaultParadigmProps[propName];
     // Convert undefined back to empty string for the input field to allow clearing
     return value === undefined ? '' : String(value);
   };
@@ -336,7 +348,7 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
         {props.nameA.endsWith('Ms') && props.nameB.endsWith('Ms') && (
           <div className="px-4">
             Durations ={' '}
-            {(theStimsSpec[props.nameA] ?? 0) + (theStimsSpec[props.nameB] ?? 0)}ms
+            {(theParadigm[props.nameA] ?? 0) + (theParadigm[props.nameB] ?? 0)}ms
           </div>
         )}
       </div>

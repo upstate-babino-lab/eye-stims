@@ -58,12 +58,24 @@ export abstract class Stimulus {
     if (this.bgColor === '#000000') {
       this.bgColor = 'black';
     }
-    [this.headMs, this.bodyMs, this.tailMs] = calculateDurations(
-      props.durationMs ?? this.durationMs,
-      props.headMs,
-      props.bodyMs,
-      props.tailMs
-    );
+    try {
+      [this.headMs, this.bodyMs, this.tailMs] = calculateDurations(
+        props.durationMs ?? this.durationMs,
+        props.headMs,
+        props.bodyMs,
+        props.tailMs
+      );
+    } catch (e) {
+      console.error('ERROR: ' + e);
+      // eslint-disable-next-line no-debugger
+      debugger;
+      this.stimType = StimType.Uninitialized;
+      [this.headMs, this.bodyMs, this.tailMs] = [
+        0,
+        props.durationMs ?? this.durationMs,
+        0,
+      ];
+    }
     this.durationMs = this.headMs + this.bodyMs + this.tailMs;
     if (this.headMs == 0) {
       delete this.headMs;
@@ -107,6 +119,7 @@ export abstract class Stimulus {
   }
 }
 
+// Returns head, body, tail that must add up to duration
 function calculateDurations(
   duration: number,
   head?: number,
@@ -121,11 +134,17 @@ function calculateDurations(
       return [0, duration, 0];
 
     case '001': // Only tail is defined
-      assert(tail! <= duration, 'tail greater than duration');
+      assert(
+        tail! <= duration,
+        `tail greater than duration  tail=${tail} duration=${duration}`
+      );
       return [0, duration - tail!, tail!];
 
     case '010': // Only body is defined
-      assert(body! <= duration, 'body greater than duration');
+      assert(
+        body! <= duration,
+        `body greater than duration body=${body} duration=${duration}`
+      );
       return [0, body!, duration - body!];
 
     case '011': // Body and tail are defined
