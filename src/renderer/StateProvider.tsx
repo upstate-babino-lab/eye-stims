@@ -33,6 +33,12 @@ export function StateProvider({ children }: { children: ReactNode }) {
       const stimSequence = new StimSequence(stims);
       setTheStimSequence(stimSequence);
 
+      let fromVideoComment: unknown = null;
+      try {
+        fromVideoComment = JSON.parse(parsedContents['comment']);
+      } catch {
+        console.error('Video comment not parsed ' + parsedContents['comment']);
+      }
       setTheStimsMeta({
         loadedPath: filePath,
         title:
@@ -42,6 +48,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
         description: parsedContents['description'] ?? '',
         count: stimSequence?.stimuli.length,
         totalDurationMS: stimSequence?.duration(),
+        fromVideoComment: fromVideoComment,
       });
     };
 

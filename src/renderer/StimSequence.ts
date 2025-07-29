@@ -127,13 +127,15 @@ export default class StimSequence {
   async saveStimsAsync(
     filePath: string,
     title: string = 'Untitled',
-    description: string = ''
+    description: string = '',
+    fromVideoComment: unknown = undefined
   ) {
     const content = JSON.stringify(
       {
-        name: title,
+        title: title,
         description: description,
         appVersion: await window.electron.getAppVersion(),
+        fromVideoComment: fromVideoComment,
         stimuli: this.stimuli || [],
       },
       filterPrivateProperties,

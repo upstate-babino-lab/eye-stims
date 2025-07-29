@@ -8,6 +8,7 @@ export type StimsMeta = {
   description?: string;
   count?: number;
   totalDurationMS?: number;
+  fromVideoComment?: unknown; // Parsed comment extracted from .mp4
 };
 
 type StateContextType = {

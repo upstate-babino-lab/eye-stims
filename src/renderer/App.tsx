@@ -111,7 +111,8 @@ export default function App(): JSX.Element {
                 await theStimSequence?.saveStimsAsync(
                   filePath,
                   title,
-                  theStimsMeta?.description
+                  theStimsMeta?.description,
+                  theStimsMeta?.fromVideoComment
                 );
               }}
             >

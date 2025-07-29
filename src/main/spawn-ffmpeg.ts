@@ -264,7 +264,11 @@ export async function buildFromCacheAsync(
     // '-bsf:v', 'h264_mp4toannexb',
     '-metadata', `title=${title}`,
     '-metadata', `description=${description}`,
-    '-metadata', `comment=${JSON.stringify({appVersion: app.getVersion()})}`
+    '-metadata', `comment=${JSON.stringify({
+      appVersion: app.getVersion(),
+      buildTime: new Date().toString(),
+      uuid: crypto.randomUUID(),
+    })}`
   ];
   // args.push('-shortest'); // Removes audio completely when using mp3, or not re-encoding with opus
   args.push(outputPath);
