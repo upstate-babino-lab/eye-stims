@@ -5,7 +5,7 @@ import { FullFieldSineParadigm } from '@src/paradigms/FullFieldSineParadigm';
 
 export function FullFieldSineRanges() {
   const { theParadigm, setTheParadigm } = useAppState();
-  const { means, contrasts, frequencies } = theParadigm as FullFieldSineParadigm;
+  const { means, mContrasts, frequencies } = theParadigm as FullFieldSineParadigm;
 
   if (!theParadigm || !(theParadigm instanceof FullFieldSineParadigm)) {
     return (
@@ -31,16 +31,16 @@ export function FullFieldSineRanges() {
       <RangeSpecForm
         title="Contrasts %"
         toolTip={`Michelson contrast (max-min)/(max+min) range 10% to 90%`}
-        onUpdate={(contrasts: RangeSpec) => {
+        onUpdate={(mContrasts: RangeSpec) => {
           // console.log('>>>>> xDegrees=' + JSON.stringify(xDegrees));
           setTheParadigm(
             new FullFieldSineParadigm({
               ...theParadigm,
-              contrasts: contrasts,
+              mContrasts: mContrasts,
             })
           );
         }}
-        initialRange={contrasts}
+        initialRange={mContrasts}
       />
       <RangeSpecForm
         title="Frequencies Hz"

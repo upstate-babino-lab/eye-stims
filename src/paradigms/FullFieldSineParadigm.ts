@@ -3,7 +3,7 @@ import { ParadigmType, Paradigm } from './Paradigm';
 import { FFSine, Stimulus } from '@stims/index';
 
 export class FullFieldSineParadigm extends Paradigm {
-  means: RangeSpec = new RangeSpec({ start: 50, step: 10, nSteps: 4 });
+  means: RangeSpec = new RangeSpec({ start: 50, step: 10, nSteps: 2 });
   mContrasts: RangeSpec = new RangeSpec({
     start: 90,
     step: -10,
