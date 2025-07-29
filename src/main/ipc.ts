@@ -44,6 +44,7 @@ export async function ensureCacheDirAsync() {
 export async function clearStimCacheAsync() {
   console.log('>>>>> Removing cacheDir ' + stimsCacheDir);
   await rm(stimsCacheDir, { recursive: true, force: true });
+  await ensureCacheDirAsync();
   // Same as Electron Force Reload
   const win = BrowserWindow.getFocusedWindow();
   if (win) {
