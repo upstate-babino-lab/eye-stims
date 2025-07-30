@@ -14,6 +14,7 @@ interface RangeSpecFormProps {
   toolTip?: string;
   onUpdate: (rangeSpec: RangeSpec) => void;
   initialRange: RangeSpec;
+  // TODO: min and max
 }
 
 const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
@@ -37,7 +38,7 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
     });
     setList(newRangeSpec.list);
     onUpdate(newRangeSpec);
-  }, [start, step, nSteps]);
+  }, [start, step, nSteps, onUpdate]);
 
   useEffect(() => {
     setStart(initialRange.start);

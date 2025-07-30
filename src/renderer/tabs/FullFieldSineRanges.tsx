@@ -30,7 +30,7 @@ export function FullFieldSineRanges() {
       />
       <RangeSpecForm
         title="Contrasts %"
-        toolTip={`Michelson contrast (max-min)/(max+min) range 10% to 90%`}
+        toolTip={`Michelson contrast (max-min)/(max+min) range 0% to 100%`}
         onUpdate={(mContrasts: RangeSpec) => {
           // console.log('>>>>> xDegrees=' + JSON.stringify(xDegrees));
           setTheParadigm(

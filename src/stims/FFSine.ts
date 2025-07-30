@@ -3,7 +3,7 @@ import { StimType, Stimulus } from './Stimulus';
 
 // Full-Field Sine Wave Stimulus with specified contrast, mean luminance, frequency
 export class FFSine extends Stimulus {
-  c: number = 50; // Michelson contrast (max-min)/(max+min) range 10% to 90%
+  c: number = 50; // Michelson contrast (max-min)/(max+min) range 0% to 100%
   m: number = 50; // Mean luminance with range 0 to 1/(1+c) (percent)
   hz: number = 1; // Cycles per second.  TODO: tune to frame rate
   delayMs: number = 0; // Delay by displaying mean before first frame
@@ -15,10 +15,10 @@ export class FFSine extends Stimulus {
     super({ ...props, stimType: StimType.FFSine });
 
     this.c = props.c ?? this.c;
-    if (this.c < 10) {
-      this.c = 10;
-    } else if (this.c > 90) {
-      this.c = 90;
+    if (this.c < 0) {
+      this.c = 0;
+    } else if (this.c > 100) {
+      this.c = 100;
     }
     this.c = Math.round(this.c);
     const contrastF = this.c / 100;
