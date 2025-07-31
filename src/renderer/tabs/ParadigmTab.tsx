@@ -113,9 +113,9 @@ export default function ParadigmTab() {
           nameB="grayTailMs"
           toolTip="If grayMs > 0, each stim is followed by a gray flash and its black tail"
         />
-
-        <SubParadigmRanges />
-
+        <div className="border border-gray-500 rounded-md p-1">
+          <SubParadigmRanges />
+        </div>
         <div className="mb-1 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
             Repetitions:
