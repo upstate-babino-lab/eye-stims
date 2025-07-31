@@ -3,9 +3,11 @@ import { ParadigmType, Paradigm } from './Paradigm';
 import { Dot, Stimulus } from '@stims/index';
 import { displays } from '../displays';
 // TODO: used last selected display
-export const maxXDegrees = Math.round(displays.SD.width / displays.SD.pxPerDegree);
+export const maxXDegrees = Math.round(
+  displays.SD1.width / displays.SD1.pxPerDegree
+);
 export const maxYDegrees = Math.round(
-  displays.SD.height / displays.SD.pxPerDegree
+  displays.SD1.height / displays.SD1.pxPerDegree
 );
 
 export class ScanningDotParadigm extends Paradigm {

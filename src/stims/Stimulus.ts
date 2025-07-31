@@ -104,8 +104,8 @@ export abstract class Stimulus {
       }
       const ageSeconds = (newTimestamp - lastTimestamp) / 1000; // Seconds
       const approxPxPerDegree = // Based on current window relative to final display
-        (diagonalLength(ctx) * displays.SD.pxPerDegree) /
-        Math.sqrt(displays.SD.height ** 2 + displays.SD.width ** 2);
+        (diagonalLength(ctx) * displays.SD1.pxPerDegree) /
+        Math.sqrt(displays.SD1.height ** 2 + displays.SD1.width ** 2);
       if (ageSeconds < this.durationMs / 1000) {
         this.renderFrame(ctx, approxPxPerDegree, ageSeconds);
         requestAnimationFrame(animate);

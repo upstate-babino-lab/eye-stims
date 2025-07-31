@@ -47,7 +47,8 @@
     "vmax",
     "vmin",
     "vmins",
-    "vsync"
+    "vsync",
+    "WXGA"
   ],
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
