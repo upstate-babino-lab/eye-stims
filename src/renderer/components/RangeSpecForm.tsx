@@ -50,7 +50,7 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
   return (
     <div>
       <form
-        className="text-gray-400 text-xs font-bold shadow-md bg-gray-800 rounded-xl px-2 py-0.5 mb-4"
+        className="text-gray-400 text-xs font-bold shadow-md bg-gray-800 rounded-xl px-2 py-0.5"
         data-tooltip-id={title + '-id'} // Unique ID for the tooltip
         data-tooltip-content={toolTip}
         data-tooltip-place="right" // Position (top, right, bottom, left)

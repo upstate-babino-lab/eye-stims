@@ -316,7 +316,7 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
   return (
     <div>
       <div
-        className="flex items-center bg-gray-800 rounded-xl px-2 py-1 mb-4"
+        className="flex items-center bg-gray-800 rounded-xl px-2 py-1 mb-1"
         data-tooltip-id={props.nameA + '-id'}
         data-tooltip-content={props.toolTip}
         data-tooltip-place="right"

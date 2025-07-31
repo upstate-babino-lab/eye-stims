@@ -16,7 +16,7 @@ export function GratingRanges() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       <RangeSpecForm
         title="Cycles per degree"
         toolTip="One dark and one light bar make one cycle"

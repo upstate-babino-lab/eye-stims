@@ -18,7 +18,7 @@ export function ScanningDotRanges() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col items-center gap-2">
       <RangeSpecForm
         title="Diameters"
         toolTip="Degrees of visual angle"

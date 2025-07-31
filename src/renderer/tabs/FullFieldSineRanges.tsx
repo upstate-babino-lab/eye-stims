@@ -14,7 +14,7 @@ export function FullFieldSineRanges() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col items-center gap-2">
       <RangeSpecForm
         title="Mean intensities %"
         toolTip="Mean luminance with range 0% to 1/(1+contrast)"
