@@ -38,7 +38,8 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
     });
     setList(newRangeSpec.list);
     onUpdate(newRangeSpec);
-  }, [start, step, nSteps, onUpdate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [start, step, nSteps]);
 
   useEffect(() => {
     setStart(initialRange.start);
