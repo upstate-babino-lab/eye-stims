@@ -81,8 +81,9 @@ function lToHex(f: number) {
   if (f < 0 || f > 1) {
     throw new Error(`lToHex() got ${f}, expected 0-1`);
   }
+  const GAMMA = 2.2; // TODO retrieve from selected display
   // Gamma compress linear light intensity between zero and one
-  const n = Math.round(Math.pow(f, 1 / 2.2) * 255);
+  const n = Math.round(Math.pow(f, 1 / GAMMA) * 255);
   let hex = '';
   if (n < 10) {
     hex = '0';
@@ -90,10 +91,27 @@ function lToHex(f: number) {
   return hex + n.toString(16);
 }
 
+// Michelson contrast (max-min)/(max+min) range 0% to 100%
+export function contrastPair(
+  contrastPercent: number,
+  meanIntensityPercent: number = 50
+) {
+  // Convert to fraction in range 0-1
+  const contrastF = Math.max(0, Math.min(contrastPercent / 100, 1.0));
+  const meanF = Math.max(
+    0,
+    Math.min(meanIntensityPercent / 100, 1 / (1 + contrastF))
+  );
+
+  const min = meanF * (1 - contrastF);
+  const max = meanF * (1 + contrastF);
+  return [min, max].map((c) => linearToHex(c, c, c));
+}
+
 // Contrast values from eye-candy
 //  0   is max contrast (black & white)
 // -2.2 is minimal contrast
-export function contrastPair(logContrast: number) {
+export function oldContrastPair(logContrast: number) {
   return logContrastToLinearPair(logContrast).map((c) => linearToHex(c, c, c));
 }
 

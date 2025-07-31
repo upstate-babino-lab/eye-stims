@@ -33,7 +33,7 @@ export function GratingRanges() {
       />
       <RangeSpecForm
         title="Contrasts"
-        toolTip="LogContrast of 0 is max (black & white), -2.2 is minimal contrast"
+        toolTip={`Michelson contrast (max-min)/(max+min) range 0% to 100%`}
         onUpdate={(contrasts: RangeSpec) => {
           // console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
           setTheStimsSpec(

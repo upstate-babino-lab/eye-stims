@@ -7,7 +7,11 @@ import { Solid } from '@stims/Solid';
 
 export class SqrGratingParadigm extends Paradigm {
   cpds: RangeSpec = new RangeSpec({ start: 0.3, step: 0.2, nSteps: 1 });
-  contrasts: RangeSpec = new RangeSpec({ start: 0, step: -0.1, nSteps: 1 });
+  contrasts: RangeSpec = new RangeSpec({
+    start: 90,
+    step: -10,
+    nSteps: 4,
+  });
   speeds: RangeSpec = new RangeSpec({ start: 3, step: 1, nSteps: 1 });
   includeStaticGratings: boolean = false;
 
