@@ -6,13 +6,15 @@ import { SqrGrating } from '@stims/SqrGrating';
 import { Solid } from '@stims/Solid';
 
 export class SqrGratingParadigm extends Paradigm {
-  cpds: RangeSpec = new RangeSpec({ start: 0.3, step: 0.2, nSteps: 1 });
+  cpds: RangeSpec = new RangeSpec({ start: 0.3, step: 0.2, nSteps: 1 }); // TODO? add min/max
   contrasts: RangeSpec = new RangeSpec({
     start: 90,
     step: -10,
     nSteps: 4,
+    min: 0,
+    max: 100,
   });
-  speeds: RangeSpec = new RangeSpec({ start: 3, step: 1, nSteps: 1 });
+  speeds: RangeSpec = new RangeSpec({ start: 3, step: 1, nSteps: 1 }); // TODO? add min/max
   includeStaticGratings: boolean = false;
 
   constructor(props: Partial<SqrGratingParadigm> = {}) {

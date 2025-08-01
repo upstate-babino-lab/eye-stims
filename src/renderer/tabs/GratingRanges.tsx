@@ -44,6 +44,8 @@ export function GratingRanges() {
           );
         }}
         initialRange={contrasts}
+        min={0}
+        max={100}
       />
       <RangeSpecForm
         title="Speeds"

@@ -27,6 +27,8 @@ export function FullFieldSineRanges() {
           );
         }}
         initialRange={means}
+        min={0}
+        max={100}
       />
       <RangeSpecForm
         title="Contrasts %"
@@ -41,6 +43,8 @@ export function FullFieldSineRanges() {
           );
         }}
         initialRange={mContrasts}
+        min={0}
+        max={100}
       />
       <RangeSpecForm
         title="Frequencies Hz"

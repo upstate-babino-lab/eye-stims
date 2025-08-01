@@ -3,6 +3,7 @@ import { RangeSpec } from '@src/paradigms/index';
 import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '../render-utils';
 import 'react-tooltip/dist/react-tooltip.css';
+import { confine } from '@src/paradigms/RangeSpec';
 
 export const INPUT_STYLES =
   'shadow appearance-none border border-gray-500 rounded w-19 ' +
@@ -12,9 +13,10 @@ export const INPUT_STYLES =
 interface RangeSpecFormProps {
   title: string;
   toolTip?: string;
-  onUpdate: (rangeSpec: RangeSpec) => void;
   initialRange: RangeSpec;
-  // TODO: min and max
+  onUpdate: (rangeSpec: RangeSpec) => void;
+  min?: number;
+  max?: number;
 }
 
 const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
@@ -22,6 +24,8 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
   toolTip,
   initialRange,
   onUpdate,
+  min,
+  max,
 }) => {
   const [start, setStart] = useState<number | undefined>(initialRange.start);
   const [step, setStep] = useState<number | undefined>(initialRange.step);
@@ -35,11 +39,13 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
       start: start ?? 0, // Default start to 0 if undefined
       step: step, // ?? 1, // Default step to 1 if undefined (common for steps)
       nSteps: nSteps, // ?? 1, // Default nSteps to 1 if undefined (min is 1 for nSteps input anyway)
+      min: min,
+      max: max,
     });
     setList(newRangeSpec.list);
     onUpdate(newRangeSpec);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [start, step, nSteps]);
+  }, [start, step, nSteps, min, max]);
 
   useEffect(() => {
     setStart(initialRange.start);
@@ -60,7 +66,7 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
           <NumberInputField
             label="Start"
             value={start} // Can be number | undefined
-            onChange={(n) => setStart(n)}
+            onChange={(n) => setStart(confine(n, min, max))}
           />
           <NumberInputField
             label="Step"
@@ -91,6 +97,7 @@ const RangeSpecForm: React.FC<RangeSpecFormProps> = ({
 
 export default RangeSpecForm;
 
+//-----------------------------------------------------------------------------
 function NumberInputField(props: {
   label: string;
   value: number | undefined;
@@ -104,9 +111,7 @@ function NumberInputField(props: {
   if (label === 'nSteps') {
     minAttr = 1; // nSteps must be at least 1
   }
-  // For 'Start' and 'Step', we want to allow negative numbers and zero.
-  // By NOT setting a `min` attribute, the input allows any number including negative values and zero.
-  // So, minAttr will remain `undefined` for 'Start' and 'Step'.
+  // For 'Start' and 'Step', we allow negative numbers and zero by leaving minAttr undefined
 
   return (
     <div className="mb-1 flex items-center space-x-3">
