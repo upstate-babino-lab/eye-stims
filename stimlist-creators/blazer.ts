@@ -4,10 +4,10 @@
   complete processing of stimulations to data collection to analysis of
   retinal acuity, using all our new systems and code.
 */
-import { SqrGratingParadigm, RangeSpec } from '../src/paradigms/index';
+import { SqrGratingAssay, RangeSpec } from '../src/assays/index';
 import { frameWithBlack } from '@stims/stim-utils';
 
-const stimsSpec = new SqrGratingParadigm({
+const stimsSpec = new SqrGratingAssay({
   title: 'Blazer4',
   description:
     'Pairs of gratings moving left and right for each cpd, contrast, and speed.',

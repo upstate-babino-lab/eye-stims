@@ -5,15 +5,15 @@ import StimList from '../StimList';
 import StimSequence from '@renderer/StimSequence';
 
 export default function StimsTab() {
-  const { theParadigm: theStimsSpec, theStimSequence, setTheStimSequence } = useAppState();
+  const { theAssay, theStimSequence, setTheStimSequence } = useAppState();
   const [selectedStimIndex, setSelectedStimIndex] = useState(-1);
 
   // Update from StimsSpec if we're using one
   useEffect(() => {
-    if (theStimsSpec) {
-      setTheStimSequence(new StimSequence(theStimsSpec.stimuli()));
+    if (theAssay) {
+      setTheStimSequence(new StimSequence(theAssay.stimuli()));
     }
-  }, [setTheStimSequence, theStimsSpec]);
+  }, [setTheStimSequence, theAssay]);
 
   return (
     <div className="grow flex flex-col p-2 gap-2">

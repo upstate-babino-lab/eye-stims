@@ -1,8 +1,8 @@
 import { RangeSpec } from './RangeSpec';
-import { ParadigmType, Paradigm } from './Paradigm';
+import { AssayType, Assay } from './Assay';
 import { FFSine, Stimulus } from '@stims/index';
 
-export class FullFieldSineParadigm extends Paradigm {
+export class FullFieldSineAssay extends Assay {
   means: RangeSpec = new RangeSpec({ start: 50, step: 10, nSteps: 2 });
   mContrasts: RangeSpec = new RangeSpec({
     start: 90,
@@ -15,11 +15,11 @@ export class FullFieldSineParadigm extends Paradigm {
     nSteps: 4,
   });
 
-  constructor(props: Partial<FullFieldSineParadigm> = {}) {
+  constructor(props: Partial<FullFieldSineAssay> = {}) {
     // TODO: Check that props are all in valid ranges
     super({
       ...props,
-      paradigmType: ParadigmType.FullFieldSine,
+      assayType: AssayType.FullFieldSine,
     });
     this.means = (props.means && new RangeSpec(props.means)) ?? this.means;
     this.mContrasts =

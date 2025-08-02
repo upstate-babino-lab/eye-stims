@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { RangeSpec } from '@src/paradigms/index';
+import { RangeSpec } from '@src/assays/index';
 import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '../render-utils';
 import 'react-tooltip/dist/react-tooltip.css';
-import { confine } from '@src/paradigms/RangeSpec';
+import { confine } from '@src/assays/RangeSpec';
 
 export const INPUT_STYLES =
   'shadow appearance-none border border-gray-500 rounded w-19 ' +

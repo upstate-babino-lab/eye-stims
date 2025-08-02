@@ -1,19 +1,19 @@
 import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
-import { RangeSpec } from '@src/paradigms';
+import { RangeSpec } from '@src/assays';
 import {
-  ScanningDotParadigm,
+  ScanningDotAssay,
   maxXDegrees,
   maxYDegrees,
-} from '@src/paradigms/ScanningDotParadigm';
+} from '@src/assays/ScanningDotAssay';
 
 export function ScanningDotRanges() {
-  const { theParadigm, setTheParadigm } = useAppState();
-  const { diameters, xDegrees, yDegrees } = theParadigm as ScanningDotParadigm;
+  const { theAssay, setTheAssay } = useAppState();
+  const { diameters, xDegrees, yDegrees } = theAssay as ScanningDotAssay;
 
-  if (!theParadigm || !(theParadigm instanceof ScanningDotParadigm)) {
+  if (!theAssay || !(theAssay instanceof ScanningDotAssay)) {
     return (
-      <div className="text-red-500">No valid ScanningDotParadigm available</div>
+      <div className="text-red-500">No valid ScanningDotAssay available</div>
     );
   }
 
@@ -23,9 +23,9 @@ export function ScanningDotRanges() {
         title="Diameters"
         toolTip="Degrees of visual angle"
         onUpdate={(diameters: RangeSpec) => {
-          setTheParadigm(
-            new ScanningDotParadigm({
-              ...theParadigm,
+          setTheAssay(
+            new ScanningDotAssay({
+              ...theAssay,
               diameters: diameters,
             })
           );
@@ -37,9 +37,9 @@ export function ScanningDotRanges() {
         toolTip={`Horizontal degrees of visual angle starting from left (max ~${maxXDegrees})`}
         onUpdate={(xDegrees: RangeSpec) => {
           // console.log('>>>>> xDegrees=' + JSON.stringify(xDegrees));
-          setTheParadigm(
-            new ScanningDotParadigm({
-              ...theParadigm,
+          setTheAssay(
+            new ScanningDotAssay({
+              ...theAssay,
               xDegrees: xDegrees,
             })
           );
@@ -51,9 +51,9 @@ export function ScanningDotRanges() {
         toolTip={`Vertical degrees of visual angle starting from top (max ~${maxYDegrees})`}
         onUpdate={(yDegrees: RangeSpec) => {
           // console.log('>>>>> yDegrees=' + JSON.stringify(yDegrees));
-          setTheParadigm(
-            new ScanningDotParadigm({
-              ...theParadigm,
+          setTheAssay(
+            new ScanningDotAssay({
+              ...theAssay,
               yDegrees: yDegrees,
             })
           );

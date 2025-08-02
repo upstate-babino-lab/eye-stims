@@ -1,5 +1,5 @@
 import { RangeSpec } from './RangeSpec';
-import { ParadigmType, Paradigm } from './Paradigm';
+import { AssayType, Assay } from './Assay';
 import { Dot, Stimulus } from '@stims/index';
 import { displays } from '../displays';
 // TODO: used last selected display
@@ -10,7 +10,7 @@ export const maxYDegrees = Math.round(
   displays.SD1.height / displays.SD1.pxPerDegree
 );
 
-export class ScanningDotParadigm extends Paradigm {
+export class ScanningDotAssay extends Assay {
   diameters: RangeSpec = new RangeSpec({ start: 3, step: 3, nSteps: 1 });
   xDegrees: RangeSpec = new RangeSpec({
     start: 3,
@@ -23,11 +23,11 @@ export class ScanningDotParadigm extends Paradigm {
     nSteps: 10,
   });
 
-  constructor(props: Partial<ScanningDotParadigm> = {}) {
+  constructor(props: Partial<ScanningDotAssay> = {}) {
     // TODO: Check that cpds, contrasts, and speeds are all in valid ranges
     super({
       ...props,
-      paradigmType: ParadigmType.ScanningDot,
+      assayType: AssayType.ScanningDot,
     });
     this.diameters =
       (props.diameters && new RangeSpec(props.diameters)) ?? this.diameters;

@@ -3,13 +3,13 @@ import { INPUT_STYLES } from '@renderer/components/RangeSpecForm';
 import { saveFileDialogAsync } from '@renderer/render-utils';
 import { useAppState } from '@renderer/StateContext';
 import {
-  newParadigm,
-  ParadigmType,
-  paradigmsInfo,
-  SqrGratingParadigm,
-  ScanningDotParadigm,
-  FullFieldSineParadigm,
-} from '@src/paradigms/index';
+  newAssay,
+  AssayType,
+  assaysInfo,
+  SqrGratingAssay,
+  ScanningDotAssay,
+  FullFieldSineAssay,
+} from '@src/assays/index';
 import { useEffect, useState } from 'react';
 import { filterPrivateProperties } from '@src/shared-utils';
 import { Tooltip } from 'react-tooltip';
@@ -19,30 +19,30 @@ import StimSequence from '../StimSequence';
 import { GratingRanges } from './GratingRanges';
 import { ScanningDotRanges } from './ScanningDotRanges';
 import { FullFieldSineRanges } from './FullFieldSineRanges';
-import { ParadigmProps } from '@src/paradigms/Paradigm';
+import { AssayProps } from '@src/assays/Assay';
 
-export default function ParadigmTab() {
-  const { theParadigm, setTheParadigm } = useAppState();
+export default function AssayTab() {
+  const { theAssay, setTheAssay } = useAppState();
   const { theStimsMeta, setTheStimsMeta } = useAppState();
   const { setTheStimSequence } = useAppState();
 
   useEffect(() => {
     // TODO?: Calculate count and duration without creating a StimSequence
-    if (theParadigm) {
-      const stimSeq = new StimSequence(theParadigm.stimuli());
+    if (theAssay) {
+      const stimSeq = new StimSequence(theAssay.stimuli());
       setTheStimSequence(stimSeq);
       setTheStimsMeta({
         ...theStimsMeta,
-        title: theParadigm?.title,
-        description: theParadigm?.description,
+        title: theAssay?.title,
+        description: theAssay?.description,
         count: stimSeq?.stimuli.length || 0,
         totalDurationMS: stimSeq?.duration(),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theParadigm, setTheStimsMeta]);
+  }, [theAssay, setTheStimsMeta]);
 
-  if (!theParadigm) {
+  if (!theAssay) {
     return <div></div>;
   }
 
@@ -54,11 +54,11 @@ export default function ParadigmTab() {
           <input
             type="text"
             className={INPUT_STYLES + ' w-full'}
-            value={theParadigm?.title}
+            value={theAssay?.title}
             onChange={(e) => {
-              setTheParadigm(
-                newParadigm({
-                  ...theParadigm,
+              setTheAssay(
+                newAssay({
+                  ...theAssay,
                   title: e.target.value,
                 })
               );
@@ -72,11 +72,11 @@ export default function ParadigmTab() {
           <input
             type="text"
             className={INPUT_STYLES + ' w-full'}
-            value={theParadigm?.description}
+            value={theAssay?.description}
             onChange={(e) => {
-              setTheParadigm(
-                newParadigm({
-                  ...theParadigm,
+              setTheAssay(
+                newAssay({
+                  ...theAssay,
                   description: e.target.value,
                 })
               );
@@ -85,19 +85,19 @@ export default function ParadigmTab() {
         </div>
         <div className="mb-3 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
-            ParadigmType:
+            AssayType:
           </label>
-          <ParadigmTypeDropdown
+          <AssayTypeDropdown
             initialValue={
-              theParadigm?.paradigmType || ParadigmType.SqrGratingPairs
+              theAssay?.assayType || AssayType.SqrGratingPairs
             }
-            onChange={(newType: ParadigmType) => {
-              console.log('>>>>> ParadigmType changed to ' + newType);
-              setTheParadigm(
-                newParadigm({
-                  ...theParadigm,
-                  paradigmType: newType,
-                  description: paradigmsInfo[newType].description,
+            onChange={(newType: AssayType) => {
+              console.log('>>>>> AssayType changed to ' + newType);
+              setTheAssay(
+                newAssay({
+                  ...theAssay,
+                  assayType: newType,
+                  description: assaysInfo[newType].description,
                 })
               );
             }}
@@ -114,7 +114,7 @@ export default function ParadigmTab() {
           toolTip="If grayMs > 0, each stim is followed by a gray flash and its black tail"
         />
         <div className="border border-gray-500 rounded-md p-1">
-          <SubParadigmRanges />
+          <SubAssayRanges />
         </div>
         <div className="mb-1 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
@@ -123,13 +123,13 @@ export default function ParadigmTab() {
           <input
             type="number"
             className={INPUT_STYLES}
-            value={theParadigm?.nRepetitions ? theParadigm?.nRepetitions : 0}
+            value={theAssay?.nRepetitions ? theAssay?.nRepetitions : 0}
             onChange={(e) => {
               const newValue =
                 e.target.value === '' ? undefined : parseFloat(e.target.value);
-              setTheParadigm(
-                newParadigm({
-                  ...theParadigm,
+              setTheAssay(
+                newAssay({
+                  ...theAssay,
                   nRepetitions: newValue,
                 })
               );
@@ -155,11 +155,11 @@ export default function ParadigmTab() {
               type="checkbox"
               // TODO?: restyle using Tailwind’s peer utility
               className="h-4 w-4 border border-gray-500 rounded-xl text-gray-200 bg-transparent checked:bg-current"
-              checked={theParadigm.doShuffle}
+              checked={theAssay.doShuffle}
               onChange={(e) => {
-                setTheParadigm(
-                  newParadigm({
-                    ...theParadigm,
+                setTheAssay(
+                  newAssay({
+                    ...theAssay,
                     doShuffle: !!e.target.checked,
                   })
                 );
@@ -184,16 +184,16 @@ export default function ParadigmTab() {
               type="number"
               className={INPUT_STYLES}
               value={
-                theParadigm?.integrityFlashIntervalMins
-                  ? theParadigm?.integrityFlashIntervalMins
+                theAssay?.integrityFlashIntervalMins
+                  ? theAssay?.integrityFlashIntervalMins
                   : 0
               }
               onChange={(e) => {
                 const newValue =
                   e.target.value === '' ? undefined : parseFloat(e.target.value);
-                setTheParadigm(
-                  newParadigm({
-                    ...theParadigm,
+                setTheAssay(
+                  newAssay({
+                    ...theAssay,
                     integrityFlashIntervalMins: newValue,
                   })
                 );
@@ -217,11 +217,11 @@ export default function ParadigmTab() {
           className="ml-auto"
           onClick={async () => {
             const filePath = await saveFileDialogAsync(
-              (theParadigm?.title.toLowerCase() || 'untitled') + '.paradigm.json'
+              (theAssay?.title.toLowerCase() || 'untitled') + '.assay.json'
             );
             setTheStimsMeta({ ...theStimsMeta, loadedPath: filePath });
             const content = JSON.stringify(
-              theParadigm,
+              theAssay,
               filterPrivateProperties,
               4
             );
@@ -231,7 +231,7 @@ export default function ParadigmTab() {
             });
           }}
         >
-          Save Paradigm
+          Save Assay
         </Button>
       </div>
     </div>
@@ -239,22 +239,22 @@ export default function ParadigmTab() {
 }
 
 //-----------------------------------------------------------------------------
-function ParadigmTypeDropdown(props: {
-  initialValue: ParadigmType;
-  onChange: (value: ParadigmType) => void;
+function AssayTypeDropdown(props: {
+  initialValue: AssayType;
+  onChange: (value: AssayType) => void;
 }) {
   const [selectedValue, setSelectedValue] = useState(props.initialValue);
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = event.target.value;
-    setSelectedValue(ParadigmType[newValue]);
-    props.onChange(ParadigmType[newValue]);
+    setSelectedValue(AssayType[newValue]);
+    props.onChange(AssayType[newValue]);
   };
 
   return (
     <div className="inline-flex">
       <select value={selectedValue} onChange={handleChange}>
-        {Object.keys(ParadigmType).map((key) => (
+        {Object.keys(AssayType).map((key) => (
           <option key={key} value={key}>
             {key}
           </option>
@@ -266,10 +266,10 @@ function ParadigmTypeDropdown(props: {
 
 //-----------------------------------------------------------------------------
 function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string }) {
-  const { theParadigm, setTheParadigm } = useAppState();
+  const { theAssay, setTheAssay } = useAppState();
   // Default values to use when field is deleted by user  or undefined
-  const defaultParadigmProps: ParadigmProps = {
-    paradigmType: theParadigm?.paradigmType || ParadigmType.SqrGratingPairs,
+  const defaultAssayProps: AssayProps = {
+    assayType: theAssay?.assayType || AssayType.SqrGratingPairs,
     title: '',
     description: '',
     bodyMs: 0,
@@ -284,7 +284,7 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
     doShuffle: false,
   };
 
-  if (!theParadigm) {
+  if (!theAssay) {
     return <div className="text-red-500">No StimsSpec available</div>;
   }
 
@@ -298,17 +298,17 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
     const newValue =
       e.target.value === '' ? undefined : parseFloat(e.target.value);
 
-    const newSpec = newParadigm({ ...theParadigm });
+    const newSpec = newAssay({ ...theAssay });
     newSpec[propName] = newValue;
-    setTheParadigm(newSpec);
+    setTheAssay(newSpec);
   };
 
-  // Ensure that if a property exists on theParadigm (even if 0), it's used.
-  // Only if it's strictly null or undefined will defaultParadigm be used.
+  // Ensure that if a property exists on theAssay (even if 0), it's used.
+  // Only if it's strictly null or undefined will defaultAssay be used.
   const getDisplayValue = (propName: string) => {
     // Check if the property exists on theStimsSpec and is not null/undefined
     // Use `??` to allow 0 as a valid value
-    const value = theParadigm[propName] ?? defaultParadigmProps[propName];
+    const value = theAssay[propName] ?? defaultAssayProps[propName];
     // Convert undefined back to empty string for the input field to allow clearing
     return value === undefined ? '' : String(value);
   };
@@ -348,7 +348,7 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
         {props.nameA.endsWith('Ms') && props.nameB.endsWith('Ms') && (
           <div className="px-4">
             Durations ={' '}
-            {(theParadigm[props.nameA] ?? 0) + (theParadigm[props.nameB] ?? 0)}ms
+            {(theAssay[props.nameA] ?? 0) + (theAssay[props.nameB] ?? 0)}ms
           </div>
         )}
       </div>
@@ -358,30 +358,30 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
 }
 
 //-----------------------------------------------------------------------------
-function SubParadigmRanges() {
-  const { theParadigm } = useAppState();
+function SubAssayRanges() {
+  const { theAssay } = useAppState();
 
   if (
-    theParadigm instanceof SqrGratingParadigm ||
-    theParadigm?.paradigmType === ParadigmType.SqrGratingPairs
+    theAssay instanceof SqrGratingAssay ||
+    theAssay?.assayType === AssayType.SqrGratingPairs
   ) {
     return <GratingRanges />;
   }
 
   if (
-    theParadigm instanceof ScanningDotParadigm ||
-    theParadigm?.paradigmType === ParadigmType.ScanningDot
+    theAssay instanceof ScanningDotAssay ||
+    theAssay?.assayType === AssayType.ScanningDot
   ) {
     return <ScanningDotRanges />;
   }
 
   if (
-    theParadigm instanceof FullFieldSineParadigm ||
-    theParadigm?.paradigmType === ParadigmType.FullFieldSine
+    theAssay instanceof FullFieldSineAssay ||
+    theAssay?.assayType === AssayType.FullFieldSine
   ) {
     return <FullFieldSineRanges />;
   }
 
   // If no match
-  return <div className="text-red-500">Unexpected theParadigm.</div>;
+  return <div className="text-red-500">Unexpected theAssay.</div>;
 }

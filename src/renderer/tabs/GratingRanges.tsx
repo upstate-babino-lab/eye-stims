@@ -1,15 +1,15 @@
-import { RangeSpec, SqrGratingParadigm } from '@src/paradigms';
+import { RangeSpec, SqrGratingAssay } from '@src/assays';
 import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
 import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '@renderer/render-utils';
 
 export function GratingRanges() {
-  const { theParadigm: theStimsSpec, setTheParadigm: setTheStimsSpec } = useAppState();
+  const { theAssay: theStimsSpec, setTheAssay: setTheStimsSpec } = useAppState();
   const { cpds, contrasts, speeds, includeStaticGratings } =
-    theStimsSpec as SqrGratingParadigm;
+    theStimsSpec as SqrGratingAssay;
 
-  if (!theStimsSpec || !(theStimsSpec instanceof SqrGratingParadigm)) {
+  if (!theStimsSpec || !(theStimsSpec instanceof SqrGratingAssay)) {
     return (
       <div className="text-red-500">No valid SqrGratingStimsSpec available</div>
     );
@@ -23,7 +23,7 @@ export function GratingRanges() {
         onUpdate={(cpds: RangeSpec) => {
           // console.log('>>>>> cpds=' + JSON.stringify(cpds));
           setTheStimsSpec(
-            new SqrGratingParadigm({
+            new SqrGratingAssay({
               ...theStimsSpec,
               cpds: cpds,
             })
@@ -37,7 +37,7 @@ export function GratingRanges() {
         onUpdate={(contrasts: RangeSpec) => {
           // console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
           setTheStimsSpec(
-            new SqrGratingParadigm({
+            new SqrGratingAssay({
               ...theStimsSpec,
               contrasts: contrasts,
             })
@@ -53,7 +53,7 @@ export function GratingRanges() {
         onUpdate={(speeds: RangeSpec) => {
           // console.log('>>>>> speeds=' + JSON.stringify(speeds));
           setTheStimsSpec(
-            new SqrGratingParadigm({
+            new SqrGratingAssay({
               ...theStimsSpec,
               speeds: speeds,
             })
@@ -78,7 +78,7 @@ export function GratingRanges() {
             checked={includeStaticGratings}
             onChange={(e) => {
               setTheStimsSpec(
-                new SqrGratingParadigm({
+                new SqrGratingAssay({
                   ...theStimsSpec,
                   includeStaticGratings: !!e.target.checked,
                 })

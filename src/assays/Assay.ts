@@ -1,21 +1,21 @@
 /*
-  A StimsParadigm is used to create a list of POJO stimuli
+  A StimsAssay is used to create a list of POJO stimuli
   that can be saved to a .stims.json file or used to create a StimSequence
 */
 import { Stimulus } from '@stims/index';
 import { addIntegrityFlashes, addRestPeriods, shuffle } from '@stims/stim-utils';
 
-// TODO: Create StimsParadigm subclasses for each type of StimsParadigm
-export enum ParadigmType {
+// TODO: Create StimsAssay subclasses for each type of StimsAssay
+export enum AssayType {
   SqrGratingPairs = 'SqrGratingPairs',
   ScanningDot = 'ScanningDot',
   FullFieldSine = 'FullFieldSine',
 }
 
-type ParadigmInfo = {
+type AssayInfo = {
   description: string;
 };
-export const paradigmsInfo: Record<ParadigmType, ParadigmInfo> = {
+export const assaysInfo: Record<AssayType, AssayInfo> = {
   SqrGratingPairs: {
     description:
       'Pairs of gratings moving left and right ' +
@@ -29,8 +29,8 @@ export const paradigmsInfo: Record<ParadigmType, ParadigmInfo> = {
   },
 };
 
-export type ParadigmProps = {
-  paradigmType: ParadigmType;
+export type AssayProps = {
+  assayType: AssayType;
   title?: string;
   description?: string;
   // Duration of body and tail in milliseconds
@@ -47,8 +47,8 @@ export type ParadigmProps = {
   restDurationMins?: number; // Minutes of solid black
   doShuffle?: boolean;
 };
-export abstract class Paradigm {
-  paradigmType: ParadigmType = Object.values(ParadigmType)[0];
+export abstract class Assay {
+  assayType: AssayType = Object.values(AssayType)[0];
   title: string = '';
   description: string = '';
   bodyMs: number = 500;
@@ -63,12 +63,12 @@ export abstract class Paradigm {
   //private _stimsCache: Stimulus[] = [];
   //private _jsonCache: string = '';
 
-  constructor(props: ParadigmProps) {
-    this.paradigmType = props.paradigmType ?? this.paradigmType;
+  constructor(props: AssayProps) {
+    this.assayType = props.assayType ?? this.assayType;
     this.title = props.title ?? this.title;
     this.description =
       props.description ??
-      (this.description || paradigmsInfo[this.paradigmType].description);
+      (this.description || assaysInfo[this.assayType].description);
     this.bodyMs = Math.max(0, props.bodyMs ?? this.bodyMs);
     this.tailMs = Math.max(0, props.tailMs ?? this.tailMs);
     this.grayTailMs = this.grayMs > 0 ? (props.grayTailMs ?? this.grayTailMs) : 0;

@@ -85,9 +85,9 @@ export async function saveFileDialogAsync(
     name = 'Stim sequences';
     extension = '.stims.json';
   }
-  if (suggestedFilename.endsWith('.paradigm.json')) {
+  if (suggestedFilename.endsWith('.assay.json')) {
     name = 'Stim specs';
-    extension = '.paradigms.json';
+    extension = '.assays.json';
   }
   const result = await window.electron.showSaveDialogAsync({
     title: 'Save File',

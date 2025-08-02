@@ -3,11 +3,11 @@ import { useEffect, useState, ReactNode } from 'react';
 import { StateContext, StimsMeta } from './StateContext';
 import StimSequence from './StimSequence';
 import { Stimulus } from '@stims/index';
-import { Paradigm, newParadigm } from '@src/paradigms/index';
+import { Assay, newAssay } from '@src/assays/index';
 
 export function StateProvider({ children }: { children: ReactNode }) {
   const [theStimsMeta, setTheStimsMeta] = useState<StimsMeta | null>(null);
-  const [theStimsSpec, setTheStimsSpec] = useState<Paradigm | null>(null);
+  const [theStimsSpec, setTheStimsSpec] = useState<Assay | null>(null);
   const [theStimSequence, setTheStimSequence] = useState<StimSequence | null>(
     null
   );
@@ -17,13 +17,13 @@ export function StateProvider({ children }: { children: ReactNode }) {
       console.log(`>>>>> renderer StateProvider got 'file-loaded' from main`);
       const fileNameWithExtension = filePath.split('/').pop() || '';
       let stims: Stimulus[] = [];
-      let stimsSpec: Paradigm | null = null;
+      let stimsSpec: Assay | null = null;
 
       if (!parsedContents) {
         throw new Error('No parsed contents from ' + filePath);
       }
-      if (filePath.endsWith('.paradigm.json')) {
-        stimsSpec = newParadigm(parsedContents as Paradigm);
+      if (filePath.endsWith('.assay.json')) {
+        stimsSpec = newAssay(parsedContents as Assay);
         setTheStimsSpec(stimsSpec);
         stims = stimsSpec.stimuli(); // Not POJOs
       } else {
@@ -80,8 +80,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
         setTheStimsMeta: setTheStimsMeta,
         theStimSequence: theStimSequence,
         setTheStimSequence: setTheStimSequence,
-        theParadigm: theStimsSpec,
-        setTheParadigm: setTheStimsSpec,
+        theAssay: theStimsSpec,
+        setTheAssay: setTheStimsSpec,
       }}
     >
       {children}

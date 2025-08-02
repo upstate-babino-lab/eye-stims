@@ -15,7 +15,7 @@ export default defineConfig({
         '@src': resolve('src'),
         '@renderer': resolve('src/renderer'),
         '@stims': resolve('src/stims'),
-        '@paradigms': resolve('src/specs'),
+        '@assays': resolve('src/specs'),
       },
     },
     plugins: [react()],

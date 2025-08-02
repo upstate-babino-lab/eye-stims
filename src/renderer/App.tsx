@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import Button from './components/Button';
 import { useAppState } from './StateContext';
-import ParadigmTab from './tabs/ParadigmTab';
+import AssayTab from './tabs/AssayTab';
 import BuildTab from './tabs/BuildTab';
 import RunTab from './tabs/RunTab';
 import StimsTab from './tabs/StimsTab';
 import { formatSeconds, saveFileDialogAsync } from './render-utils';
 import { getBasename } from '../shared-utils';
-import { ParadigmType, newParadigm } from '@src/paradigms/index';
+import { AssayType, newAssay } from '@src/assays/index';
 
 export default function App(): JSX.Element {
   const [tabLabels, setTabLabels] = useState<string[]>(['Stims', 'Build', 'Run']);
@@ -15,14 +15,14 @@ export default function App(): JSX.Element {
   const {
     theStimsMeta,
     setTheStimsMeta,
-    theParadigm: theStimsSpec,
-    setTheParadigm: setTheStimsSpec,
+    theAssay: theStimsSpec,
+    setTheAssay: setTheStimsSpec,
     theStimSequence,
   } = useAppState();
 
   useEffect(() => {
     if (theStimsSpec) {
-      setTabLabels(['Paradigm', 'Stims', 'Build', 'Run']);
+      setTabLabels(['Assay', 'Stims', 'Build', 'Run']);
     } else {
       setTabLabels(['Stims', 'Build', 'Run']);
     }
@@ -45,7 +45,7 @@ export default function App(): JSX.Element {
                   <span className="text-gray-300">
                     {theStimsMeta.loadedPath
                       ? getBasename(theStimsMeta.loadedPath)
-                      : '?' + (theStimsSpec ? '.paradigm' : '') + '.json'}
+                      : '?' + (theStimsSpec ? '.assay' : '') + '.json'}
                   </span>{' '}
                   {' | '}
                   Count:{' '}
@@ -64,7 +64,7 @@ export default function App(): JSX.Element {
         <div className="flex flex-col gap-2 ml-auto">
           <Button
             className="ml-auto"
-            tooltipText=".stims.json, .paradigm.json, or .mp4 file"
+            tooltipText=".stims.json, .assay.json, or .mp4 file"
             onClick={() => {
               window.electron.send('loadFile');
               setActiveTab('Stims');
@@ -75,15 +75,15 @@ export default function App(): JSX.Element {
           <Button
             className="ml-auto"
             onClick={() => {
-              const stimsParadigm = newParadigm({
-                paradigmType: ParadigmType.SqrGratingPairs,
+              const stimsAssay = newAssay({
+                assayType: AssayType.SqrGratingPairs,
               });
-              setTheStimsSpec(stimsParadigm);
+              setTheStimsSpec(stimsAssay);
               setTheStimsMeta({});
-              setActiveTab('Paradigm');
+              setActiveTab('Assay');
             }}
           >
-            New Paradigm
+            New Assay
           </Button>{' '}
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function App(): JSX.Element {
               Save Stims
             </Button>
           </div>
-          {activeTab === 'Paradigm' && <ParadigmTab />}
+          {activeTab === 'Assay' && <AssayTab />}
           {activeTab === 'Stims' && <StimsTab />}
           {activeTab === 'Build' && <BuildTab />}
           {activeTab === 'Run' && <RunTab />}

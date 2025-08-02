@@ -1,15 +1,15 @@
 import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
-import { RangeSpec } from '@src/paradigms';
-import { FullFieldSineParadigm } from '@src/paradigms/FullFieldSineParadigm';
+import { RangeSpec } from '@src/assays';
+import { FullFieldSineAssay } from '@src/assays/FullFieldSineAssay';
 
 export function FullFieldSineRanges() {
-  const { theParadigm, setTheParadigm } = useAppState();
-  const { means, mContrasts, frequencies } = theParadigm as FullFieldSineParadigm;
+  const { theAssay, setTheAssay } = useAppState();
+  const { means, mContrasts, frequencies } = theAssay as FullFieldSineAssay;
 
-  if (!theParadigm || !(theParadigm instanceof FullFieldSineParadigm)) {
+  if (!theAssay || !(theAssay instanceof FullFieldSineAssay)) {
     return (
-      <div className="text-red-500">No valid FullFieldSineParadigm available</div>
+      <div className="text-red-500">No valid FullFieldSineAssay available</div>
     );
   }
 
@@ -19,9 +19,9 @@ export function FullFieldSineRanges() {
         title="Mean intensities %"
         toolTip="Mean luminance with range 0% to 1/(1+contrast)"
         onUpdate={(means: RangeSpec) => {
-          setTheParadigm(
-            new FullFieldSineParadigm({
-              ...theParadigm,
+          setTheAssay(
+            new FullFieldSineAssay({
+              ...theAssay,
               means: means,
             })
           );
@@ -35,9 +35,9 @@ export function FullFieldSineRanges() {
         toolTip={`Michelson contrast (max-min)/(max+min) range 0% to 100%`}
         onUpdate={(mContrasts: RangeSpec) => {
           // console.log('>>>>> xDegrees=' + JSON.stringify(xDegrees));
-          setTheParadigm(
-            new FullFieldSineParadigm({
-              ...theParadigm,
+          setTheAssay(
+            new FullFieldSineAssay({
+              ...theAssay,
               mContrasts: mContrasts,
             })
           );
@@ -51,9 +51,9 @@ export function FullFieldSineRanges() {
         toolTip={`Cycles per second`}
         onUpdate={(frequencies: RangeSpec) => {
           // console.log('>>>>> frequencies=' + JSON.stringify(frequencies));
-          setTheParadigm(
-            new FullFieldSineParadigm({
-              ...theParadigm,
+          setTheAssay(
+            new FullFieldSineAssay({
+              ...theAssay,
               frequencies: frequencies,
             })
           );

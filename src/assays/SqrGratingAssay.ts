@@ -1,11 +1,11 @@
 import { Stimulus } from '@stims/Stimulus';
 import { RangeSpec } from './RangeSpec';
-import { ParadigmType, Paradigm } from './Paradigm';
+import { AssayType, Assay } from './Assay';
 import { contrastPair, linearToHex } from '@stims/stim-utils';
 import { SqrGrating } from '@stims/SqrGrating';
 import { Solid } from '@stims/Solid';
 
-export class SqrGratingParadigm extends Paradigm {
+export class SqrGratingAssay extends Assay {
   cpds: RangeSpec = new RangeSpec({ start: 0.3, step: 0.2, nSteps: 1 }); // TODO? add min/max
   contrasts: RangeSpec = new RangeSpec({
     start: 90,
@@ -17,11 +17,11 @@ export class SqrGratingParadigm extends Paradigm {
   speeds: RangeSpec = new RangeSpec({ start: 3, step: 1, nSteps: 1 }); // TODO? add min/max
   includeStaticGratings: boolean = false;
 
-  constructor(props: Partial<SqrGratingParadigm> = {}) {
+  constructor(props: Partial<SqrGratingAssay> = {}) {
     // TODO: Check that cpds, contrasts, and speeds are all in valid ranges
     super({
       ...props,
-      paradigmType: ParadigmType.SqrGratingPairs,
+      assayType: AssayType.SqrGratingPairs,
     });
     this.cpds = (props.cpds && new RangeSpec(props.cpds)) ?? this.cpds;
     this.contrasts =

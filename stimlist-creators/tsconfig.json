@@ -9,7 +9,7 @@
       "@stims/*": [
         "src/stims/*"
       ],
-      "@paradigms/*": [
+      "@assays/*": [
         "src/specs/*"
       ]
     }
