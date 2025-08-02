@@ -47,10 +47,10 @@ export default function App(): JSX.Element {
                       ? getBasename(theStimsMeta.loadedPath)
                       : '?' + (theStimsSpec ? '.assay' : '') + '.json'}
                   </span>{' '}
-                  {' | '}
+                  <span className="text-gray-600">{' | '}</span>
                   Count:{' '}
-                  {(theStimsMeta.count || theStimSequence?.stimuli.length || '?') +
-                    ' | '}
+                  {theStimsMeta.count || theStimSequence?.stimuli.length || '?'}
+                  <span className="text-gray-600">{' | '}</span>
                   Duration:{' '}
                   {durationSeconds ? formatSeconds(durationSeconds) : '?'}
                 </div>
@@ -64,7 +64,7 @@ export default function App(): JSX.Element {
         <div className="flex flex-col gap-2 ml-auto">
           <Button
             className="ml-auto"
-            tooltipText=".stims.json, .assay.json, or .mp4 file"
+            tooltipText=".stims.json, .assay.json, or .mp4"
             onClick={() => {
               window.electron.send('loadFile');
               setActiveTab('Stims');

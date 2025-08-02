@@ -25,7 +25,7 @@ export const assaysInfo: Record<AssayType, AssayInfo> = {
     description: 'Flash Dot on grid for each xDegree yDegree, and diameter.',
   },
   FullFieldSine: {
-    description: 'Sinusoidal variation of intensity over full field.',
+    description: 'Sinusoidal variations of intensity over full field.',
   },
 };
 

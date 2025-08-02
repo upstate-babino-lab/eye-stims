@@ -81,7 +81,7 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   return (
     <div
       style={style}
-      className="flex flex-row border border-gray-800 hover:border-gray-400 hover:bg-gray-800 transition cursor-pointer"
+      className="flex flex-row border whitespace-nowrap border-gray-800 hover:border-gray-400 hover:bg-gray-800 transition cursor-pointer"
       onClick={() => data.onRowClick(index)}
     >
       <div className={CELL_FORMAT}>{index}</div>
