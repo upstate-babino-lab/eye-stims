@@ -38,8 +38,7 @@ export type AssayProps = {
   // head(0) + body + tail = (2 * bodyMs)
   bodyMs?: number; // Multiple of 20
   tailMs?: number; // Multiple of 20
-  grayMs?: number;
-  grayTailMs?: number;
+  hasMeanColorTail?: boolean; // Black if false
   includeStaticGratings?: boolean;
   nRepetitions?: number; // Number of repetitions of the whole sequence
   integrityFlashIntervalMins?: number;
@@ -53,8 +52,7 @@ export abstract class Assay {
   description: string = '';
   bodyMs: number = 500;
   tailMs: number = 500;
-  grayMs: number = 0;
-  grayTailMs: number = 520; // only used if grayMs > 0
+  hasMeanColorTail: boolean = false;
   nRepetitions: number = 1;
   integrityFlashIntervalMins: number = 0;
   restIntervalMins: number = 2;
@@ -71,7 +69,7 @@ export abstract class Assay {
       (this.description || assaysInfo[this.assayType].description);
     this.bodyMs = Math.max(0, props.bodyMs ?? this.bodyMs);
     this.tailMs = Math.max(0, props.tailMs ?? this.tailMs);
-    this.grayTailMs = this.grayMs > 0 ? (props.grayTailMs ?? this.grayTailMs) : 0;
+    this.hasMeanColorTail = this.hasMeanColorTail ?? this.hasMeanColorTail;
     this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
     this.integrityFlashIntervalMins =
       props.integrityFlashIntervalMins ?? this.integrityFlashIntervalMins;

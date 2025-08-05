@@ -88,9 +88,7 @@ export default function AssayTab() {
             AssayType:
           </label>
           <AssayTypeDropdown
-            initialValue={
-              theAssay?.assayType || AssayType.SqrGratingPairs
-            }
+            initialValue={theAssay?.assayType || AssayType.SqrGratingPairs}
             onChange={(newType: AssayType) => {
               console.log('>>>>> AssayType changed to ' + newType);
               setTheAssay(
@@ -108,10 +106,10 @@ export default function AssayTab() {
           nameB="tailMs"
           toolTip="Each stimulus body is followed by a black tail (multiples of 20ms)"
         />
-        <TwoPropsForm
-          nameA="grayMs"
-          nameB="grayTailMs"
-          toolTip="If grayMs > 0, each stim is followed by a gray flash and its black tail"
+        <BooleanCheckbox
+          label="MeanColorTail"
+          propName="hasMeanColorTail"
+          toolTip="Use mean of all pixels in body as tail color (instead of solid black)"
         />
         <div className="border border-gray-500 rounded-md p-1">
           <SubAssayRanges />
@@ -139,35 +137,11 @@ export default function AssayTab() {
             step={1}
           />
         </div>
-        <>
-          <div
-            className="mb-1 flex items-center w-50"
-            data-tooltip-id={'do-shuffle-id'}
-            data-tooltip-content={
-              'Randomize order of all stimuli (except integrity flashes and rests)'
-            }
-            data-tooltip-place="right"
-          >
-            <label className="text-sm font-bold text-gray-100 px-4">
-              Shuffle stimuli:
-            </label>
-            <input
-              type="checkbox"
-              // TODO?: restyle using Tailwind’s peer utility
-              className="h-4 w-4 border border-gray-500 rounded-xl text-gray-200 bg-transparent checked:bg-current"
-              checked={theAssay.doShuffle}
-              onChange={(e) => {
-                setTheAssay(
-                  newAssay({
-                    ...theAssay,
-                    doShuffle: !!e.target.checked,
-                  })
-                );
-              }}
-            />
-          </div>
-          <Tooltip id={'do-shuffle-id'} className={TOOLTIP_STYLES} />
-        </>
+        <BooleanCheckbox
+          label="Shuffle stimuli"
+          propName="doShuffle"
+          toolTip="Randomize order of all stimuli (except integrity flashes and rests)"
+        />
         <>
           <div
             className="mb-1 flex items-center w-90"
@@ -220,11 +194,7 @@ export default function AssayTab() {
               (theAssay?.title.toLowerCase() || 'untitled') + '.assay.json'
             );
             setTheStimsMeta({ ...theStimsMeta, loadedPath: filePath });
-            const content = JSON.stringify(
-              theAssay,
-              filterPrivateProperties,
-              4
-            );
+            const content = JSON.stringify(theAssay, filterPrivateProperties, 4);
             window.electron.send('saveFile', {
               filePath: filePath,
               content: content,
@@ -265,6 +235,43 @@ function AssayTypeDropdown(props: {
 }
 
 //-----------------------------------------------------------------------------
+function BooleanCheckbox(props: {
+  label: string;
+  propName: string;
+  toolTip?: string;
+}) {
+  const { theAssay, setTheAssay } = useAppState();
+
+  return (
+    <>
+      <div
+        className="mb-1 flex items-center w-50"
+        data-tooltip-id={props.propName + '-id'}
+        data-tooltip-content={props.toolTip}
+        data-tooltip-place="right"
+      >
+        <label className="text-sm font-bold text-gray-100 px-4">
+          {props.label}:
+        </label>
+        <input
+          type="checkbox"
+          // TODO?: restyle using Tailwind’s peer utility
+          className="h-4 w-4 border border-gray-500 rounded-xl text-gray-200 bg-transparent checked:bg-current"
+          checked={theAssay ? theAssay[props.propName] : false}
+          onChange={(e) => {
+            const newValue = !!e.target.checked;
+            const newStruct = newAssay({ ...theAssay });
+            newStruct[props.propName] = newValue;
+            setTheAssay(newStruct);
+          }}
+        />
+      </div>
+      <Tooltip id={props.propName + '-id'} className={TOOLTIP_STYLES} />
+    </>
+  );
+}
+
+//-----------------------------------------------------------------------------
 function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string }) {
   const { theAssay, setTheAssay } = useAppState();
   // Default values to use when field is deleted by user  or undefined
@@ -274,8 +281,7 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
     description: '',
     bodyMs: 0,
     tailMs: 0,
-    grayMs: 0,
-    grayTailMs: 0,
+    hasMeanColorTail: false,
     includeStaticGratings: false,
     nRepetitions: 1,
     integrityFlashIntervalMins: 0,
@@ -298,9 +304,9 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
     const newValue =
       e.target.value === '' ? undefined : parseFloat(e.target.value);
 
-    const newSpec = newAssay({ ...theAssay });
-    newSpec[propName] = newValue;
-    setTheAssay(newSpec);
+    const newStruct = newAssay({ ...theAssay });
+    newStruct[propName] = newValue;
+    setTheAssay(newStruct);
   };
 
   // Ensure that if a property exists on theAssay (even if 0), it's used.
