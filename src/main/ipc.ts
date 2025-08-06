@@ -17,6 +17,9 @@ import {
 } from './generate-tones';
 import { AudioKey, CHOSEN_AUDIO_KEY } from '../constants';
 import { assert } from '../shared-utils';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+const execPromise = promisify(exec);
 
 export const stimsCacheDir = path.join(app.getPath('userData'), 'stims-cache');
 
@@ -162,7 +165,7 @@ export function setupIpcHandlers() {
 
   ipcMain.handle('getAppVersion', async () => {
     // console.log(`>>>>> main got 'getAppVersion'`);
-    return app.getVersion();
+    return await getAppVersionAsync();
   });
 }
 
@@ -176,6 +179,20 @@ function hashFilename(unhashedFilename: string): string {
       .digest('hex')
       .slice(0, 20) + extension;
   return filename;
+}
+
+// Return git commit string when available, else version from package.json
+export async function getAppVersionAsync(): Promise<string> {
+  try {
+    const { stdout } = await execPromise(
+      'git describe --always --long --tags --dirty',
+      { encoding: 'utf-8' }
+    );
+    return stdout.trim();
+  } catch {
+    // Git command failed and might not be a git repo
+    return app.getVersion();
+  }
 }
 
 export function formatNumberWithLeadingZero(

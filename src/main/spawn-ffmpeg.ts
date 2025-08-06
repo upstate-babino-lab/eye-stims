@@ -8,6 +8,7 @@ import {
   ensureCacheDirAsync,
   silentBasename,
   ensureSilentFileAsync,
+  getAppVersionAsync,
 } from './ipc';
 import { writeFile as writeFileAsync } from 'fs/promises';
 import { unlink as rmAsync } from 'fs/promises';
@@ -247,6 +248,7 @@ export async function buildFromCacheAsync(
   );
 
   const audioFilename = await assembleAudioFile(durations, audioProps);
+
   /* prettier-ignore */
   const args = [
     '-f', 'concat',
@@ -265,7 +267,7 @@ export async function buildFromCacheAsync(
     '-metadata', `title=${title}`,
     '-metadata', `description=${description}`,
     '-metadata', `comment=${JSON.stringify({
-      appVersion: app.getVersion(),
+      appVersion: await getAppVersionAsync(),
       buildTime: new Date().toString(),
       uuid: crypto.randomUUID(),
     })}`
