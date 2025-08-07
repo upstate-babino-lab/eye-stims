@@ -3,6 +3,6 @@
 export { AssayType, Assay, assaysInfo } from './Assay';
 export { newAssay } from './assayFactory';
 export { SqrGratingAssay } from './SqrGratingAssay';
-export { ScanningDotAssay } from './ScanningDotAssay';
-export { FullFieldSineAssay } from './FullFieldSineAssay';
+export { ScanningDotsAssay } from './ScanningDotsAssay';
+export { FullFieldSinesAssay } from './FullFieldSinesAssay';
 export { RangeSpec } from './RangeSpec';

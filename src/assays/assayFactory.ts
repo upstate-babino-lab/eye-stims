@@ -1,8 +1,8 @@
 import { AssayType } from './Assay';
 import type { Assay, AssayProps } from './Assay';
 import { SqrGratingAssay } from './SqrGratingAssay';
-import { ScanningDotAssay } from './ScanningDotAssay';
-import { FullFieldSineAssay } from './FullFieldSineAssay';
+import { ScanningDotsAssay } from './ScanningDotsAssay';
+import { FullFieldSinesAssay } from './FullFieldSinesAssay';
 
 // Map of constructors that create new StimsSpec class objects (with methods)
 // from simple parsed JSON POJOs (with no methods) using lookup by name.
@@ -12,8 +12,8 @@ type AssayConstructors = {
 };
 export const assayConstructors: AssayConstructors = {
   SqrGratingPairs: SqrGratingAssay,
-  ScanningDot: ScanningDotAssay,
-  FullFieldSine: FullFieldSineAssay,
+  ScanningDots: ScanningDotsAssay,
+  FullFieldSines: FullFieldSinesAssay,
 };
 
 // Create a new Assay class instance from POJO or parsed JSON object.

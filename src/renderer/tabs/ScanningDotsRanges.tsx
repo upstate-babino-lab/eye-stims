@@ -2,18 +2,18 @@ import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
 import { RangeSpec } from '@src/assays';
 import {
-  ScanningDotAssay,
+  ScanningDotsAssay,
   maxXDegrees,
   maxYDegrees,
-} from '@src/assays/ScanningDotAssay';
+} from '@src/assays/ScanningDotsAssay';
 
-export function ScanningDotRanges() {
+export function ScanningDotsRanges() {
   const { theAssay, setTheAssay } = useAppState();
-  const { diameters, xDegrees, yDegrees } = theAssay as ScanningDotAssay;
+  const { diameters, xDegrees, yDegrees } = theAssay as ScanningDotsAssay;
 
-  if (!theAssay || !(theAssay instanceof ScanningDotAssay)) {
+  if (!theAssay || !(theAssay instanceof ScanningDotsAssay)) {
     return (
-      <div className="text-red-500">No valid ScanningDotAssay available</div>
+      <div className="text-red-500">No valid ScanningDotsAssay available</div>
     );
   }
 
@@ -24,7 +24,7 @@ export function ScanningDotRanges() {
         toolTip="Degrees of visual angle"
         onUpdate={(diameters: RangeSpec) => {
           setTheAssay(
-            new ScanningDotAssay({
+            new ScanningDotsAssay({
               ...theAssay,
               diameters: diameters,
             })
@@ -38,7 +38,7 @@ export function ScanningDotRanges() {
         onUpdate={(xDegrees: RangeSpec) => {
           // console.log('>>>>> xDegrees=' + JSON.stringify(xDegrees));
           setTheAssay(
-            new ScanningDotAssay({
+            new ScanningDotsAssay({
               ...theAssay,
               xDegrees: xDegrees,
             })
@@ -52,7 +52,7 @@ export function ScanningDotRanges() {
         onUpdate={(yDegrees: RangeSpec) => {
           // console.log('>>>>> yDegrees=' + JSON.stringify(yDegrees));
           setTheAssay(
-            new ScanningDotAssay({
+            new ScanningDotsAssay({
               ...theAssay,
               yDegrees: yDegrees,
             })

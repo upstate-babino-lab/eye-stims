@@ -1,15 +1,15 @@
 import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
 import { RangeSpec } from '@src/assays';
-import { FullFieldSineAssay } from '@src/assays/FullFieldSineAssay';
+import { FullFieldSinesAssay } from '@src/assays/FullFieldSinesAssay';
 
-export function FullFieldSineRanges() {
+export function FullFieldSinesRanges() {
   const { theAssay, setTheAssay } = useAppState();
-  const { means, mContrasts, frequencies } = theAssay as FullFieldSineAssay;
+  const { means, mContrasts, frequencies } = theAssay as FullFieldSinesAssay;
 
-  if (!theAssay || !(theAssay instanceof FullFieldSineAssay)) {
+  if (!theAssay || !(theAssay instanceof FullFieldSinesAssay)) {
     return (
-      <div className="text-red-500">No valid FullFieldSineAssay available</div>
+      <div className="text-red-500">No valid FullFieldSinesAssay available</div>
     );
   }
 
@@ -20,7 +20,7 @@ export function FullFieldSineRanges() {
         toolTip="Mean luminance with range 0% to 1/(1+contrast)"
         onUpdate={(means: RangeSpec) => {
           setTheAssay(
-            new FullFieldSineAssay({
+            new FullFieldSinesAssay({
               ...theAssay,
               means: means,
             })
@@ -36,7 +36,7 @@ export function FullFieldSineRanges() {
         onUpdate={(mContrasts: RangeSpec) => {
           // console.log('>>>>> xDegrees=' + JSON.stringify(xDegrees));
           setTheAssay(
-            new FullFieldSineAssay({
+            new FullFieldSinesAssay({
               ...theAssay,
               mContrasts: mContrasts,
             })
@@ -52,7 +52,7 @@ export function FullFieldSineRanges() {
         onUpdate={(frequencies: RangeSpec) => {
           // console.log('>>>>> frequencies=' + JSON.stringify(frequencies));
           setTheAssay(
-            new FullFieldSineAssay({
+            new FullFieldSinesAssay({
               ...theAssay,
               frequencies: frequencies,
             })

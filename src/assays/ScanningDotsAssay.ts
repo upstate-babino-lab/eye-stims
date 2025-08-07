@@ -10,7 +10,7 @@ export const maxYDegrees = Math.round(
   displays.SD1.height / displays.SD1.pxPerDegree
 );
 
-export class ScanningDotAssay extends Assay {
+export class ScanningDotsAssay extends Assay {
   diameters: RangeSpec = new RangeSpec({ start: 3, step: 3, nSteps: 1 });
   xDegrees: RangeSpec = new RangeSpec({
     start: 3,
@@ -23,11 +23,11 @@ export class ScanningDotAssay extends Assay {
     nSteps: 10,
   });
 
-  constructor(props: Partial<ScanningDotAssay> = {}) {
+  constructor(props: Partial<ScanningDotsAssay> = {}) {
     // TODO: Check that cpds, contrasts, and speeds are all in valid ranges
     super({
       ...props,
-      assayType: AssayType.ScanningDot,
+      assayType: AssayType.ScanningDots,
     });
     this.diameters =
       (props.diameters && new RangeSpec(props.diameters)) ?? this.diameters;

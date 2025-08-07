@@ -8,8 +8,8 @@ import { addIntegrityFlashes, addRestPeriods, shuffle } from '@stims/stim-utils'
 // TODO: Create StimsAssay subclasses for each type of StimsAssay
 export enum AssayType {
   SqrGratingPairs = 'SqrGratingPairs',
-  ScanningDot = 'ScanningDot',
-  FullFieldSine = 'FullFieldSine',
+  ScanningDots = 'ScanningDots',
+  FullFieldSines = 'FullFieldSines',
 }
 
 type AssayInfo = {
@@ -21,10 +21,10 @@ export const assaysInfo: Record<AssayType, AssayInfo> = {
       'Pairs of gratings moving left and right ' +
       'for each cpd, contrast, and speed.',
   },
-  ScanningDot: {
+  ScanningDots: {
     description: 'Flash Dot on grid for each xDegree yDegree, and diameter.',
   },
-  FullFieldSine: {
+  FullFieldSines: {
     description: 'Sinusoidal variations of intensity over full field.',
   },
 };

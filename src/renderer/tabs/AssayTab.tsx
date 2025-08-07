@@ -7,8 +7,8 @@ import {
   AssayType,
   assaysInfo,
   SqrGratingAssay,
-  ScanningDotAssay,
-  FullFieldSineAssay,
+  ScanningDotsAssay,
+  FullFieldSinesAssay,
 } from '@src/assays/index';
 import { useEffect, useState } from 'react';
 import { filterPrivateAndNullProperties } from '@src/shared-utils';
@@ -17,8 +17,8 @@ import { TOOLTIP_STYLES } from '@renderer/render-utils';
 import 'react-tooltip/dist/react-tooltip.css';
 import StimSequence from '../StimSequence';
 import { GratingRanges } from './GratingRanges';
-import { ScanningDotRanges } from './ScanningDotRanges';
-import { FullFieldSineRanges } from './FullFieldSineRanges';
+import { ScanningDotsRanges } from './ScanningDotsRanges';
+import { FullFieldSinesRanges } from './FullFieldSinesRanges';
 import { AssayProps } from '@src/assays/Assay';
 
 export default function AssayTab() {
@@ -379,17 +379,17 @@ function SubAssayRanges() {
   }
 
   if (
-    theAssay instanceof ScanningDotAssay ||
-    theAssay?.assayType === AssayType.ScanningDot
+    theAssay instanceof ScanningDotsAssay ||
+    theAssay?.assayType === AssayType.ScanningDots
   ) {
-    return <ScanningDotRanges />;
+    return <ScanningDotsRanges />;
   }
 
   if (
-    theAssay instanceof FullFieldSineAssay ||
-    theAssay?.assayType === AssayType.FullFieldSine
+    theAssay instanceof FullFieldSinesAssay ||
+    theAssay?.assayType === AssayType.FullFieldSines
   ) {
-    return <FullFieldSineRanges />;
+    return <FullFieldSinesRanges />;
   }
 
   // If no match
