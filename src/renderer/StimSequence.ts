@@ -2,7 +2,7 @@ import { Stimulus } from '@stims/index';
 import './StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
-import { filterPrivateProperties, getStartTimes } from '../shared-utils';
+import { filterPrivateAndNullProperties, getStartTimes } from '../shared-utils';
 import { newStimulus } from '@stims/stimConstructors';
 import { saveFileDialogAsync } from './render-utils';
 import { frameWithBlack } from '@src/stims/stim-utils';
@@ -128,9 +128,9 @@ export default class StimSequence {
     filePath: string,
     title: string = 'Untitled',
     description: string = '',
-    fromVideoComment: unknown = undefined
+    fromVideoComment?: unknown
   ) {
-    const content = JSON.stringify(
+    const contentJson = JSON.stringify(
       {
         title: title,
         description: description,
@@ -138,12 +138,12 @@ export default class StimSequence {
         fromVideoComment: fromVideoComment,
         stimuli: this.stimuli || [],
       },
-      filterPrivateProperties,
+      filterPrivateAndNullProperties,
       4
     );
     window.electron.send('saveFile', {
       filePath: filePath,
-      content: content,
+      content: contentJson,
     });
   }
 

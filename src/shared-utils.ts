@@ -79,7 +79,7 @@ export interface FilterPrivatePropertiesThis {
   [key: string]: unknown;
 }
 
-export function filterPrivateProperties(
+export function filterPrivateAndNullProperties(
   this: FilterPrivatePropertiesThis,
   key: string,
   value: unknown
@@ -93,9 +93,12 @@ export function filterPrivateProperties(
     return value;
   }
 
-  // If the key starts with an underscore, return undefined to omit it
   if (key.startsWith('_')) {
-    return undefined;
+    return undefined; // Omit key and value
+  }
+
+  if (value === null) {
+    return undefined; // Omit key and value
   }
 
   // Otherwise, return the value as is

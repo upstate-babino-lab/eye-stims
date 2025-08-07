@@ -11,7 +11,7 @@ import {
   FullFieldSineAssay,
 } from '@src/assays/index';
 import { useEffect, useState } from 'react';
-import { filterPrivateProperties } from '@src/shared-utils';
+import { filterPrivateAndNullProperties } from '@src/shared-utils';
 import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '@renderer/render-utils';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -109,7 +109,7 @@ export default function AssayTab() {
         <BooleanCheckbox
           label="MeanColorTail"
           propName="hasMeanColorTail"
-          toolTip="Use mean of all pixels in body as tail color (instead of solid black)"
+          toolTip="Use mean of all body pixels as tail color (instead of solid black)"
         />
         <div className="border border-gray-500 rounded-md p-1">
           <SubAssayRanges />
@@ -194,7 +194,11 @@ export default function AssayTab() {
               (theAssay?.title.toLowerCase() || 'untitled') + '.assay.json'
             );
             setTheStimsMeta({ ...theStimsMeta, loadedPath: filePath });
-            const content = JSON.stringify(theAssay, filterPrivateProperties, 4);
+            const content = JSON.stringify(
+              theAssay,
+              filterPrivateAndNullProperties,
+              4
+            );
             window.electron.send('saveFile', {
               filePath: filePath,
               content: content,
