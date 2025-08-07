@@ -1,9 +1,8 @@
 import { Stimulus } from '@stims/Stimulus';
 import { RangeSpec } from './RangeSpec';
 import { AssayType, Assay } from './Assay';
-import { contrastPair, linearToHex } from '@stims/stim-utils';
+import { contrastPair } from '@stims/stim-utils';
 import { SqrGrating } from '@stims/SqrGrating';
-import { Solid } from '@stims/Solid';
 
 export class SqrGratingAssay extends Assay {
   cpds: RangeSpec = new RangeSpec({ start: 0.3, step: 0.2, nSteps: 1 }); // TODO? add min/max
@@ -70,21 +69,7 @@ export class SqrGratingAssay extends Assay {
                 })
               );
             }
-            if (!this.grayMs) {
-              stimuli.push(...stimSet);
-            } else {
-              const grayStim = new Solid({
-                durationMs: this.grayMs + this.grayTailMs,
-                bodyMs: this.grayMs,
-                tailMs: this.grayTailMs,
-                bgColor: linearToHex(0.5, 0.5, 0.5), // Gray
-              });
-              // Add gray stimulus after each grating
-              stimSet.forEach((stim) => {
-                stimuli.push(stim);
-                stimuli.push(grayStim);
-              });
-            }
+            stimuli.push(...stimSet);
           }
         }
       }
