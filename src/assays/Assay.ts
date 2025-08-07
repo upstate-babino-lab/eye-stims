@@ -38,7 +38,7 @@ export type AssayProps = {
   // head(0) + body + tail = (2 * bodyMs)
   bodyMs?: number; // Multiple of 20
   tailMs?: number; // Multiple of 20
-  hasMeanColorTail?: boolean; // Black if false
+  colorTails?: boolean; // All tails black if false
   includeStaticGratings?: boolean;
   nRepetitions?: number; // Number of repetitions of the whole sequence
   integrityFlashIntervalMins?: number;
@@ -52,7 +52,7 @@ export abstract class Assay {
   description: string = '';
   bodyMs: number = 500;
   tailMs: number = 500;
-  hasMeanColorTail: boolean = false;
+  colorTails: boolean = false;
   nRepetitions: number = 1;
   integrityFlashIntervalMins: number = 0;
   restIntervalMins: number = 2;
@@ -69,7 +69,7 @@ export abstract class Assay {
       (this.description || assaysInfo[this.assayType].description);
     this.bodyMs = Math.max(0, props.bodyMs ?? this.bodyMs);
     this.tailMs = Math.max(0, props.tailMs ?? this.tailMs);
-    this.hasMeanColorTail = this.hasMeanColorTail ?? this.hasMeanColorTail;
+    this.colorTails = this.colorTails ?? this.colorTails;
     this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
     this.integrityFlashIntervalMins =
       props.integrityFlashIntervalMins ?? this.integrityFlashIntervalMins;
@@ -85,6 +85,11 @@ export abstract class Assay {
   // If we don't use cache stims will be reshuffled every time.
   stimuli(): Stimulus[] {
     let result = this.baseStimuli();
+    if (this.colorTails) {
+      result.map((s) => {
+        s.colorTail = true;
+      });
+    }
     if (this.doShuffle) {
       shuffle(result); // Optional in-place shuffle before inserting integrity flashes and rests
     }

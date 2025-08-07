@@ -107,6 +107,7 @@ function StimForm(props: {
           'headMs',
           'bodyMs',
           'tailMs',
+          'colorTail',
           'gratingType',
           'meta',
         ].includes(k)

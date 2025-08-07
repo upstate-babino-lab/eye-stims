@@ -15,6 +15,7 @@ export enum StimType {
 
 // Make sure durations align with 50fps frame rate
 // (multiples of 20 milliseconds)
+// TODO: Support other frame rates?
 export function roundToValidDuration(num: number): number {
   if (num < 0) {
     return 0;
@@ -31,9 +32,10 @@ type StimProps = {
   stimType: StimType;
   durationMs?: number;
   bgColor?: string;
-  headMs?: number;
+  headMs?: number; // Not used - may be buggy and could be removed in future
   bodyMs?: number;
   tailMs?: number;
+  colorTail?: boolean;
   meta?: Record<string, unknown>;
 };
 
@@ -44,9 +46,10 @@ export abstract class Stimulus {
   bgColor: string = 'black';
   // Head, body and tail are optional, but must sum to duration
   // By default head and tail are 0 and body is full duration
-  headMs?: number; // Duration of black before body
+  headMs?: number; // Duration of black before body TODO: Remove because not used
   bodyMs?: number; // Duration between head and tail, multiple of 20
-  tailMs?: number; // Duration of black after body
+  tailMs?: number; // Duration of black (or mean body color) after body
+  colorTail?: boolean = false; // Use mean of all body pixels as tail color instead of black
   meta?: Record<string, unknown>;
   _videoCacheFilename?: string;
   _silentCacheFilename?: string;
@@ -86,6 +89,7 @@ export abstract class Stimulus {
     if (this.tailMs == 0) {
       delete this.tailMs;
     }
+    this.colorTail = props.colorTail ?? this.colorTail;
     this.meta = props.meta ?? this.meta;
   }
 
@@ -128,7 +132,7 @@ function calculateDurations(
 ): [number, number, number] {
   const defined = (head ? '1' : '0') + (body ? '1' : '0') + (tail ? '1' : '0');
   duration = Math.max(TONE_DURATION_MS, duration); // Leave room for sync tones
-  roundToValidDuration(duration); // Round to nearest 20ms
+  duration = roundToValidDuration(duration);
   switch (defined) {
     case '000': // All durations are undefined
       return [0, duration, 0];

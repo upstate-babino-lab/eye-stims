@@ -104,12 +104,12 @@ export default function AssayTab() {
         <TwoPropsForm
           nameA="bodyMs"
           nameB="tailMs"
-          toolTip="Each stimulus body is followed by a black tail (multiples of 20ms)"
+          toolTip="Each stimulus body is followed by full-field black or colored tail (multiples of 20ms)"
         />
         <BooleanCheckbox
-          label="MeanColorTail"
-          propName="hasMeanColorTail"
-          toolTip="Use mean of all body pixels as tail color (instead of solid black)"
+          label="Colored Tails"
+          propName="colorTails"
+          toolTip="Color tails with mean of last 200ms of each body (instead of solid black)"
         />
         <div className="border border-gray-500 rounded-md p-1">
           <SubAssayRanges />
@@ -285,7 +285,7 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
     description: '',
     bodyMs: 0,
     tailMs: 0,
-    hasMeanColorTail: false,
+    colorTails: false,
     includeStaticGratings: false,
     nRepetitions: 1,
     integrityFlashIntervalMins: 0,

@@ -44,6 +44,15 @@ const InputField: React.FC<InputFieldProps> = ({
           onChange={handleString}
         />
       );
+    case 'boolean':
+      return (
+        <input
+          {...otherProps} // Including key, className, etc.
+          type="checkbox"
+          checked={!!value}
+          onChange={(e) => onChange(e.target.checked)}
+        />
+      )
     default:
       return <div>Input field for type {valueType} not implemented yet</div>;
   }

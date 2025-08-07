@@ -34,10 +34,13 @@ export function StateProvider({ children }: { children: ReactNode }) {
       setTheStimSequence(stimSequence);
 
       let fromVideoComment: unknown = null;
+      const commentStr = parsedContents['comment'];
       try {
-        fromVideoComment = JSON.parse(parsedContents['comment']);
+        if (commentStr) {
+          fromVideoComment = JSON.parse(commentStr);
+        }
       } catch {
-        console.error('Video comment not parsed ' + parsedContents['comment']);
+        console.error('Video comment not parsed comment=' + commentStr);
       }
       setTheStimsMeta({
         loadedPath: filePath,
