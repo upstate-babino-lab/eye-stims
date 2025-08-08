@@ -10,6 +10,7 @@ export enum AssayType {
   SqrGratingPairs = 'SqrGratingPairs',
   ScanningDots = 'ScanningDots',
   FullFieldSines = 'FullFieldSines',
+  CheckerboardsAssay = 'CheckerboardsAssay',
 }
 
 type AssayInfo = {
@@ -26,6 +27,10 @@ export const assaysInfo: Record<AssayType, AssayInfo> = {
   },
   FullFieldSines: {
     description: 'Sinusoidal variations of intensity over full field.',
+  },
+  CheckerboardsAssay: {
+    description:
+      'Pairs of checkerboards with and without inversion at the middle of body ',
   },
 };
 
@@ -69,7 +74,7 @@ export abstract class Assay {
       (this.description || assaysInfo[this.assayType].description);
     this.bodyMs = Math.max(0, props.bodyMs ?? this.bodyMs);
     this.tailMs = Math.max(0, props.tailMs ?? this.tailMs);
-    this.colorTails = this.colorTails ?? this.colorTails;
+    this.colorTails = props.colorTails ?? this.colorTails;
     this.nRepetitions = props.nRepetitions ?? this.nRepetitions;
     this.integrityFlashIntervalMins =
       props.integrityFlashIntervalMins ?? this.integrityFlashIntervalMins;

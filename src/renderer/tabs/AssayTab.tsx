@@ -9,6 +9,7 @@ import {
   SqrGratingAssay,
   ScanningDotsAssay,
   FullFieldSinesAssay,
+  CheckerboardsAssay,
 } from '@src/assays/index';
 import { useEffect, useState } from 'react';
 import { filterPrivateAndNullProperties } from '@src/shared-utils';
@@ -20,6 +21,7 @@ import { GratingRanges } from './GratingRanges';
 import { ScanningDotsRanges } from './ScanningDotsRanges';
 import { FullFieldSinesRanges } from './FullFieldSinesRanges';
 import { AssayProps } from '@src/assays/Assay';
+import { CheckerboardsRanges } from './CheckerboardsRanges';
 
 export default function AssayTab() {
   const { theAssay, setTheAssay } = useAppState();
@@ -87,7 +89,7 @@ export default function AssayTab() {
           <label className="text-sm font-bold text-gray-100 px-4">
             AssayType:
           </label>
-          <AssayTypeDropdown
+          <AssayTypePulldown
             initialValue={theAssay?.assayType || AssayType.SqrGratingPairs}
             onChange={(newType: AssayType) => {
               console.log('>>>>> AssayType changed to ' + newType);
@@ -213,7 +215,7 @@ export default function AssayTab() {
 }
 
 //-----------------------------------------------------------------------------
-function AssayTypeDropdown(props: {
+function AssayTypePulldown(props: {
   initialValue: AssayType;
   onChange: (value: AssayType) => void;
 }) {
@@ -390,6 +392,13 @@ function SubAssayRanges() {
     theAssay?.assayType === AssayType.FullFieldSines
   ) {
     return <FullFieldSinesRanges />;
+  }
+
+  if (
+    theAssay instanceof CheckerboardsAssay ||
+    theAssay?.assayType === AssayType.CheckerboardsAssay
+  ) {
+    return <CheckerboardsRanges />;
   }
 
   // If no match

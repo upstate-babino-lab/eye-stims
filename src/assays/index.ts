@@ -6,3 +6,4 @@ export { SqrGratingAssay } from './SqrGratingAssay';
 export { ScanningDotsAssay } from './ScanningDotsAssay';
 export { FullFieldSinesAssay } from './FullFieldSinesAssay';
 export { RangeSpec } from './RangeSpec';
+export { CheckerboardsAssay } from './CheckerboardsAssay';
