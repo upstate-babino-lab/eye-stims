@@ -7,3 +7,4 @@ export { Bar } from './Bar';
 export { SinGrating } from './SinGrating';
 export { SqrGrating } from './SqrGrating';
 export { FFSine } from './FFSine';
+export { Checkerboard } from './Checkerboard';

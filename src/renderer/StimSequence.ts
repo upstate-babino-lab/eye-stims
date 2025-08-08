@@ -3,7 +3,7 @@ import './StimulusElectron';
 import { Encoder } from './Encoder';
 import { DisplayKey } from '../displays';
 import { filterPrivateAndNullProperties, getStartTimes } from '../shared-utils';
-import { newStimulus } from '@stims/stimConstructors';
+import { newStimulus } from '@src/stims/stimFactory';
 import { saveFileDialogAsync } from './render-utils';
 import { frameWithBlack } from '@src/stims/stim-utils';
 

@@ -11,6 +11,7 @@ export enum StimType {
   SinGrating = 'SinGrating',
   SqrGrating = 'SqrGrating',
   FFSine = 'FFSine',
+  Checkerboard = 'Checkerboard',
 }
 
 // Make sure durations align with 50fps frame rate
@@ -28,7 +29,7 @@ export function roundToValidDuration(num: number): number {
 
 export type NestedStimuli = (Stimulus | NestedStimuli)[];
 
-type StimProps = {
+export type StimProps = {
   stimType: StimType;
   durationMs?: number;
   bgColor?: string;

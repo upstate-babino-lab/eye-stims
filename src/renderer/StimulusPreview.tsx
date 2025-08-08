@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { StimType, Stimulus } from '@stims/Stimulus';
-import { stimConstructors } from '@stims/stimConstructors';
+import { newStimulus } from '@src/stims/stimFactory';
 import Button from './components/Button';
 import InputField from './components/InputField';
 import CloseButton from './components/CloseButton';
@@ -14,24 +14,15 @@ export default function StimulusPreview(props: {
 }) {
   const { theStimSequence } = useAppState();
   const indexedStim = theStimSequence?.stimuli[props.stimIndex];
-  // TODO: simplify below by using imported newStimulus()
   const isValidStimType =
     indexedStim && Object.values(StimType).includes(indexedStim.stimType);
-  let constructor = stimConstructors['Solid'];
-  if (isValidStimType) {
-    constructor = stimConstructors[indexedStim.stimType];
-  } else {
-    console.log(
-      `ERROR from StimulusPreview: '${indexedStim?.stimType}' invalid StimTypeName`
-    );
-  }
   const [stimulus, setStimulus] = useState<Stimulus | undefined>(
-    isValidStimType ? indexedStim && new constructor(indexedStim) : undefined
+    isValidStimType ? indexedStim && newStimulus(indexedStim) : undefined
   );
 
   useEffect(() => {
-    setStimulus(indexedStim && new constructor(indexedStim));
-  }, [props.stimIndex, indexedStim, constructor]);
+    setStimulus(indexedStim && newStimulus(indexedStim));
+  }, [props.stimIndex, indexedStim]);
 
   return stimulus && isValidStimType ? (
     <div className={`flex flex-col ${props.className || ''}`}>
@@ -71,7 +62,8 @@ function StimForm(props: {
     delete oldStimulus.headMs;
     delete oldStimulus.bodyMs;
     delete oldStimulus.tailMs;
-    const newStim = new stimConstructors[stimTypeName]({
+    oldStimulus.stimType = stimTypeName;
+    const newStim = newStimulus({
       ...oldStimulus, // properties that remain the same
       ...overrides, // last properties win
     });

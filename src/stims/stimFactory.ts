@@ -1,4 +1,5 @@
 import { SqrGrating } from './SqrGrating';
+import { StimProps } from './Stimulus';
 import {
   StimTypeName,
   Stimulus,
@@ -7,6 +8,7 @@ import {
   Bar,
   SinGrating,
   FFSine,
+  Checkerboard,
 } from './index';
 
 // Should never actually be used.
@@ -38,11 +40,11 @@ class Uninitialized extends Stimulus {
 
 // Map of constructors that create new Stimulus class objects (with methods)
 // from simple parsed JSON objects (with no methods) using lookup by name.
-// Each StimTypeName must be assigned or thankfully, Typescript complains.
+// Each StimTypeName must be assigned or thankfully Typescript complains.
 type StimConstructors = {
   [key in StimTypeName]: new (args: Partial<Stimulus>) => Stimulus;
 };
-export const stimConstructors: StimConstructors = {
+const stimConstructors: StimConstructors = {
   Uninitialized: Uninitialized,
   Solid: Solid,
   Dot: Dot,
@@ -50,10 +52,11 @@ export const stimConstructors: StimConstructors = {
   SinGrating: SinGrating,
   SqrGrating: SqrGrating,
   FFSine: FFSine,
+  Checkerboard: Checkerboard,
 };
 
 // Create a new Stimulus class instance from POJO or parsed JSON object.
-export function newStimulus(stim: Stimulus) {
+export function newStimulus(stim: StimProps) {
   const isValidStimType =
     stim && Object.values(StimTypeName).includes(stim.stimType);
   let constructor = stimConstructors['Uninitialized'];
