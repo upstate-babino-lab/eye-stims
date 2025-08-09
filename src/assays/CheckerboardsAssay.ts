@@ -42,7 +42,7 @@ export class CheckerboardsAssay extends Assay {
             tailMs: this.tailMs,
             bgColor: bgColor,
             fgColor: fgColor,
-            inversionOffsetMs: this.bodyMs / 2, // Invert half way through body
+            invertMs: this.bodyMs / 2, // Invert half way through body
             meta: { contrast: contrast },
           };
           stimSet.push(new Checkerboard(stimPojo)); // First stimulus
@@ -50,7 +50,7 @@ export class CheckerboardsAssay extends Assay {
           stimSet.push(
             new Checkerboard({
               ...stimPojo,
-              inversionOffsetMs: 0,
+              invertMs: 0,
             })
           );
           stimuli.push(...stimSet);

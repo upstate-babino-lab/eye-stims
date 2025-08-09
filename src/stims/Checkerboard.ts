@@ -5,22 +5,22 @@ import { degreesToRadians, vmax } from './stim-utils';
 export class Checkerboard extends Stimulus {
   fgColor: string = 'white';
   cpd: number = 0.1;
-  inversionOffsetMs: number = 0; // How far into body to start inverting
+  invertMs: number = 0; // How far into body to start inverting
   angle: number = 0; // Degrees
 
   constructor(props: Partial<Checkerboard> = {}) {
     // console.log(`>>>>> constructor Checkerboard(duration=${duration}, bgColor=${bgColor}, ...)`);
     super({ ...props, stimType: StimType.Checkerboard });
     this.fgColor = props.fgColor ?? this.fgColor;
-    this.inversionOffsetMs = props.inversionOffsetMs ?? this.inversionOffsetMs;
+    this.invertMs = props.invertMs ?? this.invertMs;
     this.cpd = props.cpd ?? this.cpd;
     this.angle = props.angle ?? this.angle;
 
     const bodyDuration =
       this.durationMs - ((this.headMs ?? 0) + (this.tailMs ?? 0));
     assert(
-      this.inversionOffsetMs < bodyDuration,
-      'inversionOffsetMs must be less than body duration'
+      this.invertMs < bodyDuration,
+      'invertMs must be less than body duration'
     );
   }
 
@@ -59,8 +59,7 @@ export class Checkerboard extends Stimulus {
     };
 
     draw(
-      !!this.inversionOffsetMs &&
-        ageSeconds * 1000 >= (this.headMs ?? 0) + this.inversionOffsetMs
+      !!this.invertMs && ageSeconds * 1000 >= (this.headMs ?? 0) + this.invertMs
     );
   }
 
