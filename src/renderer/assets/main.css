@@ -17,3 +17,11 @@
     border-color: var(--color-gray-200, currentColor);
   }
 }
+
+@font-face {
+  font-family: 'sloan-optotype';
+  src: url('assets/Sloan.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

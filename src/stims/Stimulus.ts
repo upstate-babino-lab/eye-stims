@@ -12,6 +12,7 @@ export enum StimType {
   SqrGrating = 'SqrGrating',
   FFSine = 'FFSine',
   Checkerboard = 'Checkerboard',
+  Letter = 'Letter',
 }
 
 // Make sure durations align with 50fps frame rate

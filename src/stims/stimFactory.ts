@@ -9,6 +9,7 @@ import {
   SinGrating,
   FFSine,
   Checkerboard,
+  Letter,
 } from './index';
 
 // Should never actually be used.
@@ -53,6 +54,7 @@ const stimConstructors: StimConstructors = {
   SqrGrating: SqrGrating,
   FFSine: FFSine,
   Checkerboard: Checkerboard,
+  Letter: Letter,
 };
 
 // Create a new Stimulus class instance from POJO or parsed JSON object.
