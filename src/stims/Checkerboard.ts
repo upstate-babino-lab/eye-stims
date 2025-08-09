@@ -72,7 +72,7 @@ export class Checkerboard extends Stimulus {
     if (!ctx) {
       throw new Error('Could not get 2D context');
     }
-    const sqSize = Math.floor(edgeSize / 2);
+    const sqSize = edgeSize / 2;
 
     ctx.fillStyle = doInverted ? this.fgColor : this.bgColor;
     ctx.fillRect(0, 0, edgeSize, edgeSize);

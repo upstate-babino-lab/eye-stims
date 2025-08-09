@@ -78,7 +78,7 @@ export class Grating extends Stimulus {
     const patternCanvas = new OffscreenCanvas(width, height);
     const ctx = patternCanvas.getContext('2d');
     if (!ctx) throw new Error('Could not get 2D context');
-    const fgWidth = Math.floor(width / 2); // Sightly favor bgColor
+    const fgWidth = width / 2;
 
     ctx.fillStyle = this.bgColor;
     ctx.fillRect(0, 0, width + fgWidth, height);
