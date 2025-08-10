@@ -10,7 +10,7 @@ import {
 
 const ROW_HEIGHT = 30;
 const CELL_FORMAT = 'min-w-19 p-0.5 text-left';
-const TYPE_FORMAT = CELL_FORMAT + ' min-w-25'; // Typename column a bit wider
+const TYPE_FORMAT = CELL_FORMAT + ' min-w-30'; // Typename column a bit wider to fit widest Stim type name
 
 const StimList = ({
   data,

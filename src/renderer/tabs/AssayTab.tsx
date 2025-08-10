@@ -10,6 +10,7 @@ import {
   ScanningDotsAssay,
   FullFieldSinesAssay,
   CheckerboardsAssay,
+  LettersAssay,
 } from '@src/assays/index';
 import { useEffect, useState } from 'react';
 import { filterPrivateAndNullProperties } from '@src/shared-utils';
@@ -22,6 +23,7 @@ import { ScanningDotsRanges } from './ScanningDotsRanges';
 import { FullFieldSinesRanges } from './FullFieldSinesRanges';
 import { AssayProps } from '@src/assays/Assay';
 import { CheckerboardsRanges } from './CheckerboardsRanges';
+import { LetterRanges } from './LetterRanges';
 
 export default function AssayTab() {
   const { theAssay, setTheAssay } = useAppState();
@@ -149,7 +151,7 @@ export default function AssayTab() {
             className="mb-1 flex items-center w-90"
             data-tooltip-id={'integrity-flash-id'}
             data-tooltip-content={
-              'gray, red, green, blue flashes optional at interval, required at start and end'
+              'Gray,red,green,blue flashes are optional at interval, but required at start and end'
             }
             data-tooltip-place="right"
           >
@@ -401,6 +403,15 @@ function SubAssayRanges() {
     return <CheckerboardsRanges />;
   }
 
-  // If no match
-  return <div className="text-red-500">Unexpected theAssay.</div>;
+  if (
+    theAssay instanceof LettersAssay ||
+    theAssay?.assayType === AssayType.Letters
+  ) {
+    return <LetterRanges />;
+  }
+  // eslint-disable-next-line no-debugger
+  debugger; // Need to add AssayType code here
+  return (
+    <div className="text-red-500">SubAssayRanges missing this AssayType.</div>
+  );
 }

@@ -7,3 +7,4 @@ export { ScanningDotsAssay } from './ScanningDotsAssay';
 export { FullFieldSinesAssay } from './FullFieldSinesAssay';
 export { RangeSpec } from './RangeSpec';
 export { CheckerboardsAssay } from './CheckerboardsAssay';
+export { LettersAssay } from './LettersAssay';

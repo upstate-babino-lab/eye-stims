@@ -11,6 +11,7 @@ export enum AssayType {
   ScanningDots = 'ScanningDots',
   FullFieldSines = 'FullFieldSines',
   Checkerboards = 'Checkerboards',
+  Letters = 'Letters',
 }
 
 type AssayInfo = {
@@ -30,7 +31,10 @@ export const assaysInfo: Record<AssayType, AssayInfo> = {
   },
   Checkerboards: {
     description:
-      'Pairs of checkerboards with and without inversion at the middle of body ',
+      'Pairs of checkerboards with and without inversion at the middle of body.',
+  },
+  Letters: {
+    description: 'Rotate through the 10 standard Sloan letters plus a blank.',
   },
 };
 

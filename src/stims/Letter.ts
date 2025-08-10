@@ -1,7 +1,21 @@
 import { StimType, Stimulus } from './Stimulus';
 
+export const STANDARD_SLOAN_LETTERS = [
+  'C',
+  'D',
+  'H',
+  'K',
+  'N',
+  'O',
+  'R',
+  'S',
+  'V',
+  'Z',
+  ' ',
+];
+
 export class Letter extends Stimulus {
-  letter: string = 'C'; // Valid letters: C, D, H, K, N, O, R, S, V, Z
+  letter: string = STANDARD_SLOAN_LETTERS[0];
   fgColor: string = 'white';
   size: number = 10; // Degrees
 

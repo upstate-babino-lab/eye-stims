@@ -4,6 +4,7 @@ import { SqrGratingAssay } from './SqrGratingAssay';
 import { ScanningDotsAssay } from './ScanningDotsAssay';
 import { FullFieldSinesAssay } from './FullFieldSinesAssay';
 import { CheckerboardsAssay } from './CheckerboardsAssay';
+import { LettersAssay } from './LettersAssay';
 
 // Map of constructors that create new StimsSpec class objects (with methods)
 // from simple parsed JSON POJOs (with no methods) using lookup by name.
@@ -16,6 +17,7 @@ export const assayConstructors: AssayConstructors = {
   ScanningDots: ScanningDotsAssay,
   FullFieldSines: FullFieldSinesAssay,
   Checkerboards: CheckerboardsAssay,
+  Letters: LettersAssay,
 };
 
 // Create a new Assay class instance from POJO or parsed JSON object.
