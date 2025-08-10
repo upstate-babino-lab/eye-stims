@@ -17,7 +17,7 @@ export const STANDARD_SLOAN_LETTERS = [
 export class Letter extends Stimulus {
   letter: string = STANDARD_SLOAN_LETTERS[0];
   fgColor: string = 'white';
-  size: number = 10; // Degrees
+  size: number = 10; // Degrees of height
 
   constructor(props: Partial<Letter> = {}) {
     // console.log(`>>>>> constructor Letter(duration=${duration}, bgColor=${bgColor}, ...)`);
@@ -35,7 +35,7 @@ export class Letter extends Stimulus {
     if (ageSeconds < 0 || ageSeconds > this.durationMs / 1000) {
       return;
     }
-    const LetterDiameterPx = this.size * pxPerDegree;
+    const LetterHeightPx = this.size * pxPerDegree;
 
     ctx.save();
     // Start with pure background
@@ -46,7 +46,7 @@ export class Letter extends Stimulus {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = this.fgColor;
-    ctx.font = LetterDiameterPx + 'px sloan-optotype'; // From assets/main.css
+    ctx.font = LetterHeightPx + 'px sloan-optotype'; // From assets/main.css
     ctx.fillText(this.letter, 0, 0);
 
     ctx.restore();

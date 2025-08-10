@@ -14,7 +14,7 @@ export function LetterRanges() {
     <div className="flex flex-col gap-2">
       <RangeSpecForm
         title="Sizes (in degrees)"
-        toolTip="Width of letter in degrees of visual angle"
+        toolTip="Height of letter in degrees of visual angle"
         onUpdate={(sizes: RangeSpec) => {
           setTheStimsSpec(
             new LettersAssay({
