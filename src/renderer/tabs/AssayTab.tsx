@@ -109,7 +109,7 @@ export default function AssayTab() {
           toolTip="Each stimulus body is followed by full-field black or colored tail (multiples of 20ms)"
         />
         <BooleanCheckbox
-          label="Colored Tails"
+          label="Mean-colored Tails"
           propName="colorTails"
           toolTip="Color tails with mean of last 200ms of each body (instead of solid black)"
         />
@@ -396,7 +396,7 @@ function SubAssayRanges() {
 
   if (
     theAssay instanceof CheckerboardsAssay ||
-    theAssay?.assayType === AssayType.CheckerboardsAssay
+    theAssay?.assayType === AssayType.Checkerboards
   ) {
     return <CheckerboardsRanges />;
   }

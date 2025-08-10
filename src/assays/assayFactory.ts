@@ -15,7 +15,7 @@ export const assayConstructors: AssayConstructors = {
   SqrGratingPairs: SqrGratingAssay,
   ScanningDots: ScanningDotsAssay,
   FullFieldSines: FullFieldSinesAssay,
-  CheckerboardsAssay: CheckerboardsAssay,
+  Checkerboards: CheckerboardsAssay,
 };
 
 // Create a new Assay class instance from POJO or parsed JSON object.

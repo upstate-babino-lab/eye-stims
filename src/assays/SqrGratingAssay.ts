@@ -5,7 +5,7 @@ import { contrastPair } from '@stims/stim-utils';
 import { SqrGrating } from '@stims/SqrGrating';
 
 export class SqrGratingAssay extends Assay {
-  cpds: RangeSpec = new RangeSpec({ start: 0.3, step: 0.2, nSteps: 1 }); // TODO? add min/max
+  cpds: RangeSpec = new RangeSpec({ start: 0.1, step: 0.1, nSteps: 3 }); // TODO? add min/max
   contrasts: RangeSpec = new RangeSpec({
     start: 90,
     step: -10,

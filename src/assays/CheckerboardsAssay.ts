@@ -5,7 +5,7 @@ import { contrastPair } from '@stims/stim-utils';
 import { Checkerboard } from '@stims/Checkerboard';
 
 export class CheckerboardsAssay extends Assay {
-  cpds: RangeSpec = new RangeSpec({ start: 0.3, step: 0.2, nSteps: 1 }); // TODO? add min/max
+  cpds: RangeSpec = new RangeSpec({ start: 0.1, step: 0.1, nSteps: 3 }); // TODO? add min/max
   contrasts: RangeSpec = new RangeSpec({
     start: 90,
     step: -10,
@@ -18,7 +18,7 @@ export class CheckerboardsAssay extends Assay {
     // TODO: Check that cpds & contrasts are all in valid ranges
     super({
       ...props,
-      assayType: AssayType.CheckerboardsAssay,
+      assayType: AssayType.Checkerboards,
     });
     this.cpds = (props.cpds && new RangeSpec(props.cpds)) ?? this.cpds;
     this.contrasts =

@@ -10,7 +10,7 @@ export enum AssayType {
   SqrGratingPairs = 'SqrGratingPairs',
   ScanningDots = 'ScanningDots',
   FullFieldSines = 'FullFieldSines',
-  CheckerboardsAssay = 'CheckerboardsAssay',
+  Checkerboards = 'Checkerboards',
 }
 
 type AssayInfo = {
@@ -28,7 +28,7 @@ export const assaysInfo: Record<AssayType, AssayInfo> = {
   FullFieldSines: {
     description: 'Sinusoidal variations of intensity over full field.',
   },
-  CheckerboardsAssay: {
+  Checkerboards: {
     description:
       'Pairs of checkerboards with and without inversion at the middle of body ',
   },
