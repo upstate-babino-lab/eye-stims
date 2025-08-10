@@ -13,8 +13,7 @@ const stimsSpec = new SqrGratingAssay({
     'Pairs of gratings moving left and right for each cpd, contrast, and speed.',
   bodyMs: 260,
   tailMs: 520,
-  grayMs: 60,
-  grayTailMs: 520,
+  colorTails: true,
   includeStaticGratings: true,
   nRepetitions: 40,
   integrityFlashIntervalMins: 5,
@@ -25,8 +24,8 @@ const stimsSpec = new SqrGratingAssay({
     nSteps: 5,
   }),
   contrasts: new RangeSpec({
-    start: 0,
-    step: -0.1,
+    start: 90,
+    step: -10,
     nSteps: 3,
   }),
   speeds: new RangeSpec({
