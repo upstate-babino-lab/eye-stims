@@ -1,7 +1,7 @@
 import { StimType, Stimulus } from './Stimulus';
 
 export class ImageStim extends Stimulus {
-  filePath: string = 'image:///Users/pwellner/myrepos/eye-stims/junk/face.jpg';
+  filePath: string = '/Users/pwellner/myrepos/eye-stims/junk/face.jpg';
   size: number = 100; // Percentage of vmax (viewport maximum)
   private _image: HTMLImageElement | null = null;
 
@@ -9,7 +9,7 @@ export class ImageStim extends Stimulus {
     super({ ...props, stimType: StimType.Image });
     this.filePath = props.filePath ?? this.filePath;
     this.size = props.size ?? this.size;
-    loadImage(this.filePath)
+    loadImage('image://' + this.filePath)
       .then((image) => {
         this._image = image;
       })
@@ -44,14 +44,19 @@ export class ImageStim extends Stimulus {
         ctx.canvas.height / 2
       );
     } else {
-      const aspectRatio = this._image.width / this._image.height;
+      const scaleX = ctx.canvas.width / this._image.width;
+      const scaleY = ctx.canvas.height / this._image.height;
+      const scale = Math.min(scaleX, scaleY) * (this.size / 100);
+      const scaledWidth = this._image.width * scale;
+      const scaledHeight = this._image.height * scale;
+
       ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
       ctx.drawImage(
         this._image,
-        -(this.size * aspectRatio) / 2, // Center the image
-        -this.size / 2, // Center the image vertically
-        this.size * aspectRatio, // Width based on size and aspect ratio
-        this.size // Height based on size
+        -scaledWidth / 2, // Center horizontally
+        -scaledHeight / 2, // Center vertically
+        scaledWidth,
+        scaledHeight
       );
     }
 

@@ -4,7 +4,7 @@ import RangeSpecForm from '../components/RangeSpecForm';
 import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '@renderer/render-utils';
 
-export function GratingRanges() {
+export function GratingsSubform() {
   const { theAssay: theStimsSpec, setTheAssay: setTheStimsSpec } = useAppState();
   const { cpds, contrasts, speeds, includeStaticGratings } =
     theStimsSpec as SqrGratingAssay;

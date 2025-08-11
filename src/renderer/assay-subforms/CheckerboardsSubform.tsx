@@ -1,29 +1,32 @@
-import { RangeSpec, LettersAssay } from '@src/assays';
+import { RangeSpec, CheckerboardsAssay } from '@src/assays';
 import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
 
-export function LetterRanges() {
+export function CheckerboardsSubform() {
   const { theAssay: theStimsSpec, setTheAssay: setTheStimsSpec } = useAppState();
-  const { sizes, contrasts } = theStimsSpec as LettersAssay;
+  const { cpds, contrasts } = theStimsSpec as CheckerboardsAssay;
 
-  if (!theStimsSpec || !(theStimsSpec instanceof LettersAssay)) {
-    return <div className="text-red-500">No valid LettersAssay available</div>;
+  if (!theStimsSpec || !(theStimsSpec instanceof CheckerboardsAssay)) {
+    return (
+      <div className="text-red-500">No valid CheckerboardsAssay available</div>
+    );
   }
 
   return (
     <div className="flex flex-col gap-2">
       <RangeSpecForm
-        title="Sizes (in degrees)"
-        toolTip="Height of letter in degrees of visual angle"
-        onUpdate={(sizes: RangeSpec) => {
+        title="Cycles per degree"
+        toolTip="One dark and one light bar make one cycle"
+        onUpdate={(cpds: RangeSpec) => {
+          // console.log('>>>>> cpds=' + JSON.stringify(cpds));
           setTheStimsSpec(
-            new LettersAssay({
+            new CheckerboardsAssay({
               ...theStimsSpec,
-              sizes: sizes,
+              cpds: cpds,
             })
           );
         }}
-        initialRange={sizes}
+        initialRange={cpds}
       />
       <RangeSpecForm
         title="Contrasts"
@@ -31,7 +34,7 @@ export function LetterRanges() {
         onUpdate={(contrasts: RangeSpec) => {
           // console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
           setTheStimsSpec(
-            new LettersAssay({
+            new CheckerboardsAssay({
               ...theStimsSpec,
               contrasts: contrasts,
             })

@@ -7,7 +7,7 @@ import {
   maxYDegrees,
 } from '@src/assays/ScanningDotsAssay';
 
-export function ScanningDotsRanges() {
+export function ScanningDotsSubform() {
   const { theAssay, setTheAssay } = useAppState();
   const { diameters, xDegrees, yDegrees } = theAssay as ScanningDotsAssay;
 

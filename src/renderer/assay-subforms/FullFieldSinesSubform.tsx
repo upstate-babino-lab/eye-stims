@@ -3,7 +3,7 @@ import RangeSpecForm from '../components/RangeSpecForm';
 import { RangeSpec } from '@src/assays';
 import { FullFieldSinesAssay } from '@src/assays/FullFieldSinesAssay';
 
-export function FullFieldSinesRanges() {
+export function FullFieldSinesSubform() {
   const { theAssay, setTheAssay } = useAppState();
   const { means, mContrasts, frequencies } = theAssay as FullFieldSinesAssay;
 

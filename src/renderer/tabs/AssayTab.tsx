@@ -18,12 +18,12 @@ import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '@renderer/render-utils';
 import 'react-tooltip/dist/react-tooltip.css';
 import StimSequence from '../StimSequence';
-import { GratingRanges } from './GratingRanges';
-import { ScanningDotsRanges } from './ScanningDotsRanges';
-import { FullFieldSinesRanges } from './FullFieldSinesRanges';
+import { GratingsSubform } from '../assay-subforms/GratingsSubform';
+import { ScanningDotsSubform } from '../assay-subforms/ScanningDotsSubform';
+import { FullFieldSinesSubform } from '../assay-subforms/FullFieldSinesSubform';
 import { AssayProps } from '@src/assays/Assay';
-import { CheckerboardsRanges } from './CheckerboardsRanges';
-import { LetterRanges } from './LetterRanges';
+import { CheckerboardsSubform } from '../assay-subforms/CheckerboardsSubform';
+import { LettersSubform } from '../assay-subforms/LettersSubform';
 
 export default function AssayTab() {
   const { theAssay, setTheAssay } = useAppState();
@@ -116,7 +116,7 @@ export default function AssayTab() {
           toolTip="Color tails with mean of last 200ms of each body (instead of solid black)"
         />
         <div className="border border-gray-500 rounded-md p-1">
-          <SubAssayRanges />
+          <AssaySubForm />
         </div>
         <div className="mb-1 flex items-center">
           <label className="text-sm font-bold text-gray-100 px-4">
@@ -372,42 +372,42 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
 }
 
 //-----------------------------------------------------------------------------
-function SubAssayRanges() {
+function AssaySubForm() {
   const { theAssay } = useAppState();
 
   if (
     theAssay instanceof SqrGratingAssay ||
     theAssay?.assayType === AssayType.SqrGratingPairs
   ) {
-    return <GratingRanges />;
+    return <GratingsSubform />;
   }
 
   if (
     theAssay instanceof ScanningDotsAssay ||
     theAssay?.assayType === AssayType.ScanningDots
   ) {
-    return <ScanningDotsRanges />;
+    return <ScanningDotsSubform />;
   }
 
   if (
     theAssay instanceof FullFieldSinesAssay ||
     theAssay?.assayType === AssayType.FullFieldSines
   ) {
-    return <FullFieldSinesRanges />;
+    return <FullFieldSinesSubform />;
   }
 
   if (
     theAssay instanceof CheckerboardsAssay ||
     theAssay?.assayType === AssayType.Checkerboards
   ) {
-    return <CheckerboardsRanges />;
+    return <CheckerboardsSubform />;
   }
 
   if (
     theAssay instanceof LettersAssay ||
     theAssay?.assayType === AssayType.Letters
   ) {
-    return <LetterRanges />;
+    return <LettersSubform />;
   }
   // eslint-disable-next-line no-debugger
   debugger; // Need to add AssayType code here
