@@ -1,11 +1,25 @@
-import { app, shell, BrowserWindow } from 'electron';
-import { join } from 'path';
+import { app, protocol, shell, BrowserWindow, net } from 'electron';
+import * as path from 'path';
+import fs from 'fs';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import { modifyDefaultMenu } from './menu';
 import { setupIpcHandlers } from './ipc';
 
 export let theMainWindow: BrowserWindow;
+
+const PROTOCOL_NAME = 'image';
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: PROTOCOL_NAME,
+    privileges: {
+      standard: false, // False to allow absolute paths like 'image:///Users/...'
+      bypassCSP: true,
+      corsEnabled: true,
+      supportFetchAPI: true,
+    },
+  },
+]);
 
 function createTheMainWindow(): void {
   // Create the browser window.
@@ -16,7 +30,7 @@ function createTheMainWindow(): void {
     autoHideMenuBar: false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
       //sandbox: false,
       contextIsolation: true,
       nodeIntegration: false,
@@ -39,7 +53,7 @@ function createTheMainWindow(): void {
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
   }
   theMainWindow = mainWindow;
 }
@@ -48,6 +62,38 @@ function createTheMainWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  protocol.handle(PROTOCOL_NAME, async (request) => {
+    // The request.url will be something like `${PROTOCOL_NAME}://path/to/image.jpg`
+    try {
+      const parsedUrl = new URL(request.url);
+      const filePath = parsedUrl.pathname;
+
+      // If the URL comes from Windows, the path might be like /C:/path/...
+      // The pathToFileURL function handles this correctly.
+      // We also need to decode any URI-encoded characters.
+      const decodedPath = decodeURIComponent(filePath);
+      const finalPath =
+        process.platform === 'win32' && decodedPath.startsWith('/')
+          ? decodedPath.slice(1) // Remove leading slash on Windows
+          : decodedPath;
+
+      fs.stat(finalPath, (err, stats) => {
+        if (err || !stats.isFile()) {
+          console.error(`File does NOT exist: ${finalPath}`);
+        }
+      });
+
+      const fileUrl = `file://${finalPath}`;
+      return net.fetch(fileUrl);
+    } catch (error) {
+      console.error(
+        `Failed ${PROTOCOL_NAME} protocol request request.url=${request.url} error=`,
+        error
+      );
+      return new Response(null, { status: 400, statusText: 'Bad Request' });
+    }
+  });
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
 
