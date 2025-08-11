@@ -3,10 +3,10 @@ import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
 
 export function LettersSubform() {
-  const { theAssay: theStimsSpec, setTheAssay: setTheStimsSpec } = useAppState();
-  const { sizes, contrasts } = theStimsSpec as LettersAssay;
+  const { theAssay, setTheAssay } = useAppState();
+  const { sizes, contrasts } = theAssay as LettersAssay;
 
-  if (!theStimsSpec || !(theStimsSpec instanceof LettersAssay)) {
+  if (!theAssay || !(theAssay instanceof LettersAssay)) {
     return <div className="text-red-500">No valid LettersAssay available</div>;
   }
 
@@ -16,9 +16,9 @@ export function LettersSubform() {
         title="Sizes (in degrees)"
         toolTip="Height of letter in degrees of visual angle"
         onUpdate={(sizes: RangeSpec) => {
-          setTheStimsSpec(
+          setTheAssay(
             new LettersAssay({
-              ...theStimsSpec,
+              ...theAssay,
               sizes: sizes,
             })
           );
@@ -30,9 +30,9 @@ export function LettersSubform() {
         toolTip={`Michelson contrast (max-min)/(max+min) range 0% to 100%`}
         onUpdate={(contrasts: RangeSpec) => {
           // console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
-          setTheStimsSpec(
+          setTheAssay(
             new LettersAssay({
-              ...theStimsSpec,
+              ...theAssay,
               contrasts: contrasts,
             })
           );

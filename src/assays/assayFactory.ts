@@ -5,8 +5,9 @@ import { ScanningDotsAssay } from './ScanningDotsAssay';
 import { FullFieldSinesAssay } from './FullFieldSinesAssay';
 import { CheckerboardsAssay } from './CheckerboardsAssay';
 import { LettersAssay } from './LettersAssay';
+import { ImagesAssay } from './ImagesAssay';
 
-// Map of constructors that create new StimsSpec class objects (with methods)
+// Map of constructors that create new Assay class objects (with methods)
 // from simple parsed JSON POJOs (with no methods) using lookup by name.
 // Every possible AssayType must be assigned or thankfully, Typescript complains.
 type AssayConstructors = {
@@ -18,6 +19,7 @@ export const assayConstructors: AssayConstructors = {
   FullFieldSines: FullFieldSinesAssay,
   Checkerboards: CheckerboardsAssay,
   Letters: LettersAssay,
+  Images: ImagesAssay,
 };
 
 // Create a new Assay class instance from POJO or parsed JSON object.

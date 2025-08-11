@@ -4,13 +4,13 @@ import { ImageStim } from '@stims/index';
 
 export class ImagesAssay extends Assay {
   size: number = 100; // Percentage of viewport maximum
-  directory: string = ''; // Will use all images in this directory
+  directory: string = '/Users/pwellner/myrepos/eye-stims/junk/faces'; // Will use all images in this directory
 
   constructor(props: Partial<ImagesAssay> = {}) {
     // TODO: Check that parameters are all in valid ranges
     super({
       ...props,
-      assayType: AssayType.Letters,
+      assayType: AssayType.Images,
     });
     this.size = props.size ?? this.size;
     this.directory = props.directory ?? this.directory;

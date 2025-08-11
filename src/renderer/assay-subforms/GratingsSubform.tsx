@@ -5,11 +5,11 @@ import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '@renderer/render-utils';
 
 export function GratingsSubform() {
-  const { theAssay: theStimsSpec, setTheAssay: setTheStimsSpec } = useAppState();
+  const { theAssay, setTheAssay } = useAppState();
   const { cpds, contrasts, speeds, includeStaticGratings } =
-    theStimsSpec as SqrGratingAssay;
+    theAssay as SqrGratingAssay;
 
-  if (!theStimsSpec || !(theStimsSpec instanceof SqrGratingAssay)) {
+  if (!theAssay || !(theAssay instanceof SqrGratingAssay)) {
     return (
       <div className="text-red-500">No valid SqrGratingStimsSpec available</div>
     );
@@ -22,9 +22,9 @@ export function GratingsSubform() {
         toolTip="One dark and one light bar make one cycle"
         onUpdate={(cpds: RangeSpec) => {
           // console.log('>>>>> cpds=' + JSON.stringify(cpds));
-          setTheStimsSpec(
+          setTheAssay(
             new SqrGratingAssay({
-              ...theStimsSpec,
+              ...theAssay,
               cpds: cpds,
             })
           );
@@ -36,9 +36,9 @@ export function GratingsSubform() {
         toolTip={`Michelson contrast (max-min)/(max+min) range 0% to 100%`}
         onUpdate={(contrasts: RangeSpec) => {
           // console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
-          setTheStimsSpec(
+          setTheAssay(
             new SqrGratingAssay({
-              ...theStimsSpec,
+              ...theAssay,
               contrasts: contrasts,
             })
           );
@@ -52,9 +52,9 @@ export function GratingsSubform() {
         toolTip="Degrees per second"
         onUpdate={(speeds: RangeSpec) => {
           // console.log('>>>>> speeds=' + JSON.stringify(speeds));
-          setTheStimsSpec(
+          setTheAssay(
             new SqrGratingAssay({
-              ...theStimsSpec,
+              ...theAssay,
               speeds: speeds,
             })
           );
@@ -77,9 +77,9 @@ export function GratingsSubform() {
             className="h-4 w-4 border border-gray-500 rounded-xl text-gray-200 bg-transparent checked:bg-current"
             checked={includeStaticGratings}
             onChange={(e) => {
-              setTheStimsSpec(
+              setTheAssay(
                 new SqrGratingAssay({
-                  ...theStimsSpec,
+                  ...theAssay,
                   includeStaticGratings: !!e.target.checked,
                 })
               );

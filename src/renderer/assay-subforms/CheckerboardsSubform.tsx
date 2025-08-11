@@ -3,10 +3,10 @@ import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
 
 export function CheckerboardsSubform() {
-  const { theAssay: theStimsSpec, setTheAssay: setTheStimsSpec } = useAppState();
-  const { cpds, contrasts } = theStimsSpec as CheckerboardsAssay;
+  const { theAssay, setTheAssay } = useAppState();
+  const { cpds, contrasts } = theAssay as CheckerboardsAssay;
 
-  if (!theStimsSpec || !(theStimsSpec instanceof CheckerboardsAssay)) {
+  if (!theAssay || !(theAssay instanceof CheckerboardsAssay)) {
     return (
       <div className="text-red-500">No valid CheckerboardsAssay available</div>
     );
@@ -19,9 +19,9 @@ export function CheckerboardsSubform() {
         toolTip="One dark and one light bar make one cycle"
         onUpdate={(cpds: RangeSpec) => {
           // console.log('>>>>> cpds=' + JSON.stringify(cpds));
-          setTheStimsSpec(
+          setTheAssay(
             new CheckerboardsAssay({
-              ...theStimsSpec,
+              ...theAssay,
               cpds: cpds,
             })
           );
@@ -33,9 +33,9 @@ export function CheckerboardsSubform() {
         toolTip={`Michelson contrast (max-min)/(max+min) range 0% to 100%`}
         onUpdate={(contrasts: RangeSpec) => {
           // console.log('>>>>> contrasts=' + JSON.stringify(contrasts));
-          setTheStimsSpec(
+          setTheAssay(
             new CheckerboardsAssay({
-              ...theStimsSpec,
+              ...theAssay,
               contrasts: contrasts,
             })
           );

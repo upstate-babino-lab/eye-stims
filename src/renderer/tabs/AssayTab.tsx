@@ -11,6 +11,7 @@ import {
   FullFieldSinesAssay,
   CheckerboardsAssay,
   LettersAssay,
+  ImagesAssay,
 } from '@src/assays/index';
 import { useEffect, useState } from 'react';
 import { filterPrivateAndNullProperties } from '@src/shared-utils';
@@ -24,6 +25,7 @@ import { FullFieldSinesSubform } from '../assay-subforms/FullFieldSinesSubform';
 import { AssayProps } from '@src/assays/Assay';
 import { CheckerboardsSubform } from '../assay-subforms/CheckerboardsSubform';
 import { LettersSubform } from '../assay-subforms/LettersSubform';
+import { ImagesSubform } from '../assay-subforms/ImagesSubform';
 
 export default function AssayTab() {
   const { theAssay, setTheAssay } = useAppState();
@@ -409,6 +411,14 @@ function AssaySubForm() {
   ) {
     return <LettersSubform />;
   }
+
+  if (
+    theAssay instanceof ImagesAssay ||
+    theAssay?.assayType === AssayType.Images
+  ) {
+    return <ImagesSubform />;
+  }
+
   // eslint-disable-next-line no-debugger
   debugger; // Need to add AssayType code here
   return (

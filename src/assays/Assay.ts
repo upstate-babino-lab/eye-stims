@@ -12,6 +12,7 @@ export enum AssayType {
   FullFieldSines = 'FullFieldSines',
   Checkerboards = 'Checkerboards',
   Letters = 'Letters',
+  Images = 'Images',
 }
 
 type AssayInfo = {
@@ -35,6 +36,9 @@ export const assaysInfo: Record<AssayType, AssayInfo> = {
   },
   Letters: {
     description: 'Rotate through the 10 standard Sloan letters plus a blank.',
+  },
+  Images: {
+    description: 'Show all images from a directory at a specified size.',
   },
 };
 

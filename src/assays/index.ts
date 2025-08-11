@@ -8,3 +8,4 @@ export { FullFieldSinesAssay } from './FullFieldSinesAssay';
 export { RangeSpec } from './RangeSpec';
 export { CheckerboardsAssay } from './CheckerboardsAssay';
 export { LettersAssay } from './LettersAssay';
+export { ImagesAssay as ImagesAssay } from './ImagesAssay';
