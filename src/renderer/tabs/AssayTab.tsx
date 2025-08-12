@@ -204,7 +204,10 @@ export default function AssayTab() {
             );
             setTheStimsMeta({ ...theStimsMeta, loadedPath: filePath });
             const content = JSON.stringify(
-              theAssay,
+              {
+                appVersion: await window.electron.getAppVersionAsync(),
+                ...theAssay,
+              },
               filterPrivateAndNullProperties,
               4
             );

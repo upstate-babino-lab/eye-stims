@@ -1,6 +1,6 @@
 {
   "name": "eye-stims",
-  "version": "0.0.12",
+  "version": "0.1.0",
   "description": "Electron application to build videos of visual stimuli",
   "main": "./out/main/index.js",
   "author": "Pierre Wellner, SUNY Upstate Medical University Center for Vision Research - Babino Lab",

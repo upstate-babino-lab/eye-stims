@@ -41,6 +41,8 @@ export async function ensureCacheDirAsync() {
     await mkdir(stimsCacheDir, { recursive: true });
     console.log('>>>>> Created stim cacheDir ' + stimsCacheDir);
     await generateToneFilesAsync(stimsCacheDir, CHOSEN_AUDIO_KEY);
+    // TODO: Create a cacheProps.json file with apVersion
+    // This can also be used to store last built display type, average build speed, etc.
   }
 }
 
