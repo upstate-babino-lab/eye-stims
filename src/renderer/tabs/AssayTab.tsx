@@ -2,6 +2,11 @@ import Button from '@renderer/components/Button';
 import { INPUT_STYLES } from '@renderer/components/RangeSpecForm';
 import { saveFileDialogAsync } from '@renderer/render-utils';
 import { useAppState } from '@renderer/StateContext';
+import { useEffect, useState } from 'react';
+import { filterPrivateAndNullProperties } from '@src/shared-utils';
+import { Tooltip } from 'react-tooltip';
+import { TOOLTIP_STYLES } from '@renderer/render-utils';
+import StimSequence from '../StimSequence';
 import {
   newAssay,
   AssayType,
@@ -13,19 +18,17 @@ import {
   LettersAssay,
   ImagesAssay,
 } from '@src/assays/index';
-import { useEffect, useState } from 'react';
-import { filterPrivateAndNullProperties } from '@src/shared-utils';
-import { Tooltip } from 'react-tooltip';
-import { TOOLTIP_STYLES } from '@renderer/render-utils';
+import {
+  GratingsSubform,
+  ScanningDotsSubform,
+  FullFieldSinesSubform,
+  CheckerboardsSubform,
+  LettersSubform,
+  ImagesSubform,
+  AssayBooleanCheckbox,
+  AssayTwoPropsForm,
+} from '../assay-subforms/index';
 import 'react-tooltip/dist/react-tooltip.css';
-import StimSequence from '../StimSequence';
-import { GratingsSubform } from '../assay-subforms/GratingsSubform';
-import { ScanningDotsSubform } from '../assay-subforms/ScanningDotsSubform';
-import { FullFieldSinesSubform } from '../assay-subforms/FullFieldSinesSubform';
-import { AssayProps } from '@src/assays/Assay';
-import { CheckerboardsSubform } from '../assay-subforms/CheckerboardsSubform';
-import { LettersSubform } from '../assay-subforms/LettersSubform';
-import { ImagesSubform } from '../assay-subforms/ImagesSubform';
 
 export default function AssayTab() {
   const { theAssay, setTheAssay } = useAppState();
@@ -107,12 +110,12 @@ export default function AssayTab() {
             }}
           />
         </div>
-        <TwoPropsForm
+        <AssayTwoPropsForm
           nameA="bodyMs"
           nameB="tailMs"
           toolTip="Each stimulus body is followed by full-field black or colored tail (multiples of 20ms)"
         />
-        <BooleanCheckbox
+        <AssayBooleanCheckbox
           label="Mean-colored Tails"
           propName="colorTails"
           toolTip="Color tails with mean of last 200ms of center 25% of each body (instead of solid black)"
@@ -143,7 +146,7 @@ export default function AssayTab() {
             step={1}
           />
         </div>
-        <BooleanCheckbox
+        <AssayBooleanCheckbox
           label="Shuffle stimuli"
           propName="doShuffle"
           toolTip="Randomize order of all stimuli (except integrity flashes and rests)"
@@ -185,7 +188,7 @@ export default function AssayTab() {
           </div>
           <Tooltip id={'integrity-flash-id'} className={TOOLTIP_STYLES} />
         </>
-        <TwoPropsForm
+        <AssayTwoPropsForm
           nameA="restIntervalMins"
           nameB="restDurationMins"
           toolTip="How often and how long to rest with solid black"
@@ -240,135 +243,6 @@ function AssayTypePulldown(props: {
           </option>
         ))}
       </select>
-    </div>
-  );
-}
-
-//-----------------------------------------------------------------------------
-function BooleanCheckbox(props: {
-  label: string;
-  propName: string;
-  toolTip?: string;
-}) {
-  const { theAssay, setTheAssay } = useAppState();
-
-  return (
-    <>
-      <div
-        className="mb-1 flex items-center w-50"
-        data-tooltip-id={props.propName + '-id'}
-        data-tooltip-content={props.toolTip}
-        data-tooltip-place="right"
-      >
-        <label className="text-sm font-bold text-gray-100 px-4">
-          {props.label}:
-        </label>
-        <input
-          type="checkbox"
-          // TODO?: restyle using Tailwind’s peer utility
-          className="h-4 w-4 border border-gray-500 rounded-xl text-gray-200 bg-transparent checked:bg-current"
-          checked={theAssay ? theAssay[props.propName] : false}
-          onChange={(e) => {
-            const newValue = !!e.target.checked;
-            const newStruct = newAssay({ ...theAssay });
-            newStruct[props.propName] = newValue;
-            setTheAssay(newStruct);
-          }}
-        />
-      </div>
-      <Tooltip id={props.propName + '-id'} className={TOOLTIP_STYLES} />
-    </>
-  );
-}
-
-//-----------------------------------------------------------------------------
-function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string }) {
-  const { theAssay, setTheAssay } = useAppState();
-  // Default values to use when field is deleted by user  or undefined
-  const defaultAssayProps: AssayProps = {
-    assayType: theAssay?.assayType || AssayType.SqrGratingPairs,
-    title: '',
-    description: '',
-    bodyMs: 0,
-    tailMs: 0,
-    colorTails: false,
-    includeStaticGratings: false,
-    nRepetitions: 1,
-    integrityFlashIntervalMins: 0,
-    restIntervalMins: 0,
-    restDurationMins: 0,
-    doShuffle: false,
-  };
-
-  if (!theAssay) {
-    return <div className="text-red-500">No StimsSpec available</div>;
-  }
-
-  // Helper function to handle input changes and update state
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    propName: string
-  ) => {
-    // Keep 'undefined' for empty string to allow clearing the input field
-    // However, if 0 is a valid input, parseFloat will convert '0' to 0
-    const newValue =
-      e.target.value === '' ? undefined : parseFloat(e.target.value);
-
-    const newStruct = newAssay({ ...theAssay });
-    newStruct[propName] = newValue;
-    setTheAssay(newStruct);
-  };
-
-  // Ensure that if a property exists on theAssay (even if 0), it's used.
-  // Only if it's strictly null or undefined will defaultAssay be used.
-  const getDisplayValue = (propName: string) => {
-    // Check if the property exists on theStimsSpec and is not null/undefined
-    // Use `??` to allow 0 as a valid value
-    const value = theAssay[propName] ?? defaultAssayProps[propName];
-    // Convert undefined back to empty string for the input field to allow clearing
-    return value === undefined ? '' : String(value);
-  };
-
-  return (
-    <div>
-      <div
-        className="flex items-center bg-gray-800 rounded-lg px-2 py-1 mb-1"
-        data-tooltip-id={props.nameA + '-id'}
-        data-tooltip-content={props.toolTip}
-        data-tooltip-place="right"
-      >
-        <label className="text-sm font-bold text-gray-100 px-4">
-          {props.nameA}:
-        </label>
-        <input
-          type="number"
-          className={INPUT_STYLES}
-          // Use the helper function for display value
-          value={getDisplayValue(props.nameA)}
-          onChange={(e) => handleInputChange(e, props.nameA)}
-          min={0}
-          step={props.nameA.endsWith('Ms') ? 20 : 1}
-        />
-        <label className="text-sm font-bold text-gray-100 px-4">
-          {props.nameB}:
-        </label>
-        <input
-          type="number"
-          className={INPUT_STYLES}
-          // Use the helper function for display value
-          value={getDisplayValue(props.nameB)}
-          onChange={(e) => handleInputChange(e, props.nameB)}
-          min={0} // Make sure this is 0 if you want 0 input to be valid
-          step={props.nameA.endsWith('Ms') ? 20 : 1}
-        />
-        {props.nameA.endsWith('Ms') && props.nameB.endsWith('Ms') && (
-          <div className="px-4">
-            Durations ={' '}
-            {(theAssay[props.nameA] ?? 0) + (theAssay[props.nameB] ?? 0)}ms
-          </div>
-        )}
-      </div>
-      <Tooltip id={props.nameA + '-id'} className={TOOLTIP_STYLES} />
     </div>
   );
 }

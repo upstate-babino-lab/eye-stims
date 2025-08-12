@@ -13,6 +13,7 @@ export class LettersAssay extends Assay {
     min: 0,
     max: 100,
   });
+  isLightOnDark: boolean = false; // Default is dark letters on light background
 
   constructor(props: Partial<LettersAssay> = {}) {
     // TODO: Check that parameters are all in valid ranges
@@ -23,6 +24,7 @@ export class LettersAssay extends Assay {
     this.sizes = (props.sizes && new RangeSpec(props.sizes)) ?? this.sizes;
     this.contrasts =
       (props.contrasts && new RangeSpec(props.contrasts)) ?? this.contrasts;
+    this.isLightOnDark = props.isLightOnDark ?? this.isLightOnDark;
   }
 
   baseStimuli(): Stimulus[] {
@@ -41,8 +43,8 @@ export class LettersAssay extends Assay {
                 durationMs: this.bodyMs + this.tailMs,
                 bodyMs: this.bodyMs,
                 tailMs: this.tailMs,
-                bgColor: bgColor,
-                fgColor: fgColor,
+                bgColor: this.isLightOnDark ? fgColor : bgColor,
+                fgColor: this.isLightOnDark ? bgColor : fgColor,
                 meta: { contrast: contrast },
               })
             );

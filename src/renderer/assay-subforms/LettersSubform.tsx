@@ -1,6 +1,7 @@
 import { RangeSpec, LettersAssay } from '@src/assays';
 import { useAppState } from '../StateContext';
 import RangeSpecForm from '../components/RangeSpecForm';
+import { AssayBooleanCheckbox } from './AssayBooleanCheckbox';
 
 export function LettersSubform() {
   const { theAssay, setTheAssay } = useAppState();
@@ -40,6 +41,11 @@ export function LettersSubform() {
         initialRange={contrasts}
         min={0}
         max={100}
+      />
+      <AssayBooleanCheckbox
+        label="Light letters on dark background"
+        propName="isLightOnDark"
+        toolTip="Dark background when checked (defaults to dark letters on light background when unchecked)"
       />
     </div>
   );
