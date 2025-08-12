@@ -1,7 +1,7 @@
 import { StimType, Stimulus } from './Stimulus';
 
 export class ImageStim extends Stimulus {
-  filePath: string = '/Users/pwellner/myrepos/eye-stims/junk/face.jpg';
+  filePath: string = ''; // Absolute path to the image file
   size: number = 100; // Percentage of vmax (viewport maximum)
   private _image: HTMLImageElement | null = null;
 
