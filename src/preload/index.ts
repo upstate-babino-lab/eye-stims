@@ -68,7 +68,11 @@ contextBridge.exposeInMainWorld('electron', {
     return ipcRenderer.invoke('isCached', unhashedFilename);
   },
 
-  getAppVersion: () => {
+  getAppVersionAsync: () => {
     return ipcRenderer.invoke('getAppVersion');
   },
+
+  // Prompts user to select a directory and returns an array of image paths,
+  // starting with the directory path
+  scanImagesInDirectoryAsync: () => ipcRenderer.invoke('scanImagesInDirectory'),
 });

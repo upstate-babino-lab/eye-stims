@@ -23,7 +23,6 @@ declare module '@stims/Stimulus' {
 
 Stimulus.prototype.encode = function (encoder: Encoder): void {
   const nFrames = Math.round((this.durationMs / 1000) * encoder.displayProps.fps);
-  const nPixelsPerFrame = encoder.canvas.width * encoder.canvas.height;
   const nFramesOfBodyToAverage = 10;
   let [bodyRed, bodyGreen, bodyBlue] = [0, 0, 0];
   let tailColor: string = '';
@@ -70,12 +69,12 @@ Stimulus.prototype.encode = function (encoder: Encoder): void {
     const lastBitOfBodyMs =
       startOfTailMs - (nFramesOfBodyToAverage / encoder.displayProps.fps) * 1000;
     if (this.colorTail && this.tailMs && ageMs >= lastBitOfBodyMs) {
-      // Get every pixel in this frame
+      // Get center 25% of pixels in this frame
       const imageData = encoder.ctx.getImageData(
-        0,
-        0,
-        encoder.canvas.width,
-        encoder.canvas.height
+        Math.round(encoder.canvas.width / 4),
+        Math.round(encoder.canvas.height / 4),
+        Math.round(encoder.canvas.width / 2),
+        Math.round(encoder.canvas.height / 2)
       );
       const pixelData = imageData.data;
       // Calculate sum of all all pixel values
@@ -87,9 +86,9 @@ Stimulus.prototype.encode = function (encoder: Encoder): void {
         // Alpha value is at pixelData[i + 3] but not needed for RGB mean
       }
       // Update bodyRGB totals with averages from this frame
-      bodyRed += Math.floor(frameRed / nPixelsPerFrame);
-      bodyGreen += Math.floor(frameGreen / nPixelsPerFrame);
-      bodyBlue += Math.floor(frameBlue / nPixelsPerFrame);
+      bodyRed += Math.floor(frameRed / (pixelData.length / 4));
+      bodyGreen += Math.floor(frameGreen / (pixelData.length / 4));
+      bodyBlue += Math.floor(frameBlue / (pixelData.length / 4));
     }
 
     encoder.encodeOneFrame();

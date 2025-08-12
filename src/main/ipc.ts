@@ -1,6 +1,6 @@
 import { ipcMain, app, dialog, BrowserWindow } from 'electron';
 import { loadFileDialogAsync } from './menu';
-import { mkdir, writeFile, readFile, access, rm } from 'fs/promises'; // TODO: import as mkdirAsync, etc.
+import { mkdir, writeFile, readFile, readdir, access, rm } from 'fs/promises'; // TODO: import as mkdirAsync, etc.
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -166,6 +166,55 @@ export function setupIpcHandlers() {
   ipcMain.handle('getAppVersion', async () => {
     // console.log(`>>>>> main got 'getAppVersion'`);
     return await getAppVersionAsync();
+  });
+
+  // Return array of image paths, starting with the directory selected by the user
+  ipcMain.handle('scanImagesInDirectory', async () => {
+    if (!theMainWindow) {
+      return []; // No window to open the dialog from
+    }
+    const imageExtensions = [
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.gif',
+      '.bmp',
+      '.webp',
+      '.svg',
+    ];
+
+    try {
+      const userSelection = await dialog.showOpenDialog(theMainWindow, {
+        properties: ['openDirectory'],
+        title: 'Select a directory with images',
+      });
+
+      // If user canceled the dialog, return an empty array
+      if (userSelection.canceled || userSelection.filePaths.length === 0) {
+        return [];
+      }
+      const directoryPath = userSelection.filePaths[0];
+      const files = await readdir(directoryPath);
+      console.log(
+        `>>>>> Scanned directory: ${directoryPath} with ${files.length} files`
+      );
+
+      // Set first element to directoryPath
+      const imagePaths: string[] = [directoryPath];
+      for (const file of files) {
+        const fileExtension = path.extname(file).toLowerCase();
+        if (imageExtensions.includes(fileExtension)) {
+          imagePaths.push(path.join(directoryPath, file));
+        }
+      }
+      console.log(`>>>>> Found ${imagePaths.length - 1} images in directory`);
+      // Return array of image paths, starting with the directory path
+      // The first element is the directory path
+      return imagePaths;
+    } catch (error) {
+      console.error('Error during directory scan:', error);
+      return [];
+    }
   });
 }
 

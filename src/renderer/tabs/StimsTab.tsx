@@ -26,6 +26,7 @@ export default function StimsTab() {
                 // console.log(`>>>>> onRowClick(${index})`);
                 setSelectedStimIndex(index);
               }}
+              selectedIndex={selectedStimIndex}
             />
           </div>
           {selectedStimIndex >= 0 && (

@@ -134,7 +134,7 @@ export default class StimSequence {
       {
         title: title,
         description: description,
-        appVersion: await window.electron.getAppVersion(),
+        appVersion: await window.electron.getAppVersionAsync(),
         fromVideoComment: fromVideoComment,
         stimuli: this.stimuli || [],
       },

@@ -27,7 +27,8 @@ export interface ElectronAPI {
   ensureSilentCacheAsync: (durationMs: number) => Promise<string>;
   readFromCache: (filename: string) => Promise<ArrayBuffer>;
   isCachedAsync: (unhashedFilename: string) => Promise<string>;
-  getAppVersion: () => Promise<string>;
+  getAppVersionAsync: () => Promise<string>;
+  scanImagesInDirectoryAsync: () => Promise<string[]>;
 }
 
 declare global {

@@ -115,7 +115,7 @@ export default function AssayTab() {
         <BooleanCheckbox
           label="Mean-colored Tails"
           propName="colorTails"
-          toolTip="Color tails with mean of last 200ms of each body (instead of solid black)"
+          toolTip="Color tails with mean of last 200ms of center 25% of each body (instead of solid black)"
         />
         <div className="border border-gray-500 rounded-md p-1">
           <AssaySubForm />
@@ -332,7 +332,7 @@ function TwoPropsForm(props: { nameA: string; nameB: string; toolTip?: string })
   return (
     <div>
       <div
-        className="flex items-center bg-gray-800 rounded-xl px-2 py-1 mb-1"
+        className="flex items-center bg-gray-800 rounded-lg px-2 py-1 mb-1"
         data-tooltip-id={props.nameA + '-id'}
         data-tooltip-content={props.toolTip}
         data-tooltip-place="right"

@@ -12,13 +12,17 @@ const ROW_HEIGHT = 30;
 const CELL_FORMAT = 'min-w-19 p-0.5 text-left';
 const TYPE_FORMAT = CELL_FORMAT + ' min-w-30'; // Typename column a bit wider to fit widest Stim type name
 
-const StimList = ({
-  data,
-  onRowClick,
-}: {
+interface StimListProps {
   data: Stimulus[];
   onRowClick: (id: number) => void;
-}) => {
+  selectedIndex?: number;
+}
+
+export default function StimList({
+  data,
+  onRowClick,
+  selectedIndex,
+}: StimListProps) {
   return (
     <>
       <div
@@ -43,7 +47,7 @@ const StimList = ({
             itemCount={data.length}
             itemSize={ROW_HEIGHT - 2}
             width={width}
-            itemData={{ data, onRowClick }}
+            itemData={{ data, onRowClick, selectedIndex }}
           >
             {Row}
           </List>
@@ -51,12 +55,13 @@ const StimList = ({
       </AutoSizer>
     </>
   );
-};
+}
 
 // eslint-disable-next-line prettier/prettier
-function Row({ index, style, data, }: ListChildComponentProps<{
+function Row({ index, style, data }: ListChildComponentProps<{
   data: Stimulus[];
   onRowClick: (id: number) => void;
+  selectedIndex?: number;
 }>) {
   const { theStimSequence } = useAppState();
   const row = data.data[index];
@@ -78,10 +83,16 @@ function Row({ index, style, data, }: ListChildComponentProps<{
   // Excludes private props and ensure more compact number formatting
   const partialJson = stableStringify(roundNumericalProperties(partial));
 
+  const isSelected = index === data.selectedIndex;
+
   return (
     <div
       style={style}
-      className="flex flex-row border whitespace-nowrap border-gray-800 hover:border-gray-400 hover:bg-gray-800 transition cursor-pointer"
+      className={
+        `flex flex-row border whitespace-nowrap border-gray-800 ` +
+        `${isSelected ? 'bg-gray-800' : 'hover:border-gray-400 hover:bg-gray-800'} ` +
+        `transition cursor-pointer`
+      }
       onClick={() => data.onRowClick(index)}
     >
       <div className={CELL_FORMAT}>{index}</div>
@@ -101,5 +112,3 @@ function Row({ index, style, data, }: ListChildComponentProps<{
     </div>
   );
 }
-
-export default StimList;

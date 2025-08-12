@@ -3,9 +3,9 @@ import { AssayType, Assay } from './Assay';
 import { FFSine, Stimulus } from '@stims/index';
 
 export class FullFieldSinesAssay extends Assay {
-  means: RangeSpec = new RangeSpec({ start: 50, step: 10, nSteps: 2 });
+  means: RangeSpec = new RangeSpec({ start: 50, step: 5, nSteps: 2 });
   mContrasts: RangeSpec = new RangeSpec({
-    start: 90,
+    start: 75,
     step: -10,
     nSteps: 4,
   });
