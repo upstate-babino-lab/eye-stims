@@ -2,7 +2,7 @@ import Button from '@renderer/components/Button';
 import { INPUT_STYLES } from '@renderer/components/RangeSpecForm';
 import { saveFileDialogAsync } from '@renderer/render-utils';
 import { useAppState } from '@renderer/StateContext';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { filterPrivateAndNullProperties } from '@src/shared-utils';
 import { Tooltip } from 'react-tooltip';
 import { TOOLTIP_STYLES } from '@renderer/render-utils';
