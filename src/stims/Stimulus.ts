@@ -13,7 +13,7 @@ export enum StimType {
   FFSine = 'FFSine',
   Checkerboard = 'Checkerboard',
   Letter = 'Letter',
-  Image = 'Image',
+  ImageStim = 'ImageStim',
 }
 
 // Make sure durations align with 50fps frame rate

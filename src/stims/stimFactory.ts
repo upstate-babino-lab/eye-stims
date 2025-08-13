@@ -56,7 +56,7 @@ const stimConstructors: StimConstructors = {
   FFSine: FFSine,
   Checkerboard: Checkerboard,
   Letter: Letter,
-  Image: ImageStim,
+  ImageStim: ImageStim,
 };
 
 // Create a new Stimulus class instance from POJO or parsed JSON object.

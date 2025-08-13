@@ -42,10 +42,10 @@ export class Grating extends Stimulus {
     const vmax2 = vmax1 * 2;
 
     const barWidthPx = this.cpd > 0 ? pxPerDegree / (this.cpd * 2) : vmax1;
-    if (barWidthPx < 0.5) {
+    if (barWidthPx <= 0.5) {
       throw new Error(
-        'cpd * pxPerDegree must be at least 0.5 to have at least one pixel' +
-          ` cpd=${this.cpd} pxPerDegree=${pxPerDegree}`
+        'barWidthPx must be at least 0.5 to have at least one pixel' +
+          ` cpd=${this.cpd} pxPerDegree=${pxPerDegree} barWidthPx=${barWidthPx}`
       );
     }
 

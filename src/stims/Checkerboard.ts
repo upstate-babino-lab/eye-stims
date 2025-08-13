@@ -36,16 +36,16 @@ export class Checkerboard extends Stimulus {
     const vmax1 = vmax(ctx);
     const vmax2 = vmax1 * 2;
 
-    const squareWidthPx = this.cpd > 0 ? pxPerDegree / (this.cpd * 2) : vmax1;
-    if (squareWidthPx < 0.5) {
+    const gratingWidthPx = this.cpd > 0 ? pxPerDegree / (this.cpd * 2) : vmax1;
+    if (gratingWidthPx <= 0.5) {
       throw new Error(
-        'cpd * pxPerDegree must be at least 0.5 to have at least one pixel' +
-          ` cpd=${this.cpd} pxPerDegree=${pxPerDegree}`
+        'squareWidthPx must be at least 0.5 to have at least one pixel' +
+          ` cpd=${this.cpd} pxPerDegree=${pxPerDegree} gratingWidthPx=${gratingWidthPx}`
       );
     }
 
     const draw = (doInverted: boolean): void => {
-      const patternCanvas = this.patternCanvas(squareWidthPx * 2, doInverted);
+      const patternCanvas = this.patternCanvas(gratingWidthPx * 2, doInverted);
       ctx.save();
       const pattern = ctx.createPattern(patternCanvas, 'repeat');
       if (!pattern) {

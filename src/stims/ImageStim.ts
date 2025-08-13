@@ -6,7 +6,7 @@ export class ImageStim extends Stimulus {
   private _image: HTMLImageElement | null = null;
 
   constructor(props: Partial<ImageStim> = {}) {
-    super({ ...props, stimType: StimType.Image });
+    super({ ...props, stimType: StimType.ImageStim });
     this.filePath = props.filePath ?? this.filePath;
     this.size = props.size ?? this.size;
     loadImage('image://' + this.filePath)
