@@ -29,6 +29,7 @@ import {
   AssayTwoPropsForm,
 } from '../assay-subforms/index';
 import 'react-tooltip/dist/react-tooltip.css';
+import { AssayTypePulldown } from '../assay-subforms/AssayTypePulldown';
 
 export default function AssayTab() {
   const { theAssay, setTheAssay } = useAppState();
@@ -224,7 +225,7 @@ export default function AssayTab() {
   );
 }
 
-//-----------------------------------------------------------------------------
+/*-----------------------------------------------------------------------------
 function AssayTypePulldown(props: {
   initialValue: AssayType;
   onChange: (value: AssayType) => void;
@@ -249,6 +250,7 @@ function AssayTypePulldown(props: {
     </div>
   );
 }
+*/
 
 //-----------------------------------------------------------------------------
 function AssaySubForm() {
