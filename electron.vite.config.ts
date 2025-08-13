@@ -19,5 +19,15 @@ export default defineConfig({
       },
     },
     plugins: [react()],
+    assetsInclude: ['**/*.otf', '**/*.ttf', '**/*.woff2'],
+    build: {
+      assetsDir: 'assets',
+      rollupOptions: {
+        output: {
+          assetFileNames: 'assets/[name][extname]',
+        },
+      },
+    },
+    base: './',
   },
 });
