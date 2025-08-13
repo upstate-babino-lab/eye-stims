@@ -58,6 +58,7 @@ export default class StimSequence {
 
     // TODO: Use limited parallelism -- ideally based on number of CPUs
     // Perhaps WebWorkers are the way?
+    // Note Sloan font will need to be loaded in each worker
     /*
     await Promise.all(
       this.stimuli.map((stimulus) => stimulus.saveToCacheAsync(displayKey))

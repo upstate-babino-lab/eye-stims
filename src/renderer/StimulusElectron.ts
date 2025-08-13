@@ -13,7 +13,7 @@ import { TONE_DURATION_MS } from '../constants';
 import { stableStringify } from '@renderer/render-utils';
 import { rgbToHex } from '@src/stims/stim-utils';
 
-// Extend the interface
+// Extend the Stimulus interface
 declare module '@stims/Stimulus' {
   interface Stimulus {
     encode(encoder: Encoder): void;

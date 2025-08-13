@@ -9,7 +9,7 @@ export class ImageStim extends Stimulus {
     super({ ...props, stimType: StimType.ImageStim });
     this.filePath = props.filePath ?? this.filePath;
     this.size = props.size ?? this.size;
-    loadImage('image://' + this.filePath)
+    loadImage('image://' + this.filePath) // Using custom protocol defined in main
       .then((image) => {
         this._image = image;
       })

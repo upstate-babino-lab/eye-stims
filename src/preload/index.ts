@@ -9,6 +9,7 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
 
+// All these properties are accessible via window.electron in the renderer
 contextBridge.exposeInMainWorld('electron', {
   send: (channel: string, data?: any) => {
     ipcRenderer.send(channel, data);
