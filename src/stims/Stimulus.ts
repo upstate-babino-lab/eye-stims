@@ -92,7 +92,11 @@ export abstract class Stimulus {
     if (this.tailMs == 0) {
       delete this.tailMs;
     }
-    this.colorTail = props.colorTail ?? this.colorTail;
+    if (props.colorTail) {
+      this.colorTail = props.colorTail;
+    } else {
+      delete this.colorTail;
+    }
     this.meta = props.meta ?? this.meta;
   }
 

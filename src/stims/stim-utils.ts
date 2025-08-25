@@ -146,6 +146,8 @@ export function frameWithBlack(stims: Stimulus[]): Stimulus[] {
     stims?.unshift(
       new Solid({
         durationMs: 10_000,
+        bodyMs: 2_000,
+        text: 'Initial 10 seconds are black...',
         meta: { comment: 'initial black' },
       })
     );
@@ -172,19 +174,19 @@ export function addIntegrityFlashes(
       meta: { comment: 'integrity flash' },
     }), // Perceptually gray
     new Solid({
-      bgColor: 'red',
+      bgColor: '#FF0000', // Red
       durationMs: 1260,
       bodyMs: 260,
       meta: { comment: 'integrity flash' },
     }),
     new Solid({
-      bgColor: 'green',
+      bgColor: '#00FF00', // Green
       durationMs: 1260,
       bodyMs: 260,
       meta: { comment: 'integrity flash' },
     }),
     new Solid({
-      bgColor: 'blue',
+      bgColor: '#0000FF', // Blue
       durationMs: 1260,
       bodyMs: 260,
       meta: { comment: 'integrity flash' },

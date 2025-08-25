@@ -14,9 +14,13 @@ import {
 } from './index';
 
 // Should never actually be used.
-class Uninitialized extends Stimulus {
+class Uninitialized extends Solid {
   constructor(props: Partial<Uninitialized> = {}) {
-    super({ ...props, stimType: StimTypeName.Uninitialized });
+    super({
+      ...props,
+      stimType: StimTypeName.Uninitialized,
+      text: 'Uninitialized Stimulus',
+    });
   }
   renderFrame(
     ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
@@ -28,15 +32,6 @@ class Uninitialized extends Stimulus {
     }
     ctx.fillStyle = this.bgColor;
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.font = '20px Arial';
-    ctx.fillStyle = 'red';
-    ctx.textAlign = 'center'; // Horizontal centering
-    ctx.textBaseline = 'middle'; // Vertical centering
-    ctx.fillText(
-      'Uninitialized Stimulus',
-      ctx.canvas.width / 2,
-      ctx.canvas.height / 2
-    );
   }
 }
 
@@ -74,7 +69,7 @@ export function newStimulus(stim: StimProps) {
       throw new Error(`newStimulus(): Stimulus '${stim.stimType}' not found`);
     }
   } else {
-    console.log(
+    console.error(
       `ERROR from newStimulus(): '${stim?.stimType}' invalid StimTypeName`
     );
   }
