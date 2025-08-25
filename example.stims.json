@@ -1,0 +1,46 @@
+{
+  "title": "Minimal Example",
+  "description": "From README",
+  "stimuli": [
+    {
+      "stimType": "Solid",
+      "bgColor": "green",
+      "durationMs": 2000
+    },
+    {
+      "stimType": "Bar",
+      "bgColor": "black",
+      "durationMs": 2000,
+      "fgColor": "orange",
+      "cpd": 10,
+      "speed": 10,
+      "angle": 45
+    },
+    {
+      "stimType": "SqrGrating",
+      "bgColor": "black",
+      "durationMs": 2000,
+      "angle": 45,
+      "fgColor": "white",
+      "speed": 4,
+      "cpd": 0.3
+    },
+    {
+      "stimType": "SinGrating",
+      "bgColor": "black",
+      "durationMs": 2000,
+      "angle": -45,
+      "fgColor": "white",
+      "speed": 5,
+      "cpd": 0.1
+    },
+    {
+      "stimType": "Checkerboard",
+      "bgColor": "black",
+      "durationMs": 2000,
+      "invertMs": 1000,
+      "fgColor": "white",
+      "cpd": 0.1
+    }
+  ]
+}
