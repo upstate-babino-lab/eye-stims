@@ -1,14 +1,14 @@
 # EyeStims
 
-A desktop application for building `.mp4` video files to stimulate retinas.
+EyeStims is a desktop application for building video files to stimulate retinas.
 
-Videos are projected to retinas on a microelectrode array, and neural signals recorded from the retinas can be precisely aligned to each corresponding visual stimulus for subsequent analysis of neural spike trains.
+Videos are projected to retinas on a microelectrode array, and neural signals recorded from the retinas can be precisely aligned to each corresponding visual stimulus for subsequent analysis.
 
 EyeStims can build videos in two ways: 1) from higher-level Assays, or 2) from lower-level Stim sequence.
 
 ### Assays
 
-A set of pre-defined Assays can be configured from the GUI, including the following:
+Pre-defined Assays include the following:
 
 - Pairs of gratings moving left and right for a range of sizes, contrasts, and speeds.
 - Flashing dots for a range of diameters and locations.
@@ -19,9 +19,7 @@ A set of pre-defined Assays can be configured from the GUI, including the follow
 
 ### Stims
 
-Finer control of detailed stimuli and their parameters can be achieved with EyeStims by loading a sequence of stimuli from a `.stims.json` file created by hand or from a program.
-
-Parameterized Stims currently available are listed below.
+Finer control of detailed stimuli and their parameters can be achieved by loading a sequence of stimuli from a `.stims.json` file using any of the following:
 
 - Solid
 - Bar

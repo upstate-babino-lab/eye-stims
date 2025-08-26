@@ -8,6 +8,6 @@ The amplitude profile of the sync-tones is designed to be easily pinpointed in t
 
 Tone amplitudes rise and fall according to a positive half-cycle sine wave raised to the fourth power (sin^4 in the figure below). Tones last no more than 200 milliseconds in duration, with peak amplitude centered at the 100 millisecond point.
 
-![Sync-tone profile](sync-tone-profile.png)
+<img src="sync-tone-profile.png" width="30%">
 
 In addition to being easy to locate within digital recordings, this amplitude profile avoids creating unpleasant distorted noise when played over a speaker, and it is long enough to be reliably identified by DTMF decoding circuits.
