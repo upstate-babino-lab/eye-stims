@@ -191,6 +191,12 @@ export function addIntegrityFlashes(
       bodyMs: 260,
       meta: { comment: 'integrity flash' },
     }),
+    new Solid({
+      bgColor: 'black',
+      durationMs: 1260,
+      bodyMs: 260,
+      meta: { comment: 'post integrity flash rest' },
+    }),
   ];
 
   // Required integrity flashes at start
