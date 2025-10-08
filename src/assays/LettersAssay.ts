@@ -5,15 +5,15 @@ import { contrastPair } from '@stims/stim-utils';
 import { Letter, STANDARD_SLOAN_LETTERS } from '@stims/Letter';
 
 export class LettersAssay extends Assay {
-  sizes: RangeSpec = new RangeSpec({ start: 5, step: 10, nSteps: 2 }); // Degrees
+  sizes: RangeSpec = new RangeSpec({ start: 40, step: -10, nSteps: 2 }); // Degrees
   contrasts: RangeSpec = new RangeSpec({
-    start: 90,
+    start: 100,
     step: -10,
     nSteps: 4,
     min: 0,
     max: 100,
   });
-  isLightOnDark: boolean = false; // Default is dark letters on light background
+  isDarkOnLight: boolean = false; // Default is light letters on dark background
 
   constructor(props: Partial<LettersAssay> = {}) {
     // TODO: Check that parameters are all in valid ranges
@@ -24,7 +24,7 @@ export class LettersAssay extends Assay {
     this.sizes = (props.sizes && new RangeSpec(props.sizes)) ?? this.sizes;
     this.contrasts =
       (props.contrasts && new RangeSpec(props.contrasts)) ?? this.contrasts;
-    this.isLightOnDark = props.isLightOnDark ?? this.isLightOnDark;
+    this.isDarkOnLight = props.isDarkOnLight ?? this.isDarkOnLight;
   }
 
   baseStimuli(): Stimulus[] {
@@ -43,8 +43,8 @@ export class LettersAssay extends Assay {
                 durationMs: this.bodyMs + this.tailMs,
                 bodyMs: this.bodyMs,
                 tailMs: this.tailMs,
-                bgColor: this.isLightOnDark ? fgColor : bgColor,
-                fgColor: this.isLightOnDark ? bgColor : fgColor,
+                bgColor: this.isDarkOnLight ? bgColor : fgColor,
+                fgColor: this.isDarkOnLight ? fgColor : bgColor,
                 meta: { contrast: contrast },
               })
             );

@@ -103,7 +103,7 @@ export default function AssayTab() {
               console.log('>>>>> AssayType changed to ' + newType);
               setTheAssay(
                 newAssay({
-                  ...theAssay,
+                  //...theAssay, // Don't use old props. Create with new defaults
                   assayType: newType,
                   description: assaysInfo[newType].description,
                 })

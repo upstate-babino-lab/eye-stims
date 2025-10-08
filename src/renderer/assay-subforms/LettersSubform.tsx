@@ -43,9 +43,9 @@ export function LettersSubform() {
         max={100}
       />
       <AssayBooleanCheckbox
-        label="Light letters on dark background"
-        propName="isLightOnDark"
-        toolTip="Dark background when checked (defaults to dark letters on light background when unchecked)"
+        label="Dark letters on light background"
+        propName="isDarkOnLight"
+        toolTip="Bright background when checked"
       />
     </div>
   );
