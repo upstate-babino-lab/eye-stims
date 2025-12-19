@@ -1,7 +1,7 @@
 import { StimType, Stimulus } from './Stimulus';
 
 export class Solid extends Stimulus {
-  text: string = '';
+  text?: string = undefined;
   constructor(props: Partial<Solid> = {}) {
     // console.log(`>>>>> constructor Solid(duration=${duration}, bgColor=${bgColor})`);
     super({ ...props, stimType: StimType.Solid });

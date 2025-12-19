@@ -9,7 +9,7 @@ export interface SubtitleCue {
   startTime: number; // Duration in seconds
   endTime: number; // Duration in seconds
   durationMs: number; // Duration of the cue in milliseconds (endTime - startTime)
-  text: string;
+  text?: string;
   stim: unknown;
 }
 
@@ -74,7 +74,7 @@ export function parseSrtContent(srtContent: string): SubtitleCue[] {
         startTime,
         endTime,
         durationMs: duration,
-        text: textBlock,
+        text: textBlock ? textBlock : undefined,
         stim: stim,
       });
     } else {
